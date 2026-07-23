@@ -16,7 +16,6 @@
 
 import yt_dlp,os, requests, re, time, wget, random, json 
 from yt_dlp import YoutubeDL
-from pytube import YouTube
 from youtube_search import YoutubeSearch as Y88F8
 from threading import Thread
 from pyrogram import *
@@ -24,10 +23,12 @@ from pyrogram.enums import *
 from shazamio import Shazam
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from helpers.Ranks import isLockCommand
 from PIL import Image, ImageFilter
 import asyncio
+import logging
 #from pySmartDL import SmartDL
 
 shazam = Shazam()
@@ -73,7 +74,7 @@ async def yt_func(c,m,k,channel):
        title = res['title']
        id = res['id']
        keyboard.append([InlineKeyboardButton (title, callback_data=f'{m.from_user.id}GET{id}')])     
-     a = await m.reply(f'{k} البحث ~ {query}',reply_markup=InlineKeyboardMarkup (keyboard), disable_web_page_preview=True)
+     a = await m.reply(t('g_5e78a82598', '{0} البحث ~ {1}', k, query),reply_markup=InlineKeyboardMarkup (keyboard), disable_web_page_preview=True)
      await r.set(f'{a.id}:one_minute:{m.from_user.id}', 1, ex=60)
      return True
      
@@ -92,33 +93,44 @@ async def yt_func(c,m,k,channel):
         duration_string = time.strftime('%M:%S', time.gmtime(aud["duration"]))
         return await m.reply_audio(aud["audio"],caption=f'@{channel} ~ {duration_string} ⏳',reply_markup=rep)
      url = f'https://youtu.be/{res["id"]}'
-     yt = YouTube(url)
-     if yt.length > 15555555:
-         return await m.reply("صوت فوق 25 دقيقة ما اقدر انزله",reply_markup=rep)
-     else:
-         duration_string = time.strftime('%M:%S', time.gmtime(yt.length))
-         ydl_ops = {"format": "bestaudio[ext=m4a]",'forceduration':True, "username": "oauth2", "password": ''}
+     ydl_ops = {"format": "bestaudio[ext=m4a]",'forceduration':True, "username": "oauth2", "password": ''}
+     def _dl_audio():
          with yt_dlp.YoutubeDL(ydl_ops) as ydl:
-           info = ydl.extract_info(url, download=False)
-           audio_file = ydl.prepare_filename(info)
-           ydl.process_info(info)
-         thumb = await wget.download(yt.thumbnail_url)
-         os.rename(audio_file,audio_file.replace(".m4a",".mp3"))
-         audio_file = audio_file.replace(".m4a",".mp3")
-         a = await m.reply_audio(
-         audio_file,
-         title=yt.title,
-         thumb=thumb,
-         duration=yt.length,
-         caption=f'@{channel} ~ {duration_string} ⏳',
-         performer=yt.author,reply_markup=rep)
-         ytdb.set(f'ytvideo{res["id"]}',{"type":"audio","audio":a.audio.file_id,"duration":a.audio.duration})
-         os.remove(audio_file)
-         os.remove(thumb)
-         return True
+             info = ydl.extract_info(url, download=False)
+             audio_file = ydl.prepare_filename(info)
+             ydl.process_info(info)
+         return info, audio_file
+     try:
+         info, audio_file = await asyncio.to_thread(_dl_audio)
+     except Exception as e:
+         logging.exception(e)
+         return await m.reply(t('g_8a8ba1b672', "\u062a\u0639\u0630\u0651\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0635\u0648\u062a \u0645\u0646 \u064a\u0648\u062a\u064a\u0648\u0628"), reply_markup=rep)
+     length = int(info.get("duration") or 0)
+     if length > 15555555:
+         if os.path.exists(audio_file): os.remove(audio_file)
+         return await m.reply(t('g_daee7a0f4c', "\u0635\u0648\u062a \u0641\u0648\u0642 25 \u062f\u0642\u064a\u0642\u0629 \u0645\u0627 \u0627\u0642\u062f\u0631 \u0627\u0646\u0632\u0644\u0647"),reply_markup=rep)
+     duration_string = time.strftime('%M:%S', time.gmtime(length))
+     thumb = None
+     thumb_url = info.get("thumbnail")
+     if thumb_url:
+         try: thumb = await asyncio.to_thread(wget.download, thumb_url)
+         except Exception as e: logging.exception(e)
+     os.rename(audio_file,audio_file.replace(".m4a",".mp3"))
+     audio_file = audio_file.replace(".m4a",".mp3")
+     a = await m.reply_audio(
+     audio_file,
+     title=info.get("title"),
+     thumb=thumb,
+     duration=length,
+     caption=f'@{channel} ~ {duration_string} \u23f3',
+     performer=info.get("uploader") or info.get("channel"),reply_markup=rep)
+     ytdb.set(f'ytvideo{res["id"]}',{"type":"audio","audio":a.audio.file_id,"duration":a.audio.duration})
+     os.remove(audio_file)
+     if thumb: os.remove(thumb)
+     return True
   
    if text == "نسخة اليوتيوب" and m.from_user.id == 6168217372:
-     if not ytdb.keys(): return await m.reply("تخزين اليوتيوب فاضي")
+     if not ytdb.keys(): return await m.reply(t('g_bde5d43f10', "تخزين اليوتيوب فاضي"))
      else:
         videos = []
         audios = []
@@ -163,7 +175,7 @@ async def yt_func(c,m,k,channel):
        ]
        )
        count += 1
-     await m.reply(f'{k} بحث الساوند ~ {query}', reply_markup=btns)
+     await m.reply(t('g_848521b3f6', '{0} بحث الساوند ~ {1}', k, query), reply_markup=btns)
      return True
    
    if text.startswith('تيك '):
@@ -215,7 +227,7 @@ async def yt_func(c,m,k,channel):
        with yt_dlp.YoutubeDL({}) as ytdl:
            ytdl_dataa = ytdl.extract_info(url, download=False)
            if int(ytdl_dataa['duration']) > 155555555:
-              return await m.reply('مقطع اكثر من ٢٥ دقيقة مقدر انزله')
+              return await m.reply(t('g_c743635dee', 'مقطع اكثر من ٢٥ دقيقة مقدر انزله'))
        with yt_dlp.YoutubeDL({}) as ytdl:
            ytdl_dataa = ytdl.extract_info(url, download=True)
            file_name = ytdl.prepare_filename(ytdl_dataa)
@@ -238,7 +250,7 @@ async def yt_func(c,m,k,channel):
        with yt_dlp.YoutubeDL({}) as ytdl:
            ytdl_dataa = ytdl.extract_info(url, download=False)
            if int(ytdl_dataa['duration']) > 55555252:
-              return await m.reply('مقطع اكثر من ٢٥ دقيقة مقدر انزله')
+              return await m.reply(t('g_c743635dee', 'مقطع اكثر من ٢٥ دقيقة مقدر انزله'))
        with yt_dlp.YoutubeDL({}) as ytdl:
            ytdl_dataa = ytdl.extract_info(url, download=True)
            file_name = ytdl.prepare_filename(ytdl_dataa)
@@ -258,7 +270,7 @@ async def yt_func(c,m,k,channel):
        if await r.get(f'{m.chat.id}:disableSound:{Dev_Zaid}'):  return
        if await r.get(f':disableYT:{Dev_Zaid}'):  return
        id = url.split('soundcloud.com')[1]
-       return await m.reply(f"@{channel} - ☁️",reply_markup=InlineKeyboardMarkup ([
+       return await m.reply(t('g_ce9a31ea24', '@{0} - ☁️', channel),reply_markup=InlineKeyboardMarkup ([
        [InlineKeyboardButton ("اضغط هنا لاختيار صيغة التحميل", switch_inline_query_current_chat=f'{id}#SOUND')],
        [InlineKeyboardButton ("☁️", url=f't.me/{channel}')],
        ]))
@@ -279,17 +291,17 @@ async def shazamFunc(c,m):
        duration=m.reply_to_message.video.duration if m.reply_to_message.video.duration else 301
        fileSize=m.reply_to_message.video.file_size
      if duration > 300:
-       return await m.reply("🧚‍♀️ مدة المقطع أكثر من 5 دقايق ..")
+       return await m.reply(t('g_905220966d', "🧚‍♀️ مدة المقطع أكثر من 5 دقايق .."))
      if fileSize > 26214400:
-       return await m.reply("🧚‍♀️ حجم المقطع أكثر من 25 ميجابايت ..")
+       return await m.reply(t('g_cd24a9eab8', "🧚‍♀️ حجم المقطع أكثر من 25 ميجابايت .."))
      id = random.randint(1,1000)
-     msg = await m.reply("جاري المعالجة ...")
+     msg = await m.reply(t('g_36285021e9', "جاري المعالجة ..."))
      audio = await m.reply_to_message.download(f'./shazam{id}.ogg')
      out = await shazam.recognize_song(f'shazam{id}.ogg')
      os.remove(f'shazam{id}.ogg')
      await msg.delete()
      if not out["matches"]:
-       return await m.reply("فشل بالتعرف على الصوت")
+       return await m.reply(t('g_a43bec8367', "فشل بالتعرف على الصوت"))
      else:
        title = out["track"]["title"]
        author = out["track"]["subtitle"]
@@ -314,7 +326,7 @@ async def shazamLyrics(c,m):
    query = m.text.split(None,1)[1]
    out = await shazam.search_track(query=query, limit=1)
    if not out:
-     return await m.reply("فشل العثور")
+     return await m.reply(t('g_c209d9d657', "فشل العثور"))
    else:
     try:
      key = int(out["tracks"]["hits"][0]["key"])
@@ -332,7 +344,7 @@ async def shazamLyrics(c,m):
      )
      )
     except Exception:
-     return await m.reply("فشل العثور")
+     return await m.reply(t('g_c209d9d657', "فشل العثور"))
      
 @Client.on_inline_query(filters.regex("SOUND"))
 async def SoundCloud(c, query):
@@ -402,7 +414,6 @@ async def getInfo(c, query):
     if await r.get(f':disableYT:{Dev_Zaid}'):  return
     await query.message.delete()
     channel = await r.get(f'{Dev_Zaid}:BotChannel') or 'w7G_BoT'
-    yt = YouTube(f'https://youtu.be/{vid_id}')
     #title = yt.title
     """
     photo = requests.get(yt.thumbnail_url).content
@@ -413,7 +424,7 @@ async def getInfo(c, query):
     blurImage.save(f'{vid_id}.jpg')
     photo = f'{vid_id}.jpg'
     """
-    photo = yt.thumbnail_url
+    photo = f'https://i.ytimg.com/vi/{vid_id}/hqdefault.jpg'
     url = f'https://youtu.be/{vid_id}'
     reply_markup = InlineKeyboardMarkup(
       [
