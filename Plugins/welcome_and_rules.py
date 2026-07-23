@@ -22,6 +22,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from helpers.Ranks import isLockCommand
 import asyncio
@@ -70,63 +71,63 @@ async def welcomeFunc(c, m, k):
         return
     if text == "الغاء" and await r.get(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}"):
         await r.delete(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}")
-        return await m.reply(f"{k} ابشر لغيت وضع الترحيب")
+        return await m.reply(t('g_26a1209e9d', '{0} ابشر لغيت وضع الترحيب', k))
 
     if text == "الغاء" and await r.get(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}"):
         await r.delete(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}")
-        return await m.reply(f"{k} ابشر لغيت وضع القوانين")
+        return await m.reply(t('g_ea4b7403de', '{0} ابشر لغيت وضع القوانين', k))
 
     if await r.get(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}") and await mod_pls(
         m.from_user.id, m.chat.id
     ):
         await r.set(f"{m.chat.id}:CustomRules:{Dev_Zaid}", m.text.html)
         await r.delete(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}")
-        return await m.reply(f"{k} تم حطيتها")
+        return await m.reply(t('g_00c50c512b', '{0} تم حطيتها', k))
 
     if await r.get(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}") and await mod_pls(
         m.from_user.id, m.chat.id
     ):
         await r.set(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}", m.text.html)
         await r.delete(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}")
-        return await m.reply(f"{k} تم وسوينا الترحيب ياعيني")
+        return await m.reply(t('g_314c5ffbac', '{0} تم وسوينا الترحيب ياعيني', k))
 
     if text == "مسح القوانين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             await r.delete(f"{m.chat.id}:CustomRules:{Dev_Zaid}")
-            return await m.reply(f"{k} من عيوني مسحت القوانين")
+            return await m.reply(t('g_9cc2df0ba9', '{0} من عيوني مسحت القوانين', k))
 
     if text == "وضع قوانين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             await r.set(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}", 1)
-            return await m.reply(f"{k} ارسل القوانين الحين")
+            return await m.reply(t('g_ee6c03a387', '{0} ارسل القوانين الحين', k))
 
     if text == "الترحيب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}"):
-                return await m.reply(f"`{default_welcome}`")
+                return await m.reply(t('g_39f77e8fb4', '`{0}`', default_welcome))
             else:
                 welcome = await r.get(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}")
-                return await m.reply(f"`{welcome}`")
+                return await m.reply(t('g_39f77e8fb4', '`{0}`', welcome))
 
     if text == "مسح الترحيب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             await r.delete(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}")
-            return await m.reply(f"{k} مسحت الترحيب")
+            return await m.reply(t('g_7b214230c5', '{0} مسحت الترحيب', k))
 
     if text == "وضع الترحيب" or text == "ضع الترحيب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             await r.set(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}", 1)
-            return await m.reply("""⇜ تمام عيني  
+            return await m.reply(t('g_3d648731f0', """⇜ تمام عيني  
 ⇜ ارسل رسالة الترحيب الحين
 
 ⇜ ملاحظة تقدر تضيف دوال للترحيب مثلا :
@@ -137,7 +138,7 @@ async def welcomeFunc(c, m, k):
 ⇜ اظهار تاريخ دخول العضو ⇠ {التاريخ} 
 ⇜ اظهار وقت دخول العضو ⇠ {الوقت} 
 ☆
-""")
+"""))
 
 
 @Client.on_message(filters.new_chat_members, group=4)
