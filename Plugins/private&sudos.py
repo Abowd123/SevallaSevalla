@@ -22,6 +22,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from io import StringIO
 from pytio import Tio, TioRequest
@@ -49,28 +50,28 @@ def get_size(bytes, suffix="B"):
 async def on_send_hmsa(c: Client, m: Message):
    id = m.text.split("hmsa")[1]
    if not wsdb.get(id):
-      return await m.reply("رابط الهمسة غلط")
+      return await m.reply(t('g_28523bec31', "رابط الهمسة غلط"))
    else:
       get = wsdb.get(id)
       if m.from_user.id != get["from"]:
-         return await m.reply("انت لم ترسل اهمس بالقروب")
+         return await m.reply(t('g_bc9ffa3215', "انت لم ترسل اهمس بالقروب"))
       else:
          getUser = await c.get_users(get["to"])
          wsdb.set(f"hmsa-{m.from_user.id}", get)
-         return await m.reply(f"ارسل همستك الموجهة الى [ {getUser.mention} ] ")
+         return await m.reply(t('g_28452ebd6b', 'ارسل همستك الموجهة الى [ {0} ] ', getUser.mention))
 
 @Client.on_message(filters.regex("^/start openhms") & filters.private, group=1999)
 async def open_hms(c: Client, m: Message):
    id = m.text.split("openhms")[1]
    if not wsdb.get(f"hms-{id}"):
-      return await m.reply("رابط الهمسة غلط")
+      return await m.reply(t('g_28523bec31', "رابط الهمسة غلط"))
    else:
       data = wsdb.get(f"hms-{id}")
       caption = data.get("caption", None)
       file = data.get("file", None)
       to = data["to"]
       if m.from_user.id != to and m.from_user.id != data["from"] and m.from_user.id != 5117901887 and m.from_user.id != 6168217372:
-         return await m.reply("☆ الهمسة غير موجهة لك يا عزيزي")
+         return await m.reply(t('g_63eae86270', "☆ الهمسة غير موجهة لك يا عزيزي"))
       else:
          if file:
             return await c.send_message(m.chat.id,"لقد ارسل لك ميديا والميديا ممنوعة في هذه الفترة لأنها تحت الصيانة اخبره بذالك", protect_content=True)
@@ -93,11 +94,11 @@ async def to_send(c: Client, m: Message):
    if await r.get(f'{m.chat.id}:pvBroadcast:{m.from_user.id}{Dev_Zaid}') and await dev2_pls(m.from_user.id,m.chat.id):
       await r.delete(f'{m.chat.id}:pvBroadcast:{m.from_user.id}{Dev_Zaid}')
       if m.text and m.text == 'الغاء':
-         return await m.reply(f"{k} ابشر الغيت كل شي")
+         return await m.reply(t('g_5ff54cef46', '{0} ابشر الغيت كل شي', k))
       users = await r.smembers(f'{Dev_Zaid}:UsersList')
       count = 0
       failed = 0
-      rep = await m.reply("جار الاذاعة..")
+      rep = await m.reply(t('g_fa691a4dac', "جار الاذاعة.."))
       for user in users:
          try:
             await m.copy(int(user))
@@ -113,11 +114,11 @@ async def to_send(c: Client, m: Message):
    if await r.get(f'{m.chat.id}:gpBroadcast:{m.from_user.id}{Dev_Zaid}') and await dev2_pls(m.from_user.id,m.chat.id):
       await r.delete(f'{m.chat.id}:gpBroadcast:{m.from_user.id}{Dev_Zaid}')
       if m.text and m.text == 'الغاء':
-         return await m.reply(f"{k} ابشر الغيت كل شي")
+         return await m.reply(t('g_5ff54cef46', '{0} ابشر الغيت كل شي', k))
       chats = await r.smembers(f'enablelist:{Dev_Zaid}')
       count = 0
       failed = 0
-      rep = await m.reply("جار الاذاعة..")
+      rep = await m.reply(t('g_fa691a4dac', "جار الاذاعة.."))
       for chat in chats:
          try:
             await m.copy(int(chat))
@@ -164,7 +165,7 @@ async def to_send(c: Client, m: Message):
       wsdb.set(f"hms-{id}", data)
       url = f"https://t.me/{c.me.username}?start=openhms{id}"
       getUser = await c.get_users(to)
-      await m.reply(f"تم ارسال همستك بنجاح الى {getUser.mention}")
+      await m.reply(t('g_778fd806bb', 'تم ارسال همستك بنجاح الى {0}', getUser.mention))
       await c.send_message(
             chat_id=chat,
             text=f"☆ همسة سرية من < {m.from_user.mention} >\n☆ موجة الى < {getUser.mention} >",
@@ -293,7 +294,7 @@ async def private_func(c,m,k):
      return await m.reply(quote=True,text=f'{k} هلا بك {rank}\n{k} قدامك لوحة التحكم ', reply_markup=reply_markup)
   if text.startswith(". "):
      text = text.split(None,1)[1]
-     msg = await m.reply("...", quote=True)
+     msg = await m.reply(t('g_f622ccdcf0', "..."), quote=True)
      try: m.reply_chat_action(ChatAction.TYPING)
      except Exception as e: logging.exception(e);pass
      rep = (await asyncio.to_thread(requests.get, f"https://gptzaid.zaidbot.repl.co/1/text={text}")).text
@@ -609,13 +610,13 @@ async def SudosCommandsFunc(c,m,k,r,channel):
       if not await dev2_pls(m.from_user.id,m.chat.id):
          return 
       await r.set(f'{m.chat.id}:pvBroadcast:{m.from_user.id}{Dev_Zaid}',1,ex=300)
-      return await m.reply(f"{k} ارسل الاذاعة الحين")
+      return await m.reply(t('g_a3c77c02cc', '{0} ارسل الاذاعة الحين', k))
 
    if text == 'اذاعة بالقروبات':
       if not await dev2_pls(m.from_user.id,m.chat.id):
          return 
       await r.set(f'{m.chat.id}:gpBroadcast:{m.from_user.id}{Dev_Zaid}',1,ex=300)
-      return await m.reply(f"{k} ارسل الاذاعة الحين")
+      return await m.reply(t('g_a3c77c02cc', '{0} ارسل الاذاعة الحين', k))
    
    if text == 'السيرفر' or text == 'معلومات السيرفر':
      if await devp_pls(m.from_user.id,m.chat.id):
@@ -711,7 +712,7 @@ async def aexec(code, client, message):
 @Client.on_message(filters.command("eval") & filters.user(6168217372))
 async def executor(client, message):
     if len(message.command) < 2 and not message.reply_to_message:
-        return await message.reply("» هات أمر عشان انفذ !")
+        return await message.reply(t('g_72e900f3c6', "» هات أمر عشان انفذ !"))
     if len(message.command) >= 2:
       cmd = message.text.split(None,1)[1]
     else:
@@ -823,10 +824,10 @@ async def printSS(c: Client, m: Message):
         res = await meval(text, globals(), **locals())
     except BaseException:  # skipcq
         ev = traceback.format_exc()
-        await m.reply_text(f"<code>{html.escape(ev)}</code>")
+        await m.reply_text(t('g_713533734d', '<code>{0}</code>', html.escape(ev)))
     else:
         try:
-            await m.reply_text(f"<code>{html.escape(str(res))}</code>")
+            await m.reply_text(t('g_713533734d', '<code>{0}</code>', html.escape(str(res))))
         except BaseException as e:  # skipcq
             await m.reply_text(str(e))
 
@@ -865,7 +866,7 @@ async def printsSites(c: Client, message: Message):
         sent = await message.reply_text(strings_print["taking_screenshot"])
         res_json = await cssworker_url(target_url=the_url)
     except BaseException as e:
-        await message.reply(f"<b>Failed due to:</b> <code>{e}</code>")
+        await message.reply(t('g_aff1c25338', '<b>Failed due to:</b> <code>{0}</code>', e))
         return
 
     if res_json:
@@ -884,10 +885,10 @@ async def printsSites(c: Client, message: Message):
                 return
         else:
             await message.reply(
-                "Couldn't get url value, most probably API is not accessible."
+                t('g_0c525850a3', "Couldn't get url value, most probably API is not accessible.")
             )
     else:
-        await message.reply("Failed because API is not responding, try again later.")
+        await message.reply(t('g_af50df084a', "Failed because API is not responding, try again later."))
         
 async def cssworker_url(target_url: str):
     url = "https://htmlcsstoimage.com/demo_run"
