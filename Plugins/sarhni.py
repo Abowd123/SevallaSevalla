@@ -27,6 +27,7 @@ from pyrogram.enums import *
 from pyrogram.types import *
 from datetime import datetime
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from helpers.Ranks import isLockCommand
 
@@ -76,7 +77,7 @@ async def sarhniHandler(c, m):
             id = await r.get(f'{m.from_user.id}:sar7ni:{Dev_Zaid}')
         await r.set(f'{m.from_user.id}:sarhniname', m.from_user.first_name)
         return await m.reply(
-            f'{k} أهلين عيني「 ⁪⁬⁪⁬{m.from_user.mention} 」\n{k} هذا رابط صارحني الخاص فيك',
+            t('g_38220f7a88', '{0} أهلين عيني「 \u206a\u206c\u206a\u206c{1} 」\n{2} هذا رابط صارحني الخاص فيك', k, m.from_user.mention, k),
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('📩', url=f't.me/{botUsername}?start=sarhni{id}')]]),
         )
 
@@ -92,15 +93,15 @@ async def sarhniHandlerP(c, m):
     if text.startswith('/start sarhni'):
         id = text.split('sarhni')[1]
         if not await r.get(f'{id}:sarhni:{Dev_Zaid}'):
-            return await m.reply(f'{k} رابط صارحني غلط')
+            return await m.reply(t('g_34481a1b02', '{0} رابط صارحني غلط', k))
         else:
             user_id = int(await r.get(f'{id}:sarhni:{Dev_Zaid}'))
             if m.from_user.id == user_id:
-                return await m.reply('انت هطف تدخل رابط صراحة حقك؟')
+                return await m.reply(t('g_f5b7a87d20', 'انت هطف تدخل رابط صراحة حقك؟'))
             get = await c.get_chat(user_id)
             await r.set(f'{m.from_user.id}:sarhni', get.id, ex=300)
             a = await m.reply(
-                f'{k} دخلت الحين رابط صارحني مع 「 ⁪⁬⁪⁬{get.first_name} 」\n{k} اي رسالة ترسلها لي راح احولها له بسرية تامة بدون مايعرفك\n༄',
+                t('g_9a1b5f3c4d', '{0} دخلت الحين رابط صارحني مع 「 \u206a\u206c\u206a\u206c{1} 」\n{2} اي رسالة ترسلها لي راح احولها له بسرية تامة بدون مايعرفك\n༄', k, get.first_name, k),
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('الغاء', callback_data='sarhni:bye')], [InlineKeyboardButton('🧚‍♀️', url=f't.me/{channel}')]]),
                 quote=True,
             )
@@ -123,10 +124,10 @@ async def sarhniHandlerP(c, m):
                     [InlineKeyboardButton('🧚‍♀️', url=f't.me/{channel}')],
                 ]),
             )
-            return await m.reply(f'{k} ابشر ارسلت رسالتك بسرية تامة لـ {name}', quote=True)
+            return await m.reply(t('g_ace5a9c555', '{0} ابشر ارسلت رسالتك بسرية تامة لـ {1}', k, name), quote=True)
         except Exception as e:
             logging.exception(e)
-            return await m.reply('مقدر ارسله شيء يمكن حاظرني', quote=True)
+            return await m.reply(t('g_9339bec150', 'مقدر ارسله شيء يمكن حاظرني'), quote=True)
 
     if await r.get(f'{m.from_user.id}:sarhni'):
         user_id = int(await r.get(f'{m.from_user.id}:sarhni'))
@@ -146,15 +147,15 @@ async def sarhniHandlerP(c, m):
                     [InlineKeyboardButton('🧚‍♀️', url=f't.me/{channel}')],
                 ]),
             )
-            return await m.reply(f'{k} ابشر ارسلت رسالتك بسرية تامة لـ {name}', quote=True)
+            return await m.reply(t('g_ace5a9c555', '{0} ابشر ارسلت رسالتك بسرية تامة لـ {1}', k, name), quote=True)
         except Exception as e:
             logging.exception(e)
-            return await m.reply('مقدر ارسله شيء يمكن حاظرني', quote=True)
+            return await m.reply(t('g_9339bec150', 'مقدر ارسله شيء يمكن حاظرني'), quote=True)
 
     if await r.get(f'{m.from_user.id}:sarhnirep'):
         user_id = int(await r.get(f'{m.from_user.id}:sarhnirep'))
         await r.delete(f'{m.from_user.id}:sarhnirep')
-        await m.reply(f'{k} ابشر ارسلت له ردك', quote=True)
+        await m.reply(t('g_cb9a29fe20', '{0} ابشر ارسلت له ردك', k), quote=True)
         return await m.copy(user_id)
 
 
