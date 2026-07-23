@@ -5,7 +5,9 @@ yt_dlp
 youtube_search
 redis>=4.2
 pytz
+#googletrans==3.1.0a0 
 hijri_converter
+#getids
 akinator 
 pySmartDL
 pysocket
@@ -19,7 +21,6 @@ ffprobe
 pillow 
 mutagen
 wget
-pytube
 shazamio
 pytio
 telegraph

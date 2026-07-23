@@ -22,7 +22,8 @@ API_ID = int(os.getenv('API_ID', '0'))
 API_HASH = os.getenv('API_HASH', '')
 
 chats_db = {}
-db = redis.Redis(decode_responses=True)
+REDIS_URL = os.getenv('REDIS_URL')
+db = redis.Redis.from_url(REDIS_URL, decode_responses=True) if REDIS_URL else redis.Redis(decode_responses=True)
 
 DevZaid = Client(
     "cleaner",
