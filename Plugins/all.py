@@ -26,6 +26,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from helpers.persianData import persianInformation
 from .welcome_and_rules import *
@@ -188,7 +189,7 @@ import asyncio
 @Client.on_message(filters.group, group=-1111111111111)
 async def on_zbi(c: Client, m: Message):
     name = await r.get(f"{Dev_Zaid}:BotName") or "ليو"
-    text = m.text
+    text = m.text or ""
     if text.startswith(f"{name} "):
         text = text.replace(f"{name} ", "")
     if await r.get(f"{m.chat.id}:Custom:{m.chat.id}{Dev_Zaid}&text={text}"):
@@ -213,7 +214,7 @@ async def on_zbi(c: Client, m: Message):
         if await r.get(f"forceChannel:{Dev_Zaid}") and (
             not await r.get(f"disableSubscribe:{Dev_Zaid}")
         ):
-            username = await r.get(f"forceChannel:{Dev_Zaid}").replace("@", "")
+            username = (await r.get(f"forceChannel:{Dev_Zaid}")).replace("@", "")
             not_member = False
             try:
                 member = await c.get_chat_member(username, m.from_user.id)
@@ -221,7 +222,7 @@ async def on_zbi(c: Client, m: Message):
                 return m.continue_propagation()
             except UserNotParticipant:
                 await m.reply(
-                    f"- انضم للقناة ( @{username} ) لتستطيع استخدام اوامر البوت",
+                    t('g_79cbe19089', '- انضم للقناة ( @{0} ) لتستطيع استخدام اوامر البوت', username),
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
@@ -248,7 +249,7 @@ async def on_zbi(c: Client, m: Message):
 
             if not_member:
                 await m.reply(
-                    f"- انضم للقناة ( @{username} ) لتستطيع استخدام اوامر البوت",
+                    t('g_79cbe19089', '- انضم للقناة ( @{0} ) لتستطيع استخدام اوامر البوت', username),
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
@@ -440,13 +441,13 @@ async def guardResponseFunction(c, m, k, channel):
                     await r.sadd(f"{m.chat.id}:listMUTE:{Dev_Zaid}", id)
                     await r.delete(f"{id}in_spam:{m.chat.id}{Dev_Zaid}")
                     return await m.reply(
-                        f"「 {mention} 」 \n{k} كتمتك يالبثر عشان تتعلم تكرر\n☆"
+                        t('g_52b737bf63', '「 {0} 」 \n{1} كتمتك يالبثر عشان تتعلم تكرر\n☆', mention, k)
                     )
 
                 if m.sender_chat:
                     await m.chat.ban_member(m.sender_chat)
                     return await m.reply(
-                        f"「 {mention} 」 {k} حظرتك يالبثر عشان تتعلم تكرر\n☆"
+                        t('g_a1fd828680', '「 {0} 」 {1} حظرتك يالبثر عشان تتعلم تكرر\n☆', mention, k)
                     )
             else:
                 get = int(await r.get(f"{id}in_spam:{m.chat.id}{Dev_Zaid}"))
@@ -733,7 +734,7 @@ async def guardResponseFunction(c, m, k, channel):
                 question = get_random["question"]
                 reply_markup = get_random["key"]
                 return await m.reply(
-                    f"{k} قيدناك عشان نتاكد انك شخص حقيقي مو زومبي\n\n{question}",
+                    t('g_0678e11d8c', '{0} قيدناك عشان نتاكد انك شخص حقيقي مو زومبي\n\n{1}', k, question),
                     reply_markup=reply_markup,
                 )
 
@@ -765,7 +766,7 @@ async def scan4(c, m, id, file):
         await m.delete()
         k = await r.get(f"{Dev_Zaid}:botkey")
         await m.reply(
-            f"「 {m.from_user.mention} 」\n{k} تم حذف رسالتك لإحتوائها على محتوى إباحي .\n☆"
+            t('g_3c7dd1a22f', '「 {0} 」\n{1} تم حذف رسالتك لإحتوائها على محتوى إباحي .\n☆', m.from_user.mention, k)
         )
     os.remove(file)
     await session.close()
@@ -1125,7 +1126,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "الاعدادات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             x1 = "مقفول" if await r.get(f"{m.chat.id}:lockAudios:{Dev_Zaid}") else "مفتوح"
             x2 = "مقفول" if await r.get(f"{m.chat.id}:lockVideo:{Dev_Zaid}") else "مفتوح"
@@ -1159,49 +1160,14 @@ async def guardCommands(c, m, k, channel):
                 "مقفول" if await r.get(f"{m.chat.id}:lockJoinPersian:{Dev_Zaid}") else "مفتوح"
             )
             x26 = "مقفول" if await r.get(f"{m.chat.id}:lockNSFW:{Dev_Zaid}") else "مفتوح"
-            return await m.reply(f"""
-اعدادات المجموعة :
-
-{k} الملفات الصوتية ⇠ ( {x1} )
-{k} الفيديو ⇠ ( {x2} )
-{k} الفويس ⇠ ( {x3} )
-{k} الصور ⇠ ( {x4} )
-
-{k} الدردشة ⇠ ( {x5} )
-{k} الانلاين ⇠ ( {x6} )
-{k} التوجيه ⇠ ( {x7} )
-{k} الهشتاق ⇠ ( {x8} )
-{k} التعديل ⇠ ( {x9} )
-{k} الستيكرات ⇠ ( {x10} )
-
-{k} الملفات ⇠ ( {x11} )
-{k} المتحركات ⇠ ( {x12} )
-{k} الروابط ⇠ ( {x13} )
-{k} البوتات ⇠ ( {x14} )
-{k} اليوزرات ⇠ ( {x15} )
-
-{k} الاشعارات ⇠ ( {x16} )
-{k} الاضافة ⇠ ( {x17} )
-
-{k} الكلام الكثير ⇠ ( {x18} )
-{k} السب ⇠ ( {x19} )
-{k} التكرار ⇠ ( {x20} )
-{k} القنوات ⇠ ( {x21} )
-{k} تعديل الميديا ⇠ ( {x22} )
-
-{k} الدخول ⇠ ( {x23} )
-{k} الفارسية ⇠ ( {x24} )
-{k} دخول الإيراني ⇠ ( {x25} )
-{k} الإباحي ⇠ ( {x26} )
-
-~ @{channel}""")
+            return await m.reply(t('g_4c171fa319', '\nاعدادات المجموعة :\n\n{0} الملفات الصوتية ⇠ ( {1} )\n{2} الفيديو ⇠ ( {3} )\n{4} الفويس ⇠ ( {5} )\n{6} الصور ⇠ ( {7} )\n\n{8} الدردشة ⇠ ( {9} )\n{10} الانلاين ⇠ ( {11} )\n{12} التوجيه ⇠ ( {13} )\n{14} الهشتاق ⇠ ( {15} )\n{16} التعديل ⇠ ( {17} )\n{18} الستيكرات ⇠ ( {19} )\n\n{20} الملفات ⇠ ( {21} )\n{22} المتحركات ⇠ ( {23} )\n{24} الروابط ⇠ ( {25} )\n{26} البوتات ⇠ ( {27} )\n{28} اليوزرات ⇠ ( {29} )\n\n{30} الاشعارات ⇠ ( {31} )\n{32} الاضافة ⇠ ( {33} )\n\n{34} الكلام الكثير ⇠ ( {35} )\n{36} السب ⇠ ( {37} )\n{38} التكرار ⇠ ( {39} )\n{40} القنوات ⇠ ( {41} )\n{42} تعديل الميديا ⇠ ( {43} )\n\n{44} الدخول ⇠ ( {45} )\n{46} الفارسية ⇠ ( {47} )\n{48} دخول الإيراني ⇠ ( {49} )\n{50} الإباحي ⇠ ( {51} )\n\n~ @{52}', k, x1, k, x2, k, x3, k, x4, k, x5, k, x6, k, x7, k, x8, k, x9, k, x10, k, x11, k, x12, k, x13, k, x14, k, x15, k, x16, k, x17, k, x18, k, x19, k, x20, k, x21, k, x22, k, x23, k, x24, k, x25, k, x26, channel))
 
     if text == "الساعه" or text == "الساعة" or text == "الوقت":
         TIME_ZONE = "Asia/Riyadh"
         ZONE = pytz.timezone(TIME_ZONE)
         TIME = datetime.now(ZONE)
         clock = TIME.strftime("%I:%M %p")
-        return await m.reply(f"{k} الساعة ( {clock} )")
+        return await m.reply(t('g_46387c3a3d', '{0} الساعة ( {1} )', k, clock))
 
     if text == "القوانين":
         if await r.get(f"{m.chat.id}:CustomRules:{Dev_Zaid}"):
@@ -1233,11 +1199,7 @@ async def guardCommands(c, m, k, channel):
         geo_date = str(b).replace("-", "/")
         geo_month = geo.month_name("en")[:3]
 
-        return await m.reply(f"""
-التاريخ:
-{k} هجري ↢ {hijri_date} {hijri_month}
-{k} ميلادي ↢ {geo_date} {geo_month}
-""")
+        return await m.reply(t('g_3f3c1a69bb', '\nالتاريخ:\n{0} هجري ↢ {1} {2}\n{3} ميلادي ↢ {4} {5}\n', k, hijri_date, hijri_month, k, geo_date, geo_month))
 
     if text == "المالك":
         owner = None
@@ -1247,7 +1209,7 @@ async def guardCommands(c, m, k, channel):
                 break
         if owner:
             if owner.is_deleted:
-                await m.reply("حساب المالك محذوف")
+                await m.reply(t('g_60752ff85b', "حساب المالك محذوف"))
             else:
                 owner_username = owner.username if owner.username else owner.id
                 caption = f"• Owner ☆ ↦ {owner.mention}\n\n"
@@ -1272,12 +1234,12 @@ async def guardCommands(c, m, k, channel):
         if await r.get(f"{m.chat.id}:enableKickMe:{Dev_Zaid}"):
             get = await m.chat.get_member(m.from_user.id)
             if get.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
-                return await m.reply(f"{k} ممنوع طرد الحلوين")
+                return await m.reply(t('g_518d2f975f', '{0} ممنوع طرد الحلوين', k))
             if await admin_pls(m.from_user.id, m.chat.id):
-                return await m.reply(f"{k} ممنوع طرد الحلوين")
+                return await m.reply(t('g_518d2f975f', '{0} ممنوع طرد الحلوين', k))
             else:
                 await m.reply(
-                    f"طردتك يانفسية , وارسلت لك الرابط خاص تقدر ترجع متى مابغيت يامعقد"
+                    t('g_b7b42e0988', 'طردتك يانفسية , وارسلت لك الرابط خاص تقدر ترجع متى مابغيت يامعقد')
                 )
                 await m.chat.ban_member(m.from_user.id)
                 await asyncio.sleep(0.5)
@@ -1295,26 +1257,26 @@ async def guardCommands(c, m, k, channel):
     if text == "الرابط":
         if not await r.get(f"{m.chat.id}:disableLINK:{Dev_Zaid}"):
             link = await c.get_chat(m.chat.id).invite_link
-            return await m.reply(f"[{m.chat.title}]({link})", disable_web_page_preview=True)
+            return await m.reply(t('g_017ed9abd2', '[{0}]({1})', m.chat.title, link), disable_web_page_preview=True)
 
     if text == "انشاء رابط":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         link = await c.get_chat(m.chat.id).invite_link
         c.revoke_chat_invite_link(m.chat.id, link)
-        return await m.reply(f'{k} ابشر سويت رابط جديد ارسل "الرابط"')
+        return await m.reply(t('g_3c0a8d98d5', '{0} ابشر سويت رابط جديد ارسل "الرابط"', k))
 
     if text.startswith("@all"):
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         if await r.get(f"{m.chat.id}:disableALL:{Dev_Zaid}"):
-            return await m.reply("المنشن معطل")
+            return await m.reply(t('g_8334496617', "المنشن معطل"))
         if await r.get(f"{m.chat.id}:inMention:{Dev_Zaid}"):
             return False
         if await r.get(f"{m.chat.id}:inMentionWAIT:{Dev_Zaid}"):
             get = await r.ttl(f"{m.chat.id}:inMentionWAIT:{Dev_Zaid}")
             tm = time.strftime("%M:%S", time.gmtime(get))
-            return await m.reply(f"{k} سويت منشن من شوي تعال بعد {tm}")
+            return await m.reply(t('g_0fb534de9b', '{0} سويت منشن من شوي تعال بعد {1}', k, tm))
         else:
             if len(text.split()) > 1:
                 reason = text.split(None, 1)[1]
@@ -1322,7 +1284,7 @@ async def guardCommands(c, m, k, channel):
                 reason = ""
             users_list = []
             await r.set(f"{m.chat.id}:inMention:{Dev_Zaid}", 1)
-            await m.reply(f"{k} بسوي منشن يحلو ، اذا تبي توقفه ارسل `/Cancel` او `ايقاف`")
+            await m.reply(t('g_aa29383fd6', '{0} بسوي منشن يحلو ، اذا تبي توقفه ارسل `/Cancel` او `ايقاف`', k))
             for mm in await m.chat.get_members(limit=150):
                 if mm.user and not mm.user.is_deleted and not mm.user.is_bot:
                     users_list.append(mm.user.mention)
@@ -1340,234 +1302,234 @@ async def guardCommands(c, m, k, channel):
 
     if text.lower() == "/cancel" or text == "ايقاف":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:inMention:{Dev_Zaid}"):
-                return await m.reply(f"{k} مو قاعده اسوي منشن ركز")
+                return await m.reply(t('g_1a4de28401', '{0} مو قاعده اسوي منشن ركز', k))
             else:
                 await r.delete(f"{m.chat.id}:inMention:{Dev_Zaid}")
-                return await m.reply("ابشر وقفت المنشن")
+                return await m.reply(t('g_dba46b0a1f', "ابشر وقفت المنشن"))
 
     if text == "منشن":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
-        return await m.reply("استخدم امر\n@all مع الكلام")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
+        return await m.reply(t('g_92c441101b', "استخدم امر\n@all مع الكلام"))
 
     if text == "تعطيل المنشن":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableALL:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} المشن معطل من قبل\n☆"
+                    t('g_2c255be749', '{0} من「 {1} 」\n{2} المشن معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableALL:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت المنشن\n☆"
+                    t('g_2bcae869fc', '{0} من「 {1} 」\n{2} ابشر عطلت المنشن\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل المنشن":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableALL:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} المنشن مفعل من قبل\n☆"
+                    t('g_e9f65723b6', '{0} من「 {1} 」\n{2} المنشن مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableALL:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت المنشن\n☆"
+                    t('g_a64658162f', '{0} من「 {1} 」\n{2} ابشر فعلت المنشن\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الترحيب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableWelcome:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الترحيب معطل من قبل\n☆"
+                    t('g_f8476e1933', '{0} من「 {1} 」\n{2} الترحيب معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableWelcome:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الترحيب\n☆"
+                    t('g_1827b21d01', '{0} من「 {1} 」\n{2} ابشر عطلت الترحيب\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الترحيب بالصورة" or text == "تعطيل الترحيب بالصوره":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableWelcomep:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الترحيب بالصورة من قبل\n☆"
+                    t('g_73d2889c6b', '{0} من「 {1} 」\n{2} الترحيب بالصورة من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableWelcomep:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الترحيب بالصورة\n☆"
+                    t('g_9238df400d', '{0} من「 {1} 」\n{2} ابشر عطلت الترحيب بالصورة\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل الترحيب بالصورة" or text == "تفعيل الترحيب بالصوره":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableWelcomep:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الترحيب بالصورة مفعل من قبل\n☆"
+                    t('g_2a5b2aae45', '{0} من「 {1} 」\n{2} الترحيب بالصورة مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableWelcomep:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الترحيب بالصورة\n☆"
+                    t('g_958fbbf5a4', '{0} من「 {1} 」\n{2} ابشر فعلت الترحيب بالصورة\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الرابط":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableLINK:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الرابط معطل من قبل\n☆"
+                    t('g_0ad0379db4', '{0} من「 {1} 」\n{2} الرابط معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableLINK:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الرابط\n☆"
+                    t('g_405b0f3db5', '{0} من「 {1} 」\n{2} ابشر عطلت الرابط\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل الرابط":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableLINK:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الرابط مفعل من قبل\n☆"
+                    t('g_e0fd374164', '{0} من「 {1} 」\n{2} الرابط مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableLINK:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الرابط\n☆"
+                    t('g_c4d93c7e93', '{0} من「 {1} 」\n{2} ابشر فعلت الرابط\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل البايو":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableBio:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} البايو معطل من قبل\n☆"
+                    t('g_9b444471b5', '{0} من「 {1} 」\n{2} البايو معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableBio:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت البايو\n☆"
+                    t('g_4a43a06869', '{0} من「 {1} 」\n{2} ابشر عطلت البايو\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل البايو":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableBio:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} البايو مفعل من قبل\n☆"
+                    t('g_114a36b3e8', '{0} من「 {1} 」\n{2} البايو مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableBio:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت البايو\n☆"
+                    t('g_4fef6c691b', '{0} من「 {1} 」\n{2} ابشر فعلت البايو\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل اطردني":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:enableKickMe:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} اطردني معطل من قبل\n☆"
+                    t('g_bdda381c5e', '{0} من「 {1} 」\n{2} اطردني معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:enableKickMe:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت اطردني\n☆"
+                    t('g_247bfa5b89', '{0} من「 {1} 」\n{2} ابشر عطلت اطردني\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل اطردني":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:enableKickMe:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} اطردني مفعل من قبل\n☆"
+                    t('g_ac963dc278', '{0} من「 {1} 」\n{2} اطردني مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:enableKickMe:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت اطردني\n☆"
+                    t('g_01236c61e1', '{0} من「 {1} 」\n{2} ابشر فعلت اطردني\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل التحقق":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:enableVerify:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التحقق معطل من قبل\n☆"
+                    t('g_1f5f64534b', '{0} من「 {1} 」\n{2} التحقق معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:enableVerify:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت التحقق\n☆"
+                    t('g_8d597e4807', '{0} من「 {1} 」\n{2} ابشر عطلت التحقق\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل التحقق":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:enableVerify:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التحقق مفعل من قبل\n☆"
+                    t('g_3581fa0672', '{0} من「 {1} 」\n{2} التحقق مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:enableVerify:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت التحقق\n☆"
+                    t('g_bce8805d16', '{0} من「 {1} 」\n{2} ابشر فعلت التحقق\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل انطقي" or text == "تعطيل انطق":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableSay:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} انطقي معطل من قبل\n☆"
+                    t('g_a0f50c20d6', '{0} من「 {1} 」\n{2} انطقي معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableSay:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت انطقي\n☆"
+                    t('g_e686ab7455', '{0} من「 {1} 」\n{2} ابشر عطلت انطقي\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل انطقي" or text == "تفعيل انطق":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableSay:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} انطقي مفعل من قبل\n☆"
+                    t('g_0ddd634197', '{0} من「 {1} 」\n{2} انطقي مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableSay:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت انطقي\n☆"
+                    t('g_b71b952128', '{0} من「 {1} 」\n{2} ابشر فعلت انطقي\n☆', k, m.from_user.mention, k)
                 )
 
     if text.startswith("انطق "):
         if not await r.get(f"{m.chat.id}:disableSay:{Dev_Zaid}"):
             txt = text.split(None, 1)[1]
             if len(txt) > 500:
-                return await m.reply("توكل مايمدي انطق اكثر من ٥٠٠ حرف بتعب بعدين")
+                return await m.reply(t('g_26da79f2c4', "توكل مايمدي انطق اكثر من ٥٠٠ حرف بتعب بعدين"))
             """
          det = translator.detect(txt).lang.lower()
          if det == 'fa' or det == 'ar':
@@ -1627,7 +1589,7 @@ async def guardCommands(c, m, k, channel):
         if not await r.get(f"{m.chat.id}:disableSay:{Dev_Zaid}"):
             txt = text.split(None, 1)[1]
             if len(txt) > 500:
-                return await m.reply("توكل مايمدي انطق اكثر من ٥٠٠ حرف بتعب بعدين")
+                return await m.reply(t('g_26da79f2c4', "توكل مايمدي انطق اكثر من ٥٠٠ حرف بتعب بعدين"))
             """
          det = translator.detect(txt).lang.lower()
          if det == 'fa' or det == 'ar':
@@ -1689,7 +1651,7 @@ async def guardCommands(c, m, k, channel):
         and m.reply_to_message.voice
     ):
         if m.reply_to_message.voice.file_size > 20971520:
-            return await m.reply("حجمه اكثر من ٢٠ ميجابايت، توكل")
+            return await m.reply(t('g_5538f0948e', "حجمه اكثر من ٢٠ ميجابايت، توكل"))
         id = random.randint(99, 1000)
         voice = await m.reply_to_message.download(f"./zaid{id}.wav")
         s = sr.Recognizer()
@@ -1702,9 +1664,9 @@ async def guardCommands(c, m, k, channel):
         except Exception as e:
             logging.exception(e)
             os.remove(f"zaid{id}.wav")
-            return await m.reply("عجزت افهم وش يقول ")
+            return await m.reply(t('g_f3e995fa99', "عجزت افهم وش يقول "))
         os.remove(f"zaid{id}.wav")
-        return await m.reply(f"يقول : {text}")
+        return await m.reply(t('g_f0e14ce62d', 'يقول : {0}', text))
 
     if (
         (text == "zaid" or text == "زوز")
@@ -1713,7 +1675,7 @@ async def guardCommands(c, m, k, channel):
         and m.from_user.id == 6168217372
     ):
         if m.reply_to_message.voice.file_size > 20971520:
-            return await m.reply("حجمه اكثر من ٢٠ ميجابايت، توكل")
+            return await m.reply(t('g_5538f0948e', "حجمه اكثر من ٢٠ ميجابايت، توكل"))
         id = random.randint(99, 1000)
         voice = await m.reply_to_message.download(f"./zaid{id}.wav")
         s = sr.Recognizer()
@@ -1726,22 +1688,22 @@ async def guardCommands(c, m, k, channel):
         except Exception as e:
             logging.exception(e)
             os.remove(f"zaid{id}.wav")
-            return await m.reply("عجزت افهم وش يقول ")
+            return await m.reply(t('g_f3e995fa99', "عجزت افهم وش يقول "))
         os.remove(f"zaid{id}.wav")
-        return await m.reply(f"يقول : {text}")
+        return await m.reply(t('g_f0e14ce62d', 'يقول : {0}', text))
 
     if text.startswith("منع "):
         if await mod_pls(m.from_user.id, m.chat.id):
             noice = text.split(None, 1)[1]
             if await r.sismember(f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}", noice):
                 return await m.reply(
-                    f"{k} الكلمة ( {noice} ) موجودة بقائمة المنع",
+                    t('g_0cb6061fbd', '{0} الكلمة ( {1} ) موجودة بقائمة المنع', k, noice),
                     disable_web_page_preview=True,
                 )
             else:
                 await r.sadd(f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}", noice)
                 return await m.reply(
-                    f"{k} الكلمة ( {noice} ) اضفتها الى قائمة المنع",
+                    t('g_4a281660ed', '{0} الكلمة ( {1} ) اضفتها الى قائمة المنع', k, noice),
                     disable_web_page_preview=True,
                 )
 
@@ -1750,13 +1712,13 @@ async def guardCommands(c, m, k, channel):
             noice = text.split(None, 2)[2]
             if not await r.sismember(f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}", noice):
                 return await m.reply(
-                    f"{k} الكلمة ( {noice} ) مو مضافة بقائمة المنع",
+                    t('g_e5dad7b40e', '{0} الكلمة ( {1} ) مو مضافة بقائمة المنع', k, noice),
                     disable_web_page_preview=True,
                 )
             else:
                 await r.srem(f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}", noice)
                 return await m.reply(
-                    f"{k} ابشر مسحت ( {noice} ) من قائمة المنع",
+                    t('g_b9644c5f1f', '{0} ابشر مسحت ( {1} ) من قائمة المنع', k, noice),
                     disable_web_page_preview=True,
                 )
 
@@ -1787,14 +1749,14 @@ async def guardCommands(c, m, k, channel):
 
             id = file_id[-6:]
             if await r.get(f"{id}:NotAllow:{m.chat.id}{Dev_Zaid}"):
-                return await m.reply(f"{k} موجودة بقائمة المنع")
+                return await m.reply(t('g_67cb833053', '{0} موجودة بقائمة المنع', k))
             else:
                 await r.set(f"{id}:NotAllow:{m.chat.id}{Dev_Zaid}", 1)
                 await r.sadd(
                     f"{m.chat.id}:NotAllowedList:{Dev_Zaid}",
                     f"file={id}&by={m.from_user.id}&type={type}&file_id={file_id}",
                 )
-                return await m.reply(f"{k} واضفناها لقائمة المنع")
+                return await m.reply(t('g_7f0c3c80db', '{0} واضفناها لقائمة المنع', k))
 
     if text == "الغاء منع" and m.reply_to_message and m.reply_to_message.media:
         if await mod_pls(m.from_user.id, m.chat.id):
@@ -1823,18 +1785,18 @@ async def guardCommands(c, m, k, channel):
 
             id = file_id[-6:]
             if not await r.get(f"{id}:NotAllow:{m.chat.id}{Dev_Zaid}"):
-                return await m.reply(f"{k} مو موجودة بقائمة المنع")
+                return await m.reply(t('g_d8f0fcfa3a', '{0} مو موجودة بقائمة المنع', k))
             else:
                 await r.delete(f"{id}:NotAllow:{m.chat.id}{Dev_Zaid}")
                 await r.srem(
                     f"{m.chat.id}:NotAllowedList:{Dev_Zaid}",
                     f"file={id}&by={m.from_user.id}&type={type}&file_id={file_id}",
                 )
-                return await m.reply(f"{k} ابشر شلتها من قائمه المنع")
+                return await m.reply(t('g_0ec251704a', '{0} ابشر شلتها من قائمه المنع', k))
 
     if text == "منع" and m.reply_to_message and not m.reply_to_message.media:
         if await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} المنع بالرد فقط للوسائط")
+            return await m.reply(t('g_0bdbd9baa5', '{0} المنع بالرد فقط للوسائط', k))
 
     if text == "قائمه المنع" or text == "قائمة المنع":
         text1 = "الكلمات الممنوعة:\n"
@@ -1845,7 +1807,7 @@ async def guardCommands(c, m, k, channel):
             if not await r.smembers(
                 f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}"
             ) and not await r.smembers(f"{m.chat.id}:NotAllowedList:{Dev_Zaid}"):
-                return await m.reply(f"{k} مافي شي ممنوع")
+                return await m.reply(t('g_18f54be4df', '{0} مافي شي ممنوع', k))
             else:
                 if not await r.smembers(f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}"):
                     text1 += "لايوجد"
@@ -1864,14 +1826,14 @@ async def guardCommands(c, m, k, channel):
                         text2 += (
                             f"{count2} - (`{id}`) ࿓ ( [{type}](tg://user?id={by}) )\n"
                         )
-                return await m.reply(f"{text1}\n{text2}", disable_web_page_preview=True)
+                return await m.reply(t('g_e040511ac5', '{0}\n{1}', text1, text2), disable_web_page_preview=True)
 
     if text == "مسح قائمه المنع" or text == "مسح قائمة المنع":
         if await mod_pls(m.from_user.id, m.chat.id):
             if not await r.smembers(
                 f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}"
             ) and not await r.smembers(f"{m.chat.id}:NotAllowedList:{Dev_Zaid}"):
-                return await m.reply(f"{k} مافي شي ممنوع")
+                return await m.reply(t('g_18f54be4df', '{0} مافي شي ممنوع', k))
             else:
                 if await r.smembers(f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}"):
                     await r.delete(f"{m.chat.id}:NotAllowedListText:{Dev_Zaid}")
@@ -1880,11 +1842,11 @@ async def guardCommands(c, m, k, channel):
                         file_id = a.split("file=")[1].split("&by=")[0]
                         await r.delete(f"{file_id}:NotAllow:{m.chat.id}{Dev_Zaid}")
                 await r.delete(f"{m.chat.id}:NotAllowedList:{Dev_Zaid}")
-                return await m.reply(f"{k} ابشر مسحت قائمة المنع")
+                return await m.reply(t('g_a2bc704dc5', '{0} ابشر مسحت قائمة المنع', k))
 
     if text == "قفل الكل":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if (
                 await r.get(f"{m.chat.id}:mute:{Dev_Zaid}")
@@ -1914,10 +1876,10 @@ async def guardCommands(c, m, k, channel):
                 and await r.get(f"{m.chat.id}:lockNSFW:{Dev_Zaid}")
             ):
                 return await m.reply(
-                    f"{k} من 「 {m.from_user.mention} 」 \n{k} كل شي مقفل يالطيب!\n☆"
+                    t('g_984145ffd4', '{0} من 「 {1} 」 \n{2} كل شي مقفل يالطيب!\n☆', k, m.from_user.mention, k)
                 )
             else:
-                await m.reply(f"{k} من 「 {m.from_user.mention} 」 \n{k} ابشر قفلت كل شي\n☆")
+                await m.reply(t('g_ed233621f0', '{0} من 「 {1} 」 \n{2} ابشر قفلت كل شي\n☆', k, m.from_user.mention, k))
                 await r.set(f"{m.chat.id}:mute:{Dev_Zaid}", 1)
                 await r.set(f"{m.chat.id}:lockJoin:{Dev_Zaid}", 1)
                 await r.set(f"{m.chat.id}:lockChannels:{Dev_Zaid}", 1)
@@ -1947,7 +1909,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الكل":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if (
                 not await r.get(f"{m.chat.id}:mute:{Dev_Zaid}")
@@ -1977,10 +1939,10 @@ async def guardCommands(c, m, k, channel):
                 and not await r.get(f"{m.chat.id}:lockNSFW:{Dev_Zaid}")
             ):
                 return await m.reply(
-                    f"{k} من 「 {m.from_user.mention} 」 \n{k} كل شي مفتوح يالطيب!\n☆"
+                    t('g_7d29295c3c', '{0} من 「 {1} 」 \n{2} كل شي مفتوح يالطيب!\n☆', k, m.from_user.mention, k)
                 )
             else:
-                await m.reply(f"{k} من 「 {m.from_user.mention} 」 \n{k} ابشر فتحت كل شي\n☆")
+                await m.reply(t('g_884c0e7b54', '{0} من 「 {1} 」 \n{2} ابشر فتحت كل شي\n☆', k, m.from_user.mention, k))
                 await r.delete(f"{m.chat.id}:mute:{Dev_Zaid}")
                 await r.delete(f"{m.chat.id}:lockJoin:{Dev_Zaid}")
                 await r.delete(f"{m.chat.id}:lockChannels:{Dev_Zaid}")
@@ -2011,7 +1973,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "تفعيل الحماية" or text == "تفعيل الحمايه":
         if not await owner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المالك وفوق ) بس")
+            return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k))
         else:
             if (
                 await r.get(f"{m.chat.id}:lockEditM:{Dev_Zaid}")
@@ -2033,11 +1995,11 @@ async def guardCommands(c, m, k, channel):
                 and await r.get(f"{m.chat.id}:lockNSFW:{Dev_Zaid}")
             ):
                 return await m.reply(
-                    f"{k} من 「 {m.from_user.mention} 」 \n{k} الحماية مفعله من قبل\n☆"
+                    t('g_2bf23082e0', '{0} من 「 {1} 」 \n{2} الحماية مفعله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await m.reply(
-                    f"{k} من 「 {m.from_user.mention} 」 \n{k} ابشر فعلت الحمايه\n☆"
+                    t('g_75763136fe', '{0} من 「 {1} 」 \n{2} ابشر فعلت الحمايه\n☆', k, m.from_user.mention, k)
                 )
 
                 await r.set(f"{m.chat.id}:lockChannels:{Dev_Zaid}", 1)
@@ -2060,7 +2022,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "تعطيل الحماية" or text == "تعطيل الحمايه":
         if not await owner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المالك وفوق ) بس")
+            return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k))
         else:
             if (
                 await r.get(f"{m.chat.id}:lockEditM:{Dev_Zaid}")
@@ -2082,11 +2044,11 @@ async def guardCommands(c, m, k, channel):
                 and not await r.get(f"{m.chat.id}:lockNSFW:{Dev_Zaid}")
             ):
                 return await m.reply(
-                    f"{k} من 「 {m.from_user.mention} 」 \n{k} الحماية معطله من قبل\n☆"
+                    t('g_d27dbe0974', '{0} من 「 {1} 」 \n{2} الحماية معطله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await m.reply(
-                    f"{k} من 「 {m.from_user.mention} 」 \n{k} ابشر عطلت الحمايه\n☆"
+                    t('g_68799c9afa', '{0} من 「 {1} 」 \n{2} ابشر عطلت الحمايه\n☆', k, m.from_user.mention, k)
                 )
 
                 await r.delete(f"{m.chat.id}:lockChannels:{Dev_Zaid}")
@@ -2108,7 +2070,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الدردشة" or text == "قفل الدردشه" or text == "قفل الشات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:mute:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الشات"))
@@ -2118,7 +2080,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الدردشة" or text == "فتح الدردشه" or text == "فتح الشات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:mute:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الشات"))
@@ -2128,7 +2090,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل التعديل":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockEdit:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "التعديل"))
@@ -2138,7 +2100,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح التعديل":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockEdit:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "التعديل"))
@@ -2148,7 +2110,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل تعديل الميديا":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockEditM:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "تعديل الميديا"))
@@ -2158,7 +2120,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح تعديل الميديا":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockEditM:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "تعديل الميديا"))
@@ -2168,7 +2130,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الفويسات" or text == "قفل البصمات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockVoice:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الفويس"))
@@ -2178,7 +2140,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الفويسات" or text == "فتح البصمات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockVoice:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الفويس"))
@@ -2188,7 +2150,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الفيديو" or text == "قفل الفيديوهات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockVideo:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الفيديو"))
@@ -2198,7 +2160,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الفيديو" or text == "فتح الفيديوهات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockVideo:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الفيديو"))
@@ -2208,7 +2170,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الاشعارات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockNot:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "الاشعارات"))
@@ -2218,7 +2180,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الاشعارات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockNot:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "الاشعارات"))
@@ -2228,7 +2190,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الصور":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockPhoto:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "الصور"))
@@ -2238,7 +2200,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الصور":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockPhoto:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "الصور"))
@@ -2248,7 +2210,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الملصقات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockStickers:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "الملصقات"))
@@ -2258,7 +2220,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الملصقات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockStickers:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "الملصقات"))
@@ -2268,7 +2230,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الفارسيه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockPersian:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "الفارسيه"))
@@ -2278,7 +2240,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الفارسيه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockPersian:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "الفارسيه"))
@@ -2288,7 +2250,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الملفات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockFiles:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "الملفات"))
@@ -2298,7 +2260,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الملفات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockFiles:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "الملفات"))
@@ -2308,7 +2270,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل المتحركات" or text == "قفل المتحركه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockAnimations:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "المتحركات"))
@@ -2318,7 +2280,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح المتحركات" or text == "فتح المتحركه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockAnimations:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "المتحركات"))
@@ -2328,7 +2290,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الروابط":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockUrls:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "الروابط"))
@@ -2338,7 +2300,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الروابط":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockUrls:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "الروابط"))
@@ -2348,7 +2310,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الهشتاق" or text == "قفل الهاشتاق":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockHashtags:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الهاشتاق"))
@@ -2358,7 +2320,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الهشتاق" or text == "فتح الهاشتاق":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockHashtags:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الهاشتاق"))
@@ -2368,7 +2330,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل البوتات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockBots:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "البوتات"))
@@ -2378,7 +2340,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح البوتات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockBots:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "البوتات"))
@@ -2388,7 +2350,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل اليوزرات" or text == "قفل المنشن":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockTags:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "اليوزرات"))
@@ -2398,7 +2360,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح اليوزرات" or text == "فتح المنشن":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockTags:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "اليوزرات"))
@@ -2430,7 +2392,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الإباحي" or text == "قفل الاباحي":
         if not await owner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المالك وفوق ) بس")
+            return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockNSFW:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الإباحي"))
@@ -2440,7 +2402,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الإباحي" or text == "فتح الاباحي":
         if not await owner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المالك وفوق ) بس")
+            return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockNSFW:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "االإباحي"))
@@ -2450,7 +2412,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الكلام الكثير" or text == "قفل الكلايش":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockMessages:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الكلام الكثير"))
@@ -2460,7 +2422,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الكلام الكثير" or text == "فتح الكلايش":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockMessages:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الكلام الكثير"))
@@ -2470,7 +2432,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل التكرار":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockSpam:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "التكرار"))
@@ -2480,7 +2442,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح التكرار":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockSpam:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "التكرار"))
@@ -2490,7 +2452,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل التوجيه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockForward:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "التوجيه"))
@@ -2500,7 +2462,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح التوجيه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockForward:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "التوجيه"))
@@ -2510,7 +2472,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الانلاين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockInline:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الانلاين"))
@@ -2520,7 +2482,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الانلاين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockInline:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الانلاين"))
@@ -2530,7 +2492,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل السب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockSHTM:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "السب"))
@@ -2540,7 +2502,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح السب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockSHTM:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "السب"))
@@ -2550,7 +2512,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الاضافه" or text == "قفل الاضافة" or text == "قفل الجهات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockaddContacts:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "الاضافه"))
@@ -2560,7 +2522,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الاضافه" or text == "فتح الاضافة" or text == "فتح الجهات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockaddContacts:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "الاضافه"))
@@ -2570,7 +2532,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل دخول البوتات" or text == "قفل الوهمي" or text == "قفل الايراني":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockJoinPersian:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "دخول البوتات"))
@@ -2580,7 +2542,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح دخول البوتات" or text == "فتح الوهمي" or text == "فتح الايراني":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockJoinPersian:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "دخول البوتات"))
@@ -2590,7 +2552,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الصوت":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockAudios:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الصوت"))
@@ -2600,7 +2562,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الصوت":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockAudios:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الصوت"))
@@ -2610,7 +2572,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل القنوات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockChannels:{Dev_Zaid}"):
                 return await m.reply(locknn.format(k, m.from_user.mention, k, "القنوات"))
@@ -2620,7 +2582,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح القنوات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockChannels:{Dev_Zaid}"):
                 return await m.reply(Openn2.format(k, m.from_user.mention, k, "القنوات"))
@@ -2630,7 +2592,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "قفل الدخول":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:lockJoin:{Dev_Zaid}"):
                 return await m.reply(lockn.format(k, m.from_user.mention, k, "الدخول"))
@@ -2640,7 +2602,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "فتح الدخول":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:lockJoin:{Dev_Zaid}"):
                 return await m.reply(Openn.format(k, m.from_user.mention, k, "الدخول"))
@@ -2650,327 +2612,327 @@ async def guardCommands(c, m, k, channel):
 
     if text == "تعطيل التحذير":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableWarn:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التحذير معطل من قبل\n☆"
+                    t('g_3e2eb3ca56', '{0} من「 {1} 」\n{2} التحذير معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableWarn:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت التحذير\n☆"
+                    t('g_7ac73ce345', '{0} من「 {1} 」\n{2} ابشر عطلت التحذير\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل التحذير":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableWarn:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التحذير مفعل من قبل\n☆"
+                    t('g_62f0ffb508', '{0} من「 {1} 」\n{2} التحذير مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableWarn:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت التحذير\n☆"
+                    t('g_ca9ae151c4', '{0} من「 {1} 」\n{2} ابشر فعلت التحذير\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل اليوتيوب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableYT:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} اليوتيوب معطل من قبل\n☆"
+                    t('g_c539b7abc3', '{0} من「 {1} 」\n{2} اليوتيوب معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableYT:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت اليوتيوب\n☆"
+                    t('g_4c6fa30a45', '{0} من「 {1} 」\n{2} ابشر عطلت اليوتيوب\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل اليوتيوب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableYT:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} اليوتيوب مفعل من قبل\n☆"
+                    t('g_4cb5440e06', '{0} من「 {1} 」\n{2} اليوتيوب مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableYT:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت اليوتيوب\n☆"
+                    t('g_cab5a5290c', '{0} من「 {1} 」\n{2} ابشر فعلت اليوتيوب\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الساوند":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableSound:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الساوند معطل من قبل\n☆"
+                    t('g_70d1ec1f4e', '{0} من「 {1} 」\n{2} الساوند معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableSound:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الساوند\n☆"
+                    t('g_b02c1cfdff', '{0} من「 {1} 」\n{2} ابشر عطلت الساوند\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل الساوند":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableSound:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الساوند مفعل من قبل\n☆"
+                    t('g_28d1e5ee74', '{0} من「 {1} 」\n{2} الساوند مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableSound:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الساوند\n☆"
+                    t('g_d133d68fef', '{0} من「 {1} 」\n{2} ابشر فعلت الساوند\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الانستا":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableINSTA:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الانستا معطل من قبل\n☆"
+                    t('g_88c5e51f7f', '{0} من「 {1} 」\n{2} الانستا معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableINSTA:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الانستا\n☆"
+                    t('g_5f5b6cffaa', '{0} من「 {1} 」\n{2} ابشر عطلت الانستا\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل الانستا":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableINSTA:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الانستا مفعل من قبل\n☆"
+                    t('g_7cdc54fddb', '{0} من「 {1} 」\n{2} الانستا مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableINSTA:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الانستا\n☆"
+                    t('g_837f49166c', '{0} من「 {1} 」\n{2} ابشر فعلت الانستا\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل اهمس":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableWHISPER:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} اهمس معطل من قبل\n☆"
+                    t('g_9765ee25cc', '{0} من「 {1} 」\n{2} اهمس معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableWHISPER:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت اهمس\n☆"
+                    t('g_9e89bd2ed2', '{0} من「 {1} 」\n{2} ابشر عطلت اهمس\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل اهمس":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableWHISPER:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} اهمس مفعل من قبل\n☆"
+                    t('g_a41ebcad91', '{0} من「 {1} 」\n{2} اهمس مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableWHISPER:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت اهمس\n☆"
+                    t('g_ce24f8dc51', '{0} من「 {1} 」\n{2} ابشر فعلت اهمس\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل التيك":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableTik:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التيك معطل من قبل\n☆"
+                    t('g_f0487e66b4', '{0} من「 {1} 」\n{2} التيك معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableTik:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت التيك\n☆"
+                    t('g_4119693bc0', '{0} من「 {1} 」\n{2} ابشر عطلت التيك\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل التيك":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableTik:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التيك مفعل من قبل\n☆"
+                    t('g_1e2e11ff56', '{0} من「 {1} 」\n{2} التيك مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableTik:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت التيك\n☆"
+                    t('g_94ef1bad10', '{0} من「 {1} 」\n{2} ابشر فعلت التيك\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل شازام":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableShazam:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} شازام معطل من قبل\n☆"
+                    t('g_674641da3d', '{0} من「 {1} 」\n{2} شازام معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableShazam:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت شازام\n☆"
+                    t('g_865be92703', '{0} من「 {1} 」\n{2} ابشر عطلت شازام\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل شازام":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableShazam:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} شازام مفعل من قبل\n☆"
+                    t('g_7c88fe6985', '{0} من「 {1} 」\n{2} شازام مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableShazam:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت شازام\n☆"
+                    t('g_37cd17b8d3', '{0} من「 {1} 」\n{2} ابشر فعلت شازام\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الالعاب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableGames:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الالعاب معطله من قبل\n☆"
+                    t('g_13dd7c296c', '{0} من「 {1} 」\n{2} الالعاب معطله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableGames:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الالعاب\n☆"
+                    t('g_b215c97298', '{0} من「 {1} 」\n{2} ابشر عطلت الالعاب\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل الالعاب":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableGames:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الالعاب مفعله من قبل\n☆"
+                    t('g_548319cb96', '{0} من「 {1} 」\n{2} الالعاب مفعله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableGames:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الالعاب\n☆"
+                    t('g_4271806162', '{0} من「 {1} 」\n{2} ابشر فعلت الالعاب\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الترجمة" or text == "تعطيل الترجمه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableTrans:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الترجمه معطله من قبل\n☆"
+                    t('g_05d2305feb', '{0} من「 {1} 」\n{2} الترجمه معطله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableTrans:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الترجمه\n☆"
+                    t('g_d34dac7f2e', '{0} من「 {1} 」\n{2} ابشر عطلت الترجمه\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل الترجمة" or text == "تفعيل الترجمه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableTrans:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الترجمه مفعله من قبل\n☆"
+                    t('g_b334245e76', '{0} من「 {1} 」\n{2} الترجمه مفعله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableTrans:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الترجمه\n☆"
+                    t('g_8d2b2d38d3', '{0} من「 {1} 」\n{2} ابشر فعلت الترجمه\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل التسلية" or text == "تعطيل التسليه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if await r.get(f"{m.chat.id}:disableFun:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التسلية معطله من قبل\n☆"
+                    t('g_d13dd4a791', '{0} من「 {1} 」\n{2} التسلية معطله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:disableFun:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت التسلية\n☆"
+                    t('g_b32a61f4af', '{0} من「 {1} 」\n{2} ابشر عطلت التسلية\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل التسلية" or text == "تفعيل التسليه":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
         else:
             if not await r.get(f"{m.chat.id}:disableFun:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التسلية مفعله من قبل\n☆"
+                    t('g_800e99d827', '{0} من「 {1} 」\n{2} التسلية مفعله من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"{m.chat.id}:disableFun:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت التسلية\n☆"
+                    t('g_56b5b03899', '{0} من「 {1} 」\n{2} ابشر فعلت التسلية\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تعطيل الاشتراك":
         if not await dev2_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المطور وفوق ) بس")
+            return await m.reply(t('g_33cf211beb', '{0} هذا الامر يخص ( المطور وفوق ) بس', k))
         else:
             if await r.get(f"disableSubscribe:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الاشتراك الاجباري معطل من قبل\n☆"
+                    t('g_cecd8680d0', '{0} من「 {1} 」\n{2} الاشتراك الاجباري معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.set(f"disableSubscribe:{Dev_Zaid}", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الاشتراك الاجباري\n☆"
+                    t('g_64c0326e63', '{0} من「 {1} 」\n{2} ابشر عطلت الاشتراك الاجباري\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "قناة الاشتراك":
         if not await dev2_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المطور وفوق ) بس")
+            return await m.reply(t('g_33cf211beb', '{0} هذا الامر يخص ( المطور وفوق ) بس', k))
         ch = await r.get(f"forceChannel:{Dev_Zaid}") or "مافي قناة"
-        return await m.reply(f"{k} قناة الاشتراك هي ( {ch} )")
+        return await m.reply(t('g_530b6236a9', '{0} قناة الاشتراك هي ( {1} )', k, ch))
 
     if text.startswith("وضع قناة @"):
         if not await dev2_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المطور وفوق ) بس")
+            return await m.reply(t('g_33cf211beb', '{0} هذا الامر يخص ( المطور وفوق ) بس', k))
         username = text.split("@")[1]
         try:
             chat = await c.get_chat(username)
         except Exception:
-            return await m.reply(f"{k} حدث خطأ")
+            return await m.reply(t('g_6efa4fc8ff', '{0} حدث خطأ', k))
         await r.set(f"forceChannel:{Dev_Zaid}", "@" + username)
-        return await m.reply(f"{k} تم تعيين القناة بنجاح")
+        return await m.reply(t('g_01eb58e83b', '{0} تم تعيين القناة بنجاح', k))
 
     if text == "تفعيل الاشتراك":
         if not await dev2_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الامر يخص ( المطور وفوق ) بس")
+            return await m.reply(t('g_33cf211beb', '{0} هذا الامر يخص ( المطور وفوق ) بس', k))
         else:
             if not await r.get(f"disableSubscribe:{Dev_Zaid}"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} الاشتراك الاجباري مفعل من قبل\n☆"
+                    t('g_3ba691d823', '{0} من「 {1} 」\n{2} الاشتراك الاجباري مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.delete(f"disableSubscribe:{Dev_Zaid}")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الاشتراك الاجباري\n☆"
+                    t('g_ef0252266f', '{0} من「 {1} 」\n{2} ابشر فعلت الاشتراك الاجباري\n☆', k, m.from_user.mention, k)
                 )
 
     if (
@@ -2983,7 +2945,7 @@ async def guardCommands(c, m, k, channel):
             translation = (await asyncio.to_thread(requests.get,
                 f"https://hozory.com/translate/?target=ar&text={text}"
             )).json()["result"]["translate"]
-            await m.reply(f"`{translation}`")
+            await m.reply(t('g_39f77e8fb4', '`{0}`', translation))
 
     if (
         text == "/en"
@@ -2995,7 +2957,7 @@ async def guardCommands(c, m, k, channel):
             translation = (await asyncio.to_thread(requests.get,
                 f"https://hozory.com/translate/?target=en&text={text}"
             )).json()["result"]["translate"]
-            await m.reply(f"`{translation}`")
+            await m.reply(t('g_39f77e8fb4', '`{0}`', translation))
 
     if (
         text == "ترجمه"
@@ -3039,7 +3001,7 @@ async def guardCommands(c, m, k, channel):
             translation = (await asyncio.to_thread(requests.get,
                 f"https://hozory.com/translate/?target={lang}&text={text}"
             )).json()["result"]["translate"]
-            await m.reply(f"`{translation}`")
+            await m.reply(t('g_39f77e8fb4', '`{0}`', translation))
 
     if text == "ابلاغ" and m.reply_to_message:
         text = f"{k} تم ابلاغ المشرفين"
@@ -3061,7 +3023,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "المقيدين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             co = 0
             cc = 1
@@ -3082,13 +3044,13 @@ async def guardCommands(c, m, k, channel):
                     cc += 1
             text += "☆"
             if co == 0:
-                return await m.reply(f"{k} مافيه مقيديين")
+                return await m.reply(t('g_3529ff9932', '{0} مافيه مقيديين', k))
             else:
                 return await m.reply(text)
 
     if text == "مسح المقيدين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             co = 0
             for mm in await c.get_chat_members(
@@ -3110,23 +3072,23 @@ async def guardCommands(c, m, k, channel):
                     ),
                 )
             if co == 0:
-                return await m.reply(f"{k} مافيه مقيديين")
+                return await m.reply(t('g_3529ff9932', '{0} مافيه مقيديين', k))
             else:
-                return await m.reply(f"{k} ابشر مسحت ( {co} ) من المقيدين")
+                return await m.reply(t('g_aaa902c5af', '{0} ابشر مسحت ( {1} ) من المقيدين', k, co))
 
     if text == "تثبيت" and m.reply_to_message:
         if await mod_pls(m.from_user.id, m.chat.id):
             await m.reply_to_message.pin(disable_notification=False)
-            await m.reply(f"{k} ابشر ثبتت الرسالة ")
+            await m.reply(t('g_55c16f7925', '{0} ابشر ثبتت الرسالة ', k))
 
     if text == "الغاء التثبيت" and m.reply_to_message:
         if await mod_pls(m.from_user.id, m.chat.id):
             await m.reply_to_message.unpin()
-            await m.reply(f"{k} ابشر لغيت تثبيت الرسالة ")
+            await m.reply(t('g_a348754c88', '{0} ابشر لغيت تثبيت الرسالة ', k))
 
     if text.startswith("تقييد ") and len(text.split()) == 2:
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             try:
                 user = int(text.split()[1])
@@ -3135,32 +3097,32 @@ async def guardCommands(c, m, k, channel):
             try:
                 get = await m.chat.get_member(user)
                 if m.from_user.id == get.user.id:
-                    return await m.reply("شفيك تبي تنزل نفسك")
+                    return await m.reply(t('g_f5e269afe3', "شفيك تبي تنزل نفسك"))
                 if await pre_pls(get.user.id, m.chat.id):
                     rank = await get_rank(get.user.id, m.chat.id)
-                    return await m.reply(f"{k} هييه مايمديك تقييد {rank} ياورع!")
+                    return await m.reply(t('g_70980f324f', '{0} هييه مايمديك تقييد {1} ياورع!', k, rank))
                 if get.status == ChatMemberStatus.RESTRICTED:
-                    return await m.reply(f"「 {get.user.mention} 」 \n{k} مقيد من قبل\n☆")
+                    return await m.reply(t('g_ff6964c363', '「 {0} 」 \n{1} مقيد من قبل\n☆', get.user.mention, k))
             except Exception:
-                return await m.reply(f"{k} مافي عضو بهذا اليوزر")
+                return await m.reply(t('g_b022dd8e97', '{0} مافي عضو بهذا اليوزر', k))
             await c.restrict_chat_member(
                 m.chat.id, get.user.id, ChatPermissions(can_send_messages=False)
             )
-            return await m.reply(f"「 {get.user.mention} 」 \n{k} قييدته\n☆")
+            return await m.reply(t('g_6e5c2b161a', '「 {0} 」 \n{1} قييدته\n☆', get.user.mention, k))
 
     if text == "تقييد" and m.reply_to_message and m.reply_to_message.from_user:
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             if m.from_user.id == m.reply_to_message.from_user.id:
-                return await m.reply("شفيك تبي تنزل نفسك")
+                return await m.reply(t('g_f5e269afe3', "شفيك تبي تنزل نفسك"))
             get = await m.chat.get_member(m.reply_to_message.from_user.id)
             if await pre_pls(m.reply_to_message.from_user.id, m.chat.id):
                 rank = await get_rank(m.reply_to_message.from_user.id, m.chat.id)
-                return await m.reply(f"{k} هييه مايمديك تقييد {rank} ياورع!")
+                return await m.reply(t('g_70980f324f', '{0} هييه مايمديك تقييد {1} ياورع!', k, rank))
             if get.status == ChatMemberStatus.RESTRICTED:
                 return await m.reply(
-                    f"「 {m.reply_to_message.from_user.mention} 」 \n{k} مقيد من قبل\n☆"
+                    t('g_ff6964c363', '「 {0} 」 \n{1} مقيد من قبل\n☆', m.reply_to_message.from_user.mention, k)
                 )
             await c.restrict_chat_member(
                 m.chat.id,
@@ -3168,7 +3130,7 @@ async def guardCommands(c, m, k, channel):
                 ChatPermissions(can_send_messages=False),
             )
             return await m.reply(
-                f"「 {m.reply_to_message.from_user.mention} 」 \n{k} قييدته\n☆"
+                t('g_6e5c2b161a', '「 {0} 」 \n{1} قييدته\n☆', m.reply_to_message.from_user.mention, k)
             )
 
     if (
@@ -3177,7 +3139,7 @@ async def guardCommands(c, m, k, channel):
         and len(text.split()) == 3
     ):
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( الادمن وفوق ) بس")
+            return await m.reply(t('g_85ab7798c1', '{0} هذا الأمر يخص ( الادمن وفوق ) بس', k))
         else:
             try:
                 user = int(text.split()[2])
@@ -3186,9 +3148,9 @@ async def guardCommands(c, m, k, channel):
             try:
                 get = await m.chat.get_member(user)
                 if not get.status == ChatMemberStatus.RESTRICTED:
-                    return await m.reply(f"「 {get.user.mention} 」 \n{k} مو مقيد من قبل\n☆")
+                    return await m.reply(t('g_a5b241c1dc', '「 {0} 」 \n{1} مو مقيد من قبل\n☆', get.user.mention, k))
             except Exception:
-                return await m.reply(f"{k} مافي عضو بهذا اليوزر")
+                return await m.reply(t('g_b022dd8e97', '{0} مافي عضو بهذا اليوزر', k))
             await c.restrict_chat_member(
                 m.chat.id,
                 get.user.id,
@@ -3203,7 +3165,7 @@ async def guardCommands(c, m, k, channel):
                     can_pin_messages=True,
                 ),
             )
-            return await m.reply(f"「 {get.user.mention} 」 \n{k} ابشر الغيت تقييده\n☆")
+            return await m.reply(t('g_d5efe3ab05', '「 {0} 」 \n{1} ابشر الغيت تقييده\n☆', get.user.mention, k))
 
     if (
         text == "الغاء تقييد"
@@ -3212,12 +3174,12 @@ async def guardCommands(c, m, k, channel):
         and m.reply_to_message.from_user
     ):
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( الادمن وفوق ) بس")
+            return await m.reply(t('g_85ab7798c1', '{0} هذا الأمر يخص ( الادمن وفوق ) بس', k))
         else:
             get = await m.chat.get_member(m.reply_to_message.from_user.id)
             if not get.status == ChatMemberStatus.RESTRICTED:
                 return await m.reply(
-                    f"「 {m.reply_to_message.from_user.mention} 」 \n{k} مو مقيد من قبل\n☆"
+                    t('g_a5b241c1dc', '「 {0} 」 \n{1} مو مقيد من قبل\n☆', m.reply_to_message.from_user.mention, k)
                 )
             await c.restrict_chat_member(
                 m.chat.id,
@@ -3234,12 +3196,12 @@ async def guardCommands(c, m, k, channel):
                 ),
             )
             return await m.reply(
-                f"「 {m.reply_to_message.from_user.mention} 」 \n{k} ابشر الغيت تقييده\n☆"
+                t('g_d5efe3ab05', '「 {0} 」 \n{1} ابشر الغيت تقييده\n☆', m.reply_to_message.from_user.mention, k)
             )
 
     if text == "المحظورين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             co = 0
             cc = 1
@@ -3264,13 +3226,13 @@ async def guardCommands(c, m, k, channel):
                     cc += 1
             text += "☆"
             if co == 0:
-                return await m.reply(f"{k} مافيه محظورين")
+                return await m.reply(t('g_e8bdbc4fcc', '{0} مافيه محظورين', k))
             else:
                 return await m.reply(text)
 
     if text == "مسح المحظورين":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( الادمن وفوق ) بس")
+            return await m.reply(t('g_85ab7798c1', '{0} هذا الأمر يخص ( الادمن وفوق ) بس', k))
         else:
             co = 0
             for mm in await c.get_chat_members(m.chat.id, filter=ChatMembersFilter.BANNED):
@@ -3281,15 +3243,15 @@ async def guardCommands(c, m, k, channel):
                     co += 1
                     await c.unban_chat_member(m.chat.id, mm.chat.id)
             if co == 0:
-                return await m.reply(f"{k} مافيه محظورين")
+                return await m.reply(t('g_e8bdbc4fcc', '{0} مافيه محظورين', k))
             else:
-                return await m.reply(f"{k} ابشر مسحت ( {co} ) من المحظورين")
+                return await m.reply(t('g_644522cd31', '{0} ابشر مسحت ( {1} ) من المحظورين', k, co))
 
     if text.startswith("حظر ") and len(text.split()) == 2:
         if not "@" in text and not re.findall("[0-9]+", text):
             return
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             try:
                 user = int(text.split()[1])
@@ -3298,39 +3260,39 @@ async def guardCommands(c, m, k, channel):
             try:
                 get = await m.chat.get_member(user)
                 if m.from_user.id == get.user.id:
-                    return await m.reply("شفيك تبي تنزل نفسك")
+                    return await m.reply(t('g_f5e269afe3', "شفيك تبي تنزل نفسك"))
                 if await pre_pls(get.user.id, m.chat.id):
                     rank = await get_rank(get.user.id, m.chat.id)
-                    return await m.reply(f"{k} هييه مايمديك تحظر {rank} ياورع!")
+                    return await m.reply(t('g_5a4dfbabbf', '{0} هييه مايمديك تحظر {1} ياورع!', k, rank))
                 if get.status == ChatMemberStatus.BANNED:
-                    return await m.reply(f"「 {get.user.mention} 」 \n{k} محظور من قبل\n☆")
+                    return await m.reply(t('g_fcf4d7fc3e', '「 {0} 」 \n{1} محظور من قبل\n☆', get.user.mention, k))
             except Exception:
-                return await m.reply(f"{k} مافي عضو بهذا اليوزر")
+                return await m.reply(t('g_b022dd8e97', '{0} مافي عضو بهذا اليوزر', k))
             await m.chat.ban_member(get.user.id)
-            return await m.reply(f"「 {get.user.mention} 」 \n{k} حظرته\n☆")
+            return await m.reply(t('g_f85b5cfbb0', '「 {0} 」 \n{1} حظرته\n☆', get.user.mention, k))
 
     if text == "حظر" and m.reply_to_message and m.reply_to_message.from_user:
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             if m.from_user.id == m.reply_to_message.from_user.id:
-                return await m.reply("شفيك تبي تنزل نفسك")
+                return await m.reply(t('g_f5e269afe3', "شفيك تبي تنزل نفسك"))
             get = await m.chat.get_member(m.reply_to_message.from_user.id)
             if await pre_pls(m.reply_to_message.from_user.id, m.chat.id):
                 rank = await get_rank(m.reply_to_message.from_user.id, m.chat.id)
-                return await m.reply(f"{k} هييه مايمديك تحظر {rank} ياورع!")
+                return await m.reply(t('g_5a4dfbabbf', '{0} هييه مايمديك تحظر {1} ياورع!', k, rank))
             if get.status == ChatMemberStatus.BANNED:
                 return await m.reply(
-                    f"「 {m.reply_to_message.from_user.mention} 」 \n{k} محظور من قبل\n☆"
+                    t('g_fcf4d7fc3e', '「 {0} 」 \n{1} محظور من قبل\n☆', m.reply_to_message.from_user.mention, k)
                 )
             await m.chat.ban_member(m.reply_to_message.from_user.id)
             return await m.reply(
-                f"「 {m.reply_to_message.from_user.mention} 」 \n{k} حظرته\n☆"
+                t('g_f85b5cfbb0', '「 {0} 」 \n{1} حظرته\n☆', m.reply_to_message.from_user.mention, k)
             )
 
     if text == "طرد البوتات":
         if not await owner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المالك وفوق ) بس")
+            return await m.reply(t('g_4a108ff756', '{0} هذا الأمر يخص ( المالك وفوق ) بس', k))
         else:
             co = 0
             for mm in await m.chat.get_members(filter=ChatMembersFilter.BOTS):
@@ -3340,15 +3302,15 @@ async def guardCommands(c, m, k, channel):
                 except Exception:
                     pass
             if co == 0:
-                return await m.reply(f"{k} مافيه بوتات")
+                return await m.reply(t('g_2a5804ba0d', '{0} مافيه بوتات', k))
             else:
-                return await m.reply(f"{k} ابشر حظر ( {co} ) بوت")
+                return await m.reply(t('g_f379ae0d64', '{0} ابشر حظر ( {1} ) بوت', k, co))
 
     if text.startswith("طرد ") and len(text.split()) == 2:
         if not "@" in text and not re.findall("[0-9]+", text):
             return
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( الادمن وفوق ) بس")
+            return await m.reply(t('g_85ab7798c1', '{0} هذا الأمر يخص ( الادمن وفوق ) بس', k))
         else:
             try:
                 user = int(text.split()[1])
@@ -3357,30 +3319,30 @@ async def guardCommands(c, m, k, channel):
             try:
                 get = await m.chat.get_member(user)
                 if m.from_user.id == get.user.id:
-                    return await m.reply("شفيك تبي تنزل نفسك")
+                    return await m.reply(t('g_f5e269afe3', "شفيك تبي تنزل نفسك"))
                 if await pre_pls(get.user.id, m.chat.id):
                     rank = await get_rank(get.user.id, m.chat.id)
-                    return await m.reply(f"{k} هييه مايمديك تطرد {rank} ياورع!")
+                    return await m.reply(t('g_8c1626da18', '{0} هييه مايمديك تطرد {1} ياورع!', k, rank))
                 if get.status == ChatMemberStatus.BANNED:
-                    return await m.reply(f"「 {get.user.mention} 」 \n{k} مطرود من قبل\n☆")
+                    return await m.reply(t('g_e3783a2b44', '「 {0} 」 \n{1} مطرود من قبل\n☆', get.user.mention, k))
             except Exception:
-                return await m.reply(f"{k} مافي عضو بهذا اليوزر")
+                return await m.reply(t('g_b022dd8e97', '{0} مافي عضو بهذا اليوزر', k))
             await m.chat.ban_member(get.user.id)
             await m.chat.unban_member(get.user.id)
-            return await m.reply(f"「 {get.user.mention} 」 \n{k} طردته\n☆")
+            return await m.reply(t('g_16923cb69a', '「 {0} 」 \n{1} طردته\n☆', get.user.mention, k))
 
     if text == "اهمس" and m.reply_to_message and m.reply_to_message.from_user:
         if await r.get(f"{m.chat.id}:disableWHISPER:{Dev_Zaid}"):
-            return await m.reply(f"{k} امر اهمس معطل")
+            return await m.reply(t('g_a7d245c084', '{0} امر اهمس معطل', k))
         user_id = m.reply_to_message.from_user.id
         if user_id == m.from_user.id:
-            return await m.reply(f"{k} مافيك تهمس لنفسك ياغبي")
+            return await m.reply(t('g_a3e5f1bf24', '{0} مافيك تهمس لنفسك ياغبي', k))
         else:
             import uuid
 
             id = str(uuid.uuid4())[:6]
             a = await m.reply(
-                f"{k} تم تحديد الهمسة الى [ {m.reply_to_message.from_user.mention} ]",
+                t('g_bf216f5939', '{0} تم تحديد الهمسة الى [ {1} ]', k, m.reply_to_message.from_user.mention),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -3404,72 +3366,72 @@ async def guardCommands(c, m, k, channel):
 
     if text == "تعطيل التنظيف":
         if not await gowner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+            return await m.reply(t('g_ae475f0efd', '{0} هذا الأمر يخص ( المالك الاساسي وفوق ) بس', k))
         else:
             if not await r.hget(Dev_Zaid + str(m.chat.id), "ena-clean"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التنظيف معطل من قبل\n☆"
+                    t('g_a84e2fc8d3', '{0} من「 {1} 」\n{2} التنظيف معطل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.hdel(Dev_Zaid + str(m.chat.id), "ena-clean")
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت التنظيف\n☆"
+                    t('g_a1384b9bc8', '{0} من「 {1} 」\n{2} ابشر عطلت التنظيف\n☆', k, m.from_user.mention, k)
                 )
 
     if text == "تفعيل التنظيف":
         if not await gowner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+            return await m.reply(t('g_ae475f0efd', '{0} هذا الأمر يخص ( المالك الاساسي وفوق ) بس', k))
         else:
             if await r.hget(Dev_Zaid + str(m.chat.id), "ena-clean"):
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} التنظيف مفعل من قبل\n☆"
+                    t('g_cfb22d6e5f', '{0} من「 {1} 」\n{2} التنظيف مفعل من قبل\n☆', k, m.from_user.mention, k)
                 )
             else:
                 await r.hset(Dev_Zaid + str(m.chat.id), "ena-clean", 1)
                 return await m.reply(
-                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت التنظيف\n☆"
+                    t('g_534df86bb6', '{0} من「 {1} 」\n{2} ابشر فعلت التنظيف\n☆', k, m.from_user.mention, k)
                 )
 
     if re.search("^وضع وقت التنظيف [0-9]+$", text):
         if not await gowner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+            return await m.reply(t('g_ae475f0efd', '{0} هذا الأمر يخص ( المالك الاساسي وفوق ) بس', k))
         else:
             secs = int(text.split()[3])
             if secs > 3600 or secs < 60:
                 return await m.reply(
-                    f"{k} عليك تحديد وقت التنظيف بالثواني من 60 الى 3600 ثانية"
+                    t('g_ed551db004', '{0} عليك تحديد وقت التنظيف بالثواني من 60 الى 3600 ثانية', k)
                 )
             else:
                 await r.hset(Dev_Zaid + str(m.chat.id), "clean-secs", secs)
-                return await m.reply(f"{k} تم تعيين وقت التنظيف ( {secs} ) ثانية")
+                return await m.reply(t('g_0bde678f5e', '{0} تم تعيين وقت التنظيف ( {1} ) ثانية', k, secs))
 
     if text == "وقت التنظيف":
         if not await gowner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+            return await m.reply(t('g_ae475f0efd', '{0} هذا الأمر يخص ( المالك الاساسي وفوق ) بس', k))
         else:
             secs = await r.hget(Dev_Zaid + str(m.chat.id), "clean-secs") or "60"
-            return await m.reply(f"`{secs}`")
+            return await m.reply(t('g_39f77e8fb4', '`{0}`', secs))
 
     if text == "طرد" and m.reply_to_message and m.reply_to_message.from_user:
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             try:
                 if m.from_user.id == m.reply_to_message.from_user.id:
-                    return await m.reply("شفيك تبي تنزل نفسك")
+                    return await m.reply(t('g_f5e269afe3', "شفيك تبي تنزل نفسك"))
                 get = await m.chat.get_member(m.reply_to_message.from_user.id)
                 if await pre_pls(m.reply_to_message.from_user.id, m.chat.id):
                     rank = await get_rank(m.reply_to_message.from_user.id, m.chat.id)
-                    return await m.reply(f"{k} هييه مايمديك تطرد {rank} ياورع!")
+                    return await m.reply(t('g_8c1626da18', '{0} هييه مايمديك تطرد {1} ياورع!', k, rank))
                 if get.status == ChatMemberStatus.BANNED:
                     return await m.reply(
-                        f"「 {m.reply_to_message.from_user.mention} 」 \n{k} مطرود من قبل\n☆"
+                        t('g_e3783a2b44', '「 {0} 」 \n{1} مطرود من قبل\n☆', m.reply_to_message.from_user.mention, k)
                     )
                 await m.chat.ban_member(m.reply_to_message.from_user.id)
-                await m.reply(f"「 {m.reply_to_message.from_user.mention} 」 \n{k} طردته\n☆")
+                await m.reply(t('g_16923cb69a', '「 {0} 」 \n{1} طردته\n☆', m.reply_to_message.from_user.mention, k))
                 return await m.chat.unban_member(m.reply_to_message.from_user.id)
             except Exception:
-                return await m.reply(f"{k} العضو مو بالمجموعة")
+                return await m.reply(t('g_92eb0a0d77', '{0} العضو مو بالمجموعة', k))
 
     if (
         text.startswith("رفع الحظر ")
@@ -3479,7 +3441,7 @@ async def guardCommands(c, m, k, channel):
         if not "@" in text and not re.findall("[0-9]+", text):
             return
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             try:
                 user = int(text.split()[2])
@@ -3488,11 +3450,11 @@ async def guardCommands(c, m, k, channel):
             try:
                 get = await m.chat.get_member(user)
                 if not get.status == ChatMemberStatus.BANNED:
-                    return await m.reply(f"「 {get.user.mention} 」 \n{k} مو محظور من قبل\n☆")
+                    return await m.reply(t('g_170014731f', '「 {0} 」 \n{1} مو محظور من قبل\n☆', get.user.mention, k))
             except Exception:
-                return await m.reply(f"{k} مافي عضو بهذا اليوزر")
+                return await m.reply(t('g_b022dd8e97', '{0} مافي عضو بهذا اليوزر', k))
             await m.chat.unban_member(get.user.id)
-            return await m.reply(f"「 {get.user.mention} 」 \n{k} ابشر الغيت حظره\n☆")
+            return await m.reply(t('g_0ce0a3289a', '「 {0} 」 \n{1} ابشر الغيت حظره\n☆', get.user.mention, k))
 
     if (
         text == "رفع الحظر"
@@ -3501,26 +3463,26 @@ async def guardCommands(c, m, k, channel):
         and m.reply_to_message.from_user
     ):
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             try:
                 get = await m.chat.get_member(m.reply_to_message.from_user.id)
                 if not get.status == ChatMemberStatus.BANNED:
                     return await m.reply(
-                        f"「 {m.reply_to_message.from_user.mention} 」 \n{k} مو محظور من قبل\n☆"
+                        t('g_170014731f', '「 {0} 」 \n{1} مو محظور من قبل\n☆', m.reply_to_message.from_user.mention, k)
                     )
                 await m.chat.unban_member(m.reply_to_message.from_user.id)
                 return await m.reply(
-                    f"「 {m.reply_to_message.from_user.mention} 」 \n{k} ابشر الغيت حظره\n☆"
+                    t('g_0ce0a3289a', '「 {0} 」 \n{1} ابشر الغيت حظره\n☆', m.reply_to_message.from_user.mention, k)
                 )
             except Exception:
-                return await m.reply(f"{k} العضو مو بالمجموعة")
+                return await m.reply(t('g_92eb0a0d77', '{0} العضو مو بالمجموعة', k))
 
     if text.startswith("رفع القيود ") and len(text.split()) == 3:
         if not "@" in text and not re.findall("[0-9]+", text):
             return
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             try:
                 user = int(text.split()[2])
@@ -3557,18 +3519,18 @@ async def guardCommands(c, m, k, channel):
                     text += "كتم\n"
                     co += 1
                 if co > 0:
-                    return await m.reply(f"رفعت القيود التالية:\n{text}\n☆")
+                    return await m.reply(t('g_6297cf1ef6', 'رفعت القيود التالية:\n{0}\n☆', text))
                 else:
-                    return await m.reply(f"「 {get.user.mention} 」\n{k} ماله قيود من قبل\n☆")
+                    return await m.reply(t('g_0ca56fb271', '「 {0} 」\n{1} ماله قيود من قبل\n☆', get.user.mention, k))
 
             except Exception:
-                return await m.reply(f"{k} مافي عضو بهذا اليوزر")
+                return await m.reply(t('g_b022dd8e97', '{0} مافي عضو بهذا اليوزر', k))
             await m.chat.unban_member(get.user.id)
-            return await m.reply(f"「 {get.user.mention} 」 \n{k} ابشر الغيت حظره\n☆")
+            return await m.reply(t('g_0ce0a3289a', '「 {0} 」 \n{1} ابشر الغيت حظره\n☆', get.user.mention, k))
 
     if text == "رفع القيود" and m.reply_to_message and m.reply_to_message.from_user:
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             try:
                 text = ""
@@ -3601,15 +3563,15 @@ async def guardCommands(c, m, k, channel):
                     text += "كتم\n"
                     co += 1
                 if co > 0:
-                    return await m.reply(f"رفعت القيود التالية:\n{text}\n☆")
+                    return await m.reply(t('g_6297cf1ef6', 'رفعت القيود التالية:\n{0}\n☆', text))
                 else:
-                    return await m.reply(f"「 {get.user.mention} 」\n{k} ماله قيود من قبل\n☆")
+                    return await m.reply(t('g_0ca56fb271', '「 {0} 」\n{1} ماله قيود من قبل\n☆', get.user.mention, k))
             except Exception:
-                return await m.reply(f"{k} العضو مو بالمجموعة")
+                return await m.reply(t('g_92eb0a0d77', '{0} العضو مو بالمجموعة', k))
 
     if text == "كشف البوتات":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             co = 0
             text = "بوتات المجموعة:\n\n"
@@ -3625,19 +3587,19 @@ async def guardCommands(c, m, k, channel):
                 co += 1
             text += "☆"
             if co == 0:
-                return await m.reply(f"{k} مافيه بوتات")
+                return await m.reply(t('g_2a5804ba0d', '{0} مافيه بوتات', k))
             else:
                 return await m.reply(text)
 
     if text == "مين ضافني":
         get = await m.chat.get_member(m.from_user.id).invited_by
         if not get:
-            return await m.reply(f"{k} محد ضافك")
+            return await m.reply(t('g_66c2573935', '{0} محد ضافك', k))
         else:
             return await m.reply(get.mention)
 
     if text == "بايو عشوائي":
-        return await m.reply(f"{k} تحت الصيانة")
+        return await m.reply(t('g_6dc876cb81', '{0} تحت الصيانة', k))
 
     if text == "مسح" and m.reply_to_message:
         if await admin_pls(m.from_user.id, m.chat.id):
@@ -3656,7 +3618,7 @@ async def guardCommands(c, m, k, channel):
             return await m.delete()
         else:
             if count > 400:
-                return await m.reply(f"{k} اختار من 1 الى 400")
+                return await m.reply(t('g_94e1dea43b', '{0} اختار من 1 الى 400', k))
             else:
                 for msg in range(m.id, m.id - count, -1):
                     try:
@@ -3666,7 +3628,7 @@ async def guardCommands(c, m, k, channel):
 
     if text == "تنزيل مشرف" and m.reply_to_message and m.reply_to_message.from_user:
         if not await owner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المالك وفوق ) بس")
+            return await m.reply(t('g_4a108ff756', '{0} هذا الأمر يخص ( المالك وفوق ) بس', k))
         else:
             try:
                 await c.promote_chat_member(
@@ -3684,16 +3646,16 @@ async def guardCommands(c, m, k, channel):
                     ),
                 )
                 return await m.reply(
-                    f"「 {m.reply_to_message.from_user.mention} 」\n{k} نزلته من الاشراف"
+                    t('g_9375ca583a', '「 {0} 」\n{1} نزلته من الاشراف', m.reply_to_message.from_user.mention, k)
                 )
             except Exception:
                 return await m.reply(
-                    f"「 {m.reply_to_message.from_user.mention} 」\n{k} مو انا الي رفعته او ماعندي صلاحيات"
+                    t('g_954c5f6476', '「 {0} 」\n{1} مو انا الي رفعته او ماعندي صلاحيات', m.reply_to_message.from_user.mention, k)
                 )
 
     if text == "رفع مشرف" and m.reply_to_message and m.reply_to_message.from_user:
         if not await owner_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المالك وفوق ) بس")
+            return await m.reply(t('g_4a108ff756', '{0} هذا الأمر يخص ( المالك وفوق ) بس', k))
         else:
             get = await m.chat.get_member(c.me.id)
             priv = get.privileges
@@ -3706,7 +3668,7 @@ async def guardCommands(c, m, k, channel):
                 or not priv.can_change_info
                 or not priv.can_promote_members
             ):
-                return await m.reply("هات كل الصلاحيات بعدين سولف")
+                return await m.reply(t('g_0e1e568dee', "هات كل الصلاحيات بعدين سولف"))
             else:
                 await r.set(
                     f"{m.from_user.id}:promote:{m.chat.id}",
@@ -3714,7 +3676,7 @@ async def guardCommands(c, m, k, channel):
                     ex=600,
                 )
                 return await m.reply(
-                    """
+                    t('g_41784eac52', """
 ⇜ تمام الحين ارسل صلاحيات المشرف
 
 * ⇠ لرفع كل الصلاحيات ما عدا رفع المشرفين
@@ -3723,7 +3685,7 @@ async def guardCommands(c, m, k, channel):
 ⇜ يمديك تختار الصلاحيات وتعيين لقب للمشرف في سطر واحد
 
 مثال: ** الهطف
-☆""",
+☆"""),
                     reply_markup=ForceReply(selective=True),
                     parse_mode=ParseMode.HTML,
                 )
@@ -3768,21 +3730,21 @@ async def guardCommands(c, m, k, channel):
                 await r.set(f"{m.chat.id}:rankADMIN:{get.user.id}{Dev_Zaid}", 1)
                 await r.sadd(f"{m.chat.id}:listADMIN:{Dev_Zaid}", get.user.id)
                 return await m.reply(
-                    f"الحلو 「 {get.user.mention} 」\n{k} رفعته مشرف بكل صلاحيات "
+                    t('g_9a8df2f799', 'الحلو 「 {0} 」\n{1} رفعته مشرف بكل صلاحيات ', get.user.mention, k)
                 )
             else:
                 await r.set(f"{m.chat.id}:rankADMIN:{get.user.id}{Dev_Zaid}", 1)
                 await r.sadd(f"{m.chat.id}:listADMIN:{Dev_Zaid}", get.user.id)
                 return await m.reply(
-                    f"الحلو 「 {get.user.mention} 」\n{k} رفعته مشرف بكل الصلاحيات عدا رفع المشرفين"
+                    t('g_efc89c4e7a', 'الحلو 「 {0} 」\n{1} رفعته مشرف بكل الصلاحيات عدا رفع المشرفين', get.user.mention, k)
                 )
 
     if text == "مسح قائمة التثبيت":
         if not await mod_pls(m.from_user.id, m.chat.id):
-            return await m.reply(f"{k} هذا الأمر يخص ( المدير وفوق ) بس")
+            return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
         else:
             c.unpin_all_chat_messages(m.chat.id)
-            return await m.reply(f"{k} ابشر مسحت قائمة التثبيت")
+            return await m.reply(t('g_eff65d2a1a', '{0} ابشر مسحت قائمة التثبيت', k))
 
     if (
         text == "الاوامر"
@@ -3794,7 +3756,7 @@ async def guardCommands(c, m, k, channel):
                 await r.get(f"{Dev_Zaid}:BotChannel") or "YQYQY6"
             )
             return await m.reply(
-                f"{k} اهلين فيك باوامر البوت\n\nللاستفسار - @{channel}",
+                t('g_a0b94a33e5', '{0} اهلين فيك باوامر البوت\n\nللاستفسار - @{1}', k, channel),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -3835,7 +3797,7 @@ async def guardCommands(c, m, k, channel):
                 ),
             )
         else:
-            return await m.reply(f"{k} هذا الأمر يخص ( الادمن وفوق ) بس")
+            return await m.reply(t('g_85ab7798c1', '{0} هذا الأمر يخص ( الادمن وفوق ) بس', k))
 
 
 @Client.on_callback_query(group=1)
@@ -3850,78 +3812,7 @@ async def CallbackQueryResponse(c, m, channel):
     k = await r.get(f"{Dev_Zaid}:botkey")
     if m.data == f"commands1:{m.from_user.id}":
         await m.edit_message_text(
-            f"""
-للاستفسار - @{channel}
-
-
-❨ اوامر الرفع والتنزيل ❩
-
-⌯ رفع ↣ ↢ تنزيل مشرف
-⌯ رفع ↣ ↢ تنزيل مالك اساسي
-⌯ رفع ↣ ↢ تنزيل مالك
-⌯ رفع ↣ ↢ تنزيل مدير
-⌯ رفع ↣ ↢ تنزيل ادمن
-⌯ رفع ↣ ↢ تنزيل مميز
-⌯ تنزيل الكل  ↢ بالرد  ↢ لتنزيل الشخص من جميع رتبه
-⌯ مسح الكل  ↢ بدون رد  ↢ لتنزيل كل رتب المجموعة
-
-❨ اوامر المسح ❩
-
-⌯ مسح المالكيين
-⌯ مسح المدراء
-⌯ مسح الادمنيه
-⌯ مسح المميزين
-⌯ مسح المحظورين
-⌯ مسح المكتومين
-⌯ مسح قائمة المنع
-⌯ مسح رتبه
-⌯ مسح الرتب
-⌯ مسح الردود
-⌯ مسح الاوامر
-⌯ مسح + العدد
-⌯ مسح بالرد
-⌯ مسح الترحيب
-⌯ مسح قائمة التثبيت
-
-❨ اوامر الطرد الحظر الكتم ❩
-
-⌯ حظر ↢ ❨ بالرد،بالمعرف،بالايدي ❩
-⌯ طرد ↢ ❨ بالرد،بالمعرف،بالايدي ❩
-⌯ كتم ↢ ❨ بالرد،بالمعرف،بالايدي ❩
-⌯ تقيد ↢ ❨ بالرد،بالمعرف،بالايدي ❩
-⌯ الغاء الحظر ↢ ❨ بالرد،بالمعرف،بالايدي ❩
-⌯ الغاء الكتم ↢ ❨ بالرد،بالمعرف،بالايدي ❩
-⌯ الغاء التقييد ↢ ❨ بالرد،بالمعرف،بالايدي ❩
-⌯ رفع القيود ↢ لحذف الكتم,الحظر,التقييد
-⌯ منع الكلمة
-⌯ منع بالرد على قيف او ستيكر
-⌯ الغاء منع الكلمة
-⌯ طرد البوتات
-⌯ كشف البوتات
-
-❨ اوامر النطق ❩
-
-⌯ انطقي + الكلمة
-⌯ وش يقول؟ + بالرد على فويس لترجمه المحتوى
-
-❨ اوامر اخرى ❩
-
-⌯ الرابط
-⌯ معلومات الرابط
-⌯ انشاء رابط
-⌯ بايو
-⌯ بايو عشوائي
-⌯ ايدي
-⌯ الانشاء
-⌯ مجموعاتي
-⌯ ابلاغ
-⌯ نقل ملكية
-⌯ صوره
-⌯ افتاري
-⌯ افتار + باليوزر او الرد
-⌯ مين ضافني؟
-⌯ شازام، قرآن، سورة + اسم السورة
-""",
+            t('g_dbab7277bc', '\nللاستفسار - @{0}\n\n\n❨ اوامر الرفع والتنزيل ❩\n\n⌯ رفع ↣ ↢ تنزيل مشرف\n⌯ رفع ↣ ↢ تنزيل مالك اساسي\n⌯ رفع ↣ ↢ تنزيل مالك\n⌯ رفع ↣ ↢ تنزيل مدير\n⌯ رفع ↣ ↢ تنزيل ادمن\n⌯ رفع ↣ ↢ تنزيل مميز\n⌯ تنزيل الكل  ↢ بالرد  ↢ لتنزيل الشخص من جميع رتبه\n⌯ مسح الكل  ↢ بدون رد  ↢ لتنزيل كل رتب المجموعة\n\n❨ اوامر المسح ❩\n\n⌯ مسح المالكيين\n⌯ مسح المدراء\n⌯ مسح الادمنيه\n⌯ مسح المميزين\n⌯ مسح المحظورين\n⌯ مسح المكتومين\n⌯ مسح قائمة المنع\n⌯ مسح رتبه\n⌯ مسح الرتب\n⌯ مسح الردود\n⌯ مسح الاوامر\n⌯ مسح + العدد\n⌯ مسح بالرد\n⌯ مسح الترحيب\n⌯ مسح قائمة التثبيت\n\n❨ اوامر الطرد الحظر الكتم ❩\n\n⌯ حظر ↢ ❨ بالرد،بالمعرف،بالايدي ❩\n⌯ طرد ↢ ❨ بالرد،بالمعرف،بالايدي ❩\n⌯ كتم ↢ ❨ بالرد،بالمعرف،بالايدي ❩\n⌯ تقيد ↢ ❨ بالرد،بالمعرف،بالايدي ❩\n⌯ الغاء الحظر ↢ ❨ بالرد،بالمعرف،بالايدي ❩\n⌯ الغاء الكتم ↢ ❨ بالرد،بالمعرف،بالايدي ❩\n⌯ الغاء التقييد ↢ ❨ بالرد،بالمعرف،بالايدي ❩\n⌯ رفع القيود ↢ لحذف الكتم,الحظر,التقييد\n⌯ منع الكلمة\n⌯ منع بالرد على قيف او ستيكر\n⌯ الغاء منع الكلمة\n⌯ طرد البوتات\n⌯ كشف البوتات\n\n❨ اوامر النطق ❩\n\n⌯ انطقي + الكلمة\n⌯ وش يقول؟ + بالرد على فويس لترجمه المحتوى\n\n❨ اوامر اخرى ❩\n\n⌯ الرابط\n⌯ معلومات الرابط\n⌯ انشاء رابط\n⌯ بايو\n⌯ بايو عشوائي\n⌯ ايدي\n⌯ الانشاء\n⌯ مجموعاتي\n⌯ ابلاغ\n⌯ نقل ملكية\n⌯ صوره\n⌯ افتاري\n⌯ افتار + باليوزر او الرد\n⌯ مين ضافني؟\n⌯ شازام، قرآن، سورة + اسم السورة\n', channel),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -3963,39 +3854,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"commands2:{m.from_user.id}":
         await m.edit_message_text(
-            f"""
-للاستفسار - @{channel}
-
-
-❨ اوامر الوضع ❩
-
-⌯ وضع ترحيب
-⌯ وضع قوانين
-⌯ تغيير رتبه
-⌯ تغيير امر
-
-❨ اوامر رؤية الاعدادات ❩
-
-⌯ المطورين
-⌯ المالكيين الاساسيين
-⌯ المالكيين
-⌯ الادمنيه
-⌯ المدراء
-⌯ المشرفين
-⌯ المميزين
-⌯ القوانين
-⌯ قائمه المنع
-⌯ المكتومين
-⌯ المطور
-⌯ معلوماتي
-⌯ الاعدادت
-⌯ المجموعه
-⌯ الساعه
-⌯ التاريخ
-⌯ صلاحياتي
-⌯ لقبي
-⌯ صلاحياته + بالرد
-""",
+            t('g_ae4e29cc78', '\nللاستفسار - @{0}\n\n\n❨ اوامر الوضع ❩\n\n⌯ وضع ترحيب\n⌯ وضع قوانين\n⌯ تغيير رتبه\n⌯ تغيير امر\n\n❨ اوامر رؤية الاعدادات ❩\n\n⌯ المطورين\n⌯ المالكيين الاساسيين\n⌯ المالكيين\n⌯ الادمنيه\n⌯ المدراء\n⌯ المشرفين\n⌯ المميزين\n⌯ القوانين\n⌯ قائمه المنع\n⌯ المكتومين\n⌯ المطور\n⌯ معلوماتي\n⌯ الاعدادت\n⌯ المجموعه\n⌯ الساعه\n⌯ التاريخ\n⌯ صلاحياتي\n⌯ لقبي\n⌯ صلاحياته + بالرد\n', channel),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4037,75 +3896,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"commands3:{m.from_user.id}":
         await m.edit_message_text(
-            f"""
-للاستفسار - @{channel}
-
-
-❨ اوامر الردود ❩
-
-⌯ الردود ↢ تشوف كل الردود المضافه
-⌯ الردود المتعدده ↢ تشوف كل الردود المتعدده المضافه
-⌯ اضف رد ↢ عشان تضيف رد
-⌯ اضف رد متعدد ↢ عشان تضيف أكثر من رد
-⌯ اضف رد متعدد ↢ خاص بالاعضاء
-⌯ مسح رد ↢ عشان تمسح الرد
-⌯ مسح رد متعدد ↢ عشان تمسح رد متعدد
-⌯ مسح ردي ↢ عشان تمسح ردك اذا كان بردود الأعضاء
-⌯ مسح الردود ↢ تمسح كل الردود
-⌯ مسح الردود المتعدده ↢ عشان تمسح كل الردود المتعدده
-⌯ الرد + كلمة الرد
--
-
-❨ اوامر القفل والفتح بالمسح ❩
-
-⌯ قفل ↣ ↢ فتح  التعديل
-⌯ قفل ↣ ↢ فتح  الفويسات
-⌯ قفل ↣ ↢ فتح  الفيديو
-⌯ قفل ↣ ↢ فتح  الـصــور
-⌯ قفل ↣ ↢ فتح  الملصقات
-⌯ قفل ↣ ↢ فتح  الدخول
-⌯ قفل ↣ ↢ فتح  الفارسية
-⌯ قفل ↣ ↢ فتح  الملفات
-⌯ قفل ↣ ↢ فتح  المتحركات
-⌯ قفل ↣ ↢ فتح  تعديل الميديا
-⌯ قفل ↣ ↢ فتح  تعديل الميديا بالتقييد
-⌯ قفل ↣ ↢ فتح  الدردشه
-⌯ قفل ↣ ↢ فتح  الروابط
-⌯ قفل ↣ ↢ فتح  الهشتاق
-⌯ قفل ↣ ↢ فتح  البوتات
-⌯ قفل ↣ ↢ فتح  اليوزرات
-⌯ قفل ↣ ↢ فتح  الاشعارات
-⌯ قفل ↣ ↢ فتح  الكلام الكثير
-⌯ قفل ↣ ↢ فتح  التكرار
-⌯ قفل ↣ ↢ فتح  التوجيه
-⌯ قفل ↣ ↢ فتح  الانلاين
-⌯ قفل ↣ ↢ فتح  الجهات
-⌯ قفل ↣ ↢ فتح  الــكـــل
-⌯ قفل ↣ ↢ فتح  السب
-⌯ قفل ↣ ↢ فتح  الاضافه
-⌯ قفل ↣ ↢ فتح  الصوت
-⌯ قفل ↣ ↢ فتح  القنوات
-⌯ قفل ↣ ↢ فتح الايراني
-⌯ قفل ↣ ↢ فتح الإباحي
-
-❨ اوامر التفعيل والتعطيل ❩
-
-⌯ تفعيل ↣ ↢ تعطيل الترحيب
-⌯ تفعيل ↣ ↢ تعطيل الترحيب بالصورة
-⌯ تفعيل ↣ ↢ تعطيل الردود
-⌯ تفعيل ↣ ↢ تعطيل ردود الاعضاء
-⌯ تفعيل ↣ ↢ تعطيل الايدي
-⌯ تفعيل ↣ ↢ تعطيل الرابط
-⌯ تفعيل ↣ ↢ تعطيل اطردني
-⌯ تفعيل ↣ ↢ تعطيل الحماية
-⌯ تفعيل ↣ ↢ تعطيل المنشن
-⌯ تفعيل ↣ ↢ تعطيل التحقق
-⌯ تفعيل ↣ ↢ تعطيل ردود المطور
-⌯ تفعيل ↣ ↢ تعطيل التحذير
-⌯ تفعيل ↣ ↢ تعطيل البايو
-⌯ تفعيل ↣ ↢ تعطيل انطقي
-⌯ تفعيل ↣ ↢ تعطيل شازام
-""",
+            t('g_780e2b3209', '\nللاستفسار - @{0}\n\n\n❨ اوامر الردود ❩\n\n⌯ الردود ↢ تشوف كل الردود المضافه\n⌯ الردود المتعدده ↢ تشوف كل الردود المتعدده المضافه\n⌯ اضف رد ↢ عشان تضيف رد\n⌯ اضف رد متعدد ↢ عشان تضيف أكثر من رد\n⌯ اضف رد متعدد ↢ خاص بالاعضاء\n⌯ مسح رد ↢ عشان تمسح الرد\n⌯ مسح رد متعدد ↢ عشان تمسح رد متعدد\n⌯ مسح ردي ↢ عشان تمسح ردك اذا كان بردود الأعضاء\n⌯ مسح الردود ↢ تمسح كل الردود\n⌯ مسح الردود المتعدده ↢ عشان تمسح كل الردود المتعدده\n⌯ الرد + كلمة الرد\n-\n\n❨ اوامر القفل والفتح بالمسح ❩\n\n⌯ قفل ↣ ↢ فتح  التعديل\n⌯ قفل ↣ ↢ فتح  الفويسات\n⌯ قفل ↣ ↢ فتح  الفيديو\n⌯ قفل ↣ ↢ فتح  الـصــور\n⌯ قفل ↣ ↢ فتح  الملصقات\n⌯ قفل ↣ ↢ فتح  الدخول\n⌯ قفل ↣ ↢ فتح  الفارسية\n⌯ قفل ↣ ↢ فتح  الملفات\n⌯ قفل ↣ ↢ فتح  المتحركات\n⌯ قفل ↣ ↢ فتح  تعديل الميديا\n⌯ قفل ↣ ↢ فتح  تعديل الميديا بالتقييد\n⌯ قفل ↣ ↢ فتح  الدردشه\n⌯ قفل ↣ ↢ فتح  الروابط\n⌯ قفل ↣ ↢ فتح  الهشتاق\n⌯ قفل ↣ ↢ فتح  البوتات\n⌯ قفل ↣ ↢ فتح  اليوزرات\n⌯ قفل ↣ ↢ فتح  الاشعارات\n⌯ قفل ↣ ↢ فتح  الكلام الكثير\n⌯ قفل ↣ ↢ فتح  التكرار\n⌯ قفل ↣ ↢ فتح  التوجيه\n⌯ قفل ↣ ↢ فتح  الانلاين\n⌯ قفل ↣ ↢ فتح  الجهات\n⌯ قفل ↣ ↢ فتح  الــكـــل\n⌯ قفل ↣ ↢ فتح  السب\n⌯ قفل ↣ ↢ فتح  الاضافه\n⌯ قفل ↣ ↢ فتح  الصوت\n⌯ قفل ↣ ↢ فتح  القنوات\n⌯ قفل ↣ ↢ فتح الايراني\n⌯ قفل ↣ ↢ فتح الإباحي\n\n❨ اوامر التفعيل والتعطيل ❩\n\n⌯ تفعيل ↣ ↢ تعطيل الترحيب\n⌯ تفعيل ↣ ↢ تعطيل الترحيب بالصورة\n⌯ تفعيل ↣ ↢ تعطيل الردود\n⌯ تفعيل ↣ ↢ تعطيل ردود الاعضاء\n⌯ تفعيل ↣ ↢ تعطيل الايدي\n⌯ تفعيل ↣ ↢ تعطيل الرابط\n⌯ تفعيل ↣ ↢ تعطيل اطردني\n⌯ تفعيل ↣ ↢ تعطيل الحماية\n⌯ تفعيل ↣ ↢ تعطيل المنشن\n⌯ تفعيل ↣ ↢ تعطيل التحقق\n⌯ تفعيل ↣ ↢ تعطيل ردود المطور\n⌯ تفعيل ↣ ↢ تعطيل التحذير\n⌯ تفعيل ↣ ↢ تعطيل البايو\n⌯ تفعيل ↣ ↢ تعطيل انطقي\n⌯ تفعيل ↣ ↢ تعطيل شازام\n', channel),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4147,7 +3938,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"commands4:{m.from_user.id}":
         await m.edit_message_text(
-            """
+            t('g_b369261128', """
 ☤ تفعيل الالعاب
 ☤ تعطيل الالعاب
     ╼╾
@@ -4183,7 +3974,7 @@ async def CallbackQueryResponse(c, m, channel):
 ╼╾
 ❖ فلوسي ↼ عشان تشوف فلوسك
 ❖ بيع فلوسي + العدد ↼ للأستبدال
-""",
+"""),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4225,40 +4016,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"commands5:{m.from_user.id}":
         await m.edit_message_text(
-            f"""
-للاستفسار - @{channel}
-
-🍰 ⌯ رفع ↣ ↢ تنزيل كيكه
-🍯 ⌯ رفع ↣ ↢ تنزيل عسل
-💩 ⌯ رفع ↣ ↢ تنزيل زق
-🦓 ⌯ رفع ↣ ↢ تنزيل حمار
-🐄 ⌯ رفع ↣ ↢ تنزيل بقره
-🐩 ⌯ رفع ↣ ↢ تنزيل كلب
-🐒 ⌯ رفع ↣ ↢ تنزيل قرد
-🐐 ⌯ رفع ↣ ↢ تنزيل تيس
-🐂 ⌯ رفع ↣ ↢ تنزيل ثور
-🏅 ⌯ رفع ↣ ↢ تنزيل هكر
-🐓 ⌯ رفع ↣ ↢ تنزيل دجاجه
-🧱 ⌯ رفع ↣ ↢ تنزيل ملكه
-🔫 ⌯ رفع ↣ ↢ تنزيل صياد
-🐏 ⌯ رفع ↣ ↢ تنزيل خاروف
-❤️ ⌯ رفع لقلبي ↣ ↢ تنزيل من قلبي
-
-⌯ قائمة الكيك
-⌯ قائمة العسل
-⌯ قائمة الزق
-⌯ قائمة الحمير
-⌯ قائمة البقر
-⌯ قائمة الكلاب
-⌯ قائمة القرود
-⌯ قائمة التيس
-⌯ قائمة الثور
-⌯ قائمة الهكر
-⌯ قائمة الدجاج
-⌯ قائمة الهطوف
-⌯ قائمة الصيادين
-⌯ قائمة الخرفان
-""",
+            t('g_bfce082dfd', '\nللاستفسار - @{0}\n\n🍰 ⌯ رفع ↣ ↢ تنزيل كيكه\n🍯 ⌯ رفع ↣ ↢ تنزيل عسل\n💩 ⌯ رفع ↣ ↢ تنزيل زق\n🦓 ⌯ رفع ↣ ↢ تنزيل حمار\n🐄 ⌯ رفع ↣ ↢ تنزيل بقره\n🐩 ⌯ رفع ↣ ↢ تنزيل كلب\n🐒 ⌯ رفع ↣ ↢ تنزيل قرد\n🐐 ⌯ رفع ↣ ↢ تنزيل تيس\n🐂 ⌯ رفع ↣ ↢ تنزيل ثور\n🏅 ⌯ رفع ↣ ↢ تنزيل هكر\n🐓 ⌯ رفع ↣ ↢ تنزيل دجاجه\n🧱 ⌯ رفع ↣ ↢ تنزيل ملكه\n🔫 ⌯ رفع ↣ ↢ تنزيل صياد\n🐏 ⌯ رفع ↣ ↢ تنزيل خاروف\n❤️ ⌯ رفع لقلبي ↣ ↢ تنزيل من قلبي\n\n⌯ قائمة الكيك\n⌯ قائمة العسل\n⌯ قائمة الزق\n⌯ قائمة الحمير\n⌯ قائمة البقر\n⌯ قائمة الكلاب\n⌯ قائمة القرود\n⌯ قائمة التيس\n⌯ قائمة الثور\n⌯ قائمة الهكر\n⌯ قائمة الدجاج\n⌯ قائمة الهطوف\n⌯ قائمة الصيادين\n⌯ قائمة الخرفان\n', channel),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4300,7 +4058,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"commands6:{m.from_user.id}":
         await m.edit_message_text(
-            """
+            t('g_b54770848c', """
 ⚘ اليـوتيوب
 
 تفعيل اليوتيوب
@@ -4329,7 +4087,7 @@ async def CallbackQueryResponse(c, m, channel):
 ❋ للتحميل من التيك ↓
 
 تيك ورابط المقطع
-""",
+"""),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4371,7 +4129,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"commands7:{m.from_user.id}":
         await m.edit_message_text(
-            """
+            t('g_f34fa97cc1', """
 ✜ اوامر البنك
 
 ⌯ انشاء حساب بنكي  ↢ تسوي حساب وتقدر تحول فلوس مع مزايا ثانيه
@@ -4401,7 +4159,7 @@ async def CallbackQueryResponse(c, m, channel):
 ⌯ توب الفلوس ↢ يطلع توب اكثر ناس معهم فلوس بكل القروبات
 
 ⌯ توب الحراميه ↢ يطلع لك اكثر ناس زرفوا
-""",
+"""),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4443,7 +4201,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"commands8:{m.from_user.id}":
         await m.edit_message_text(
-            """
+            t('g_81dd786ceb', """
 ✜ اوامر الزواج
 
 ⌯ زواج  ↢ تكتبه بالرد على رسالة شخص مع المهر ويزوجك
@@ -4455,7 +4213,7 @@ async def CallbackQueryResponse(c, m, channel):
 ⌯ خلع  ↢ يخلع زوجك ويرجع له المهر
 
 ⌯ زواجات ↢ يطلع اغلى الزواجات بالقروب
-""",
+"""),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4518,11 +4276,7 @@ async def CallbackQueryResponse(c, m, channel):
         except Exception:
             return False
         await m.edit_message_text(
-            f"""
-{k} تم التحقق منك وطلعت مو زومبي
-{k} الحين تقدر تسولف بالقروب
-☆
-""",
+            t('g_0cb015a1b7', '\n{0} تم التحقق منك وطلعت مو زومبي\n{1} الحين تقدر تسولف بالقروب\n☆\n', k, k),
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             ),
@@ -4530,11 +4284,7 @@ async def CallbackQueryResponse(c, m, channel):
 
     if m.data == f"no:{m.from_user.id}":
         return await m.edit_message_text(
-            f"""
-{k} للأسف طلعت زومبي 🧟‍♀️
-{k} مالك غير تنطر حد من المشرفين يجي يتوسطلك
-☆
-""",
+            t('g_0a7e9d5296', '\n{0} للأسف طلعت زومبي 🧟\u200d♀️\n{1} مالك غير تنطر حد من المشرفين يجي يتوسطلك\n☆\n', k, k),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -4557,7 +4307,7 @@ async def CallbackQueryResponse(c, m, channel):
         if not await admin_pls(m.from_user.id, m.message.chat.id):
             return await m.answer(f"{k} هذا الزر يخص ( الادمن وفوق ) بس", show_alert=True)
         else:
-            await m.edit_message_text(f"{k} توسطلك واحد من الادمن ورفعت عنك القيود")
+            await m.edit_message_text(t('g_0b362170ec', '{0} توسطلك واحد من الادمن ورفعت عنك القيود', k))
             try:
                 await c.restrict_chat_member(
                     m.message.chat.id,
@@ -4581,7 +4331,7 @@ async def CallbackQueryResponse(c, m, channel):
         if not await admin_pls(m.from_user.id, m.message.chat.id):
             return await m.answer(f"{k} هذا الزر يخص ( الادمن وفوق ) بس", show_alert=True)
         else:
-            await m.edit_message_text(f"{k} انقلع برا القروب يلا")
+            await m.edit_message_text(t('g_fbdf8f361c', '{0} انقلع برا القروب يلا', k))
             try:
                 await m.message.chat.ban_member(user_id)
                 await m.message.chat.unban_member(user_id)
@@ -4592,7 +4342,7 @@ async def CallbackQueryResponse(c, m, channel):
         if not await devp_pls(m.from_user.id, m.message.chat.id):
             return await m.answer("تعجبني ثقتك")
         else:
-            await m.edit_message_text("ابشر صفرت البنك")
+            await m.edit_message_text(t('g_0c8ac45b26', "ابشر صفرت البنك"))
             keys = await r.keys("*:Floos")
             for a in keys:
                 await r.delete(a)
@@ -4657,7 +4407,7 @@ async def CallbackQueryResponse(c, m, channel):
                     ccc += 1
                     id = int(user)
                     if await r.get(f"{id}:bankName"):
-                        name = await r.get(f"{id}:bankName")[:10]
+                        name = (await r.get(f"{id}:bankName"))[:10]
                     else:
                         try:
                             name = await c.get_chat(id).first_name
@@ -4733,7 +4483,7 @@ async def CallbackQueryResponse(c, m, channel):
                     ccc += 1
                     id = int(user)
                     if await r.get(f"{id}:bankName"):
-                        name = await r.get(f"{id}:bankName")[:10]
+                        name = (await r.get(f"{id}:bankName"))[:10]
                     else:
                         try:
                             name = await c.get_chat(id).first_name
@@ -4802,12 +4552,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: 🪨
-أنا: ✂️
-
-النتيجة: ⁪⁬⁪⁬ 🏆 {m.from_user.first_name}
-""",
+                t('g_6b5cb31b3a', '\nأنت: 🪨\nأنا: ✂️\n\nالنتيجة: \u206a\u206c\u206a\u206c 🏆 {0}\n', m.from_user.first_name),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4817,12 +4562,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: 🪨
-أنا: 📃
-
-النتيجة: ⁪⁬⁪⁬ 🏆️ {name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-""",
+                t('g_d2f5a4d40b', '\nأنت: 🪨\nأنا: 📃\n\nالنتيجة: \u206a\u206c\u206a\u206c 🏆️ {0}\n', name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4831,12 +4571,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: 🪨
-أنا: 🪨
-
-النتيجة: ⁪⁬⁪⁬ ⚖️ {name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-""",
+                t('g_ceef74ce7d', '\nأنت: 🪨\nأنا: 🪨\n\nالنتيجة: \u206a\u206c\u206a\u206c ⚖️ {0}\n', name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4849,7 +4584,7 @@ async def CallbackQueryResponse(c, m, channel):
             command = m.message.reply_to_message.text.split(None, 2)[2]
             await r.hset(Dev_Zaid + f"locks-{m.message.chat.id}", command, 0)
             return await m.edit_message_text(
-                f"- تم تعيين الامر ( {command} ) للمالك الاساسي وفوق فقط"
+                t('g_61c01c218d', '- تم تعيين الامر ( {0} ) للمالك الاساسي وفوق فقط', command)
             )
 
     if m.data == f"owner+{m.from_user.id}":
@@ -4860,7 +4595,7 @@ async def CallbackQueryResponse(c, m, channel):
             command = m.message.reply_to_message.text.split(None, 2)[2]
             await r.hset(Dev_Zaid + f"locks-{m.message.chat.id}", command, 1)
             return await m.edit_message_text(
-                f"- تم تعيين الامر ( {command} ) للمالك وفوق فقط"
+                t('g_209a8c0077', '- تم تعيين الامر ( {0} ) للمالك وفوق فقط', command)
             )
 
     if m.data == f"mod+{m.from_user.id}":
@@ -4871,7 +4606,7 @@ async def CallbackQueryResponse(c, m, channel):
             command = m.message.reply_to_message.text.split(None, 2)[2]
             await r.hset(Dev_Zaid + f"locks-{m.message.chat.id}", command, 2)
             return await m.edit_message_text(
-                f"- تم تعيين الامر ( {command} ) للمدير وفوق فقط"
+                t('g_31fca58e71', '- تم تعيين الامر ( {0} ) للمدير وفوق فقط', command)
             )
 
     if m.data == f"admin+{m.from_user.id}":
@@ -4882,7 +4617,7 @@ async def CallbackQueryResponse(c, m, channel):
             command = m.message.reply_to_message.text.split(None, 2)[2]
             await r.hset(Dev_Zaid + f"locks-{m.message.chat.id}", command, 3)
             return await m.edit_message_text(
-                f"- تم تعيين الامر ( {command} ) للادمن وفوق فقط"
+                t('g_870a06a7cd', '- تم تعيين الامر ( {0} ) للادمن وفوق فقط', command)
             )
 
     if m.data == f"pre+{m.from_user.id}":
@@ -4893,7 +4628,7 @@ async def CallbackQueryResponse(c, m, channel):
             command = m.message.reply_to_message.text.split(None, 2)[2]
             await r.hset(Dev_Zaid + f"locks-{m.message.chat.id}", command, 4)
             return await m.edit_message_text(
-                f"- تم تعيين الامر ( {command} ) للمميز وفوق فقط"
+                t('g_4e1eee642a', '- تم تعيين الامر ( {0} ) للمميز وفوق فقط', command)
             )
 
     if m.data == f"RPS:paper++{m.from_user.id}":
@@ -4909,12 +4644,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: 📃
-أنا: 🪨
-
-النتيجة: ⁪⁬⁪⁬ 🏆 {m.from_user.first_name}
-""",
+                t('g_25d8ea1a07', '\nأنت: 📃\nأنا: 🪨\n\nالنتيجة: \u206a\u206c\u206a\u206c 🏆 {0}\n', m.from_user.first_name),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4924,12 +4654,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: 📃
-أنا: ✂️
-
-النتيجة: ⁪⁬⁪⁬ 🏆️ {name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-""",
+                t('g_31a2f92f1e', '\nأنت: 📃\nأنا: ✂️\n\nالنتيجة: \u206a\u206c\u206a\u206c 🏆️ {0}\n', name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4938,12 +4663,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: 📃
-أنا: 📃
-
-النتيجة: ⁪⁬⁪⁬ ⚖️ {name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-""",
+                t('g_1818b08dd2', '\nأنت: 📃\nأنا: 📃\n\nالنتيجة: \u206a\u206c\u206a\u206c ⚖️ {0}\n', name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4961,12 +4681,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: ✂️
-أنا: 📃
-
-النتيجة: ⁪⁬⁪⁬ 🏆 {m.from_user.first_name}
-""",
+                t('g_8361f259cf', '\nأنت: ✂️\nأنا: 📃\n\nالنتيجة: \u206a\u206c\u206a\u206c 🏆 {0}\n', m.from_user.first_name),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4976,12 +4691,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: ✂️
-أنا: 🪨
-
-النتيجة: ⁪⁬⁪⁬ 🏆️ {name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-""",
+                t('g_b6d790d217', '\nأنت: ✂️\nأنا: 🪨\n\nالنتيجة: \u206a\u206c\u206a\u206c 🏆️ {0}\n', name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
@@ -4990,12 +4700,7 @@ async def CallbackQueryResponse(c, m, channel):
                 [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
             )
             await m.edit_message_text(
-                f"""
-أنت: ✂️
-أنا: ✂️
-
-النتيجة: ⁪⁬⁪⁬ ⚖️ {name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-""",
+                t('g_bf0cc72179', '\nأنت: ✂️\nأنا: ✂️\n\nالنتيجة: \u206a\u206c\u206a\u206c ⚖️ {0}\n', name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")),
                 disable_web_page_preview=True,
                 reply_markup=rep,
             )
