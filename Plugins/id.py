@@ -193,9 +193,9 @@ async def get_my_rank(c,m,k):
          contacts = int(await r.get(f'{m.chat.id}TotalContacts{m.from_user.id}{Dev_Zaid}'))
       if m.from_user.username:
          username = f'@{m.from_user.username}'
-      if m.from_user.usernames:
+      if getattr(m.from_user, 'usernames', None):
          username = ''
-         for i in m.from_user.usernames: username += f"@{i.username} "
+         for i in getattr(m.from_user, 'usernames', None): username += f"@{i.username} "
       else:
          username = 'مافي يوزر'
       rank = await get_rank(m.from_user.id,m.chat.id)
@@ -481,9 +481,9 @@ async def get_my_rank(c,m,k):
            id = m.reply_to_message.from_user.id
            if m.reply_to_message.from_user.username:
                username = f'@{m.reply_to_message.from_user.username}'
-           elif m.reply_to_message.from_user.usernames:
+           elif getattr(m.reply_to_message.from_user, 'usernames', None):
                username = ''
-               for i in m.reply_to_message.from_user.usernames: username += f"@{i.username} "
+               for i in getattr(m.reply_to_message.from_user, 'usernames', None): username += f"@{i.username} "
            else:
                username = 'مافي يوزر'
            status = await m.chat.get_member(m.reply_to_message.from_user.id).status
@@ -524,9 +524,9 @@ async def get_my_rank(c,m,k):
            msgs = int(await r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.user.id}'))
            if get.user.username:
                username = f'@{get.user.username}'
-           elif get.user.usernames:
+           elif getattr(get.user, 'usernames', None):
                username = ""
-               for i in get.user.usernames: username += f"@{i.username} "
+               for i in getattr(get.user, 'usernames', None): username += f"@{i.username} "
            else:
                username = 'ماعنده يوزر'
            status = get.status
@@ -551,9 +551,9 @@ async def get_my_rank(c,m,k):
                msgs = int(await r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.id}'))
                if get.user.username:
                    username = f'@{get.user.username}'
-               if get.user.usernames:
+               if getattr(get.user, 'usernames', None):
                    username = ""
-                   for i in get.user.usernames: username += f"@{i.username} "
+                   for i in getattr(get.user, 'usernames', None): username += f"@{i.username} "
                else:
                    username = 'ماعنده يوزر'
            except Exception as e:
@@ -586,9 +586,9 @@ async def get_my_rank(c,m,k):
            msgs = int(await r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.user.id}'))
            if get.user.username:
                username = f'@{get.user.username}'
-           elif get.user.usernames:
+           elif getattr(get.user, 'usernames', None):
                username = ""
-               for i in get.user.usernames: username += f"@{i.username} "
+               for i in getattr(get.user, 'usernames', None): username += f"@{i.username} "
            else:
                username = 'ماعنده يوزر'
            status = get.status
@@ -613,9 +613,9 @@ async def get_my_rank(c,m,k):
                msgs = int(await r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.id}'))
                if get.user.username:
                    username = f'@{get.user.username}'
-               if get.user.usernames:
+               if getattr(get.user, 'usernames', None):
                    username = ""
-                   for i in get.user.usernames: username += f"@{i.username} "
+                   for i in getattr(get.user, 'usernames', None): username += f"@{i.username} "
                else:
                    username = 'ماعنده يوزر'
            except Exception as e:
@@ -900,9 +900,9 @@ async def get_my_rank(c,m,k):
 𖡋 𝐄𝐃𝐈𝐓 ⌯  {التعديل}
 𖡋 𝐂𝐑  ⌯  {الانشاء}
 {البايو}'''
-      if m.from_user.usernames:
+      if getattr(m.from_user, 'usernames', None):
          username = ''
-         for i in m.from_user.usernames: username += f"@{i.username} "
+         for i in getattr(m.from_user, 'usernames', None): username += f"@{i.username} "
       elif m.from_user.username:
          username = f'@{m.from_user.username}'
       else:
