@@ -6,6 +6,7 @@
 #   الردود المعدلة     -> list all customized replies
 #   استرجاع كل الردود -> restore ALL replies to default
 import logging
+from hashlib import md5
 from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
@@ -46,9 +47,13 @@ async def change_reply_handler(c, m):
             if not m.reply_to_message:
                 return await m.reply("رد على رسالة البوت التي تريد تغييرها ثم اكتب: تغيير")
             key = await get_key_for_message(m.chat.id, m.reply_to_message.id)
+            body = m.reply_to_message.text or m.reply_to_message.caption or ""
             if not key:
-                return await m.reply("هذا الرد غير قابل للتغيير بعد")
-            label = (m.reply_to_message.text or m.reply_to_message.caption or "")[:120]
+                if body.strip():
+                    key = "g_" + md5(("C:" + body).encode("utf-8")).hexdigest()[:10]
+                else:
+                    return await m.reply("لا يمكن تغيير هذا الرد (لا يحتوي نص)")
+            label = body[:120]
             await set_label(key, label)
             await r.set(state_key, key, ex=120)
             return await m.reply("أرسل نص الرد الجديد الآن (أو اكتب: الغاء)")
@@ -59,7 +64,11 @@ async def change_reply_handler(c, m):
                 return await m.reply("رد على رسالة البوت المراد استرجاعها ثم اكتب: استرجاع الرد")
             key = await get_key_for_message(m.chat.id, m.reply_to_message.id)
             if not key:
-                return await m.reply("هذا الرد غير مخصّص")
+                body = m.reply_to_message.text or m.reply_to_message.caption or ""
+                if body.strip():
+                    key = "g_" + md5(("C:" + body).encode("utf-8")).hexdigest()[:10]
+                else:
+                    return await m.reply("هذا الرد غير مخصّص")
             await clear_override(m.chat.id, key, glob=True)
             return await m.reply("تم استرجاع الرد الأصلي في كل القروبات ✅")
         if text in ("الردود المعدلة", "الردود المعدله", "قائمة الردود"):
