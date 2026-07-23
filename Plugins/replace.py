@@ -20,6 +20,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 import asyncio
 
@@ -66,19 +67,19 @@ async def raplaceCodefunc(c,m,k,channel):
        await r.delete(f'{m.chat.id}:replace:{m.from_user.id}{Dev_Zaid}')
        await r.delete(f'{m.chat.id}:replace2:{m.from_user.id}{Dev_Zaid}')
        await r.delete(f'{m.chat.id}:replace3:{m.from_user.id}{Dev_Zaid}')
-       return await m.reply(f'{k} من عيوني لغيت استبدال كلمة ')
+       return await m.reply(t('g_c1a4997856', '{0} من عيوني لغيت استبدال كلمة ', k))
       
    if text == 'استبدال كلمه' or text == 'استبدال كلمة':
       if not await devp_pls(m.from_user.id,m.chat.id):
-         return await m.reply(f'{k} هذا الأمر يخص ( مبرمج السورس ) بس')
+         return await m.reply(t('g_9a2cd0b2eb', '{0} هذا الأمر يخص ( مبرمج السورس ) بس', k))
       else:
          await r.set(f'{m.chat.id}:replace:{m.from_user.id}{Dev_Zaid}',1,ex=600)
-         return await m.reply(f'{k} ارسل الكلمة القديمة الآن')
+         return await m.reply(t('g_85e5254048', '{0} ارسل الكلمة القديمة الآن', k))
    
    if await r.get(f'{m.chat.id}:replace:{m.from_user.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id):
       await r.set(f'{m.chat.id}:replace2:{m.from_user.id}{Dev_Zaid}',m.text,ex=600)
       await r.delete(f'{m.chat.id}:replace:{m.from_user.id}{Dev_Zaid}')
-      return await m.reply(f'{k} ارسل الكلمة الجديدة الحين')
+      return await m.reply(t('g_16ed3598f8', '{0} ارسل الكلمة الجديدة الحين', k))
    
    if await r.get(f'{m.chat.id}:replace2:{m.from_user.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id):
       txt = await r.get(f'{m.chat.id}:replace2:{m.from_user.id}{Dev_Zaid}')
@@ -97,7 +98,7 @@ async def raplaceCodefunc(c,m,k,channel):
       return await m.reply(txt)
    
    if await r.get(f'{m.chat.id}:replace3:{m.from_user.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id) and m.text in os.listdir('Plugins'):
-      mm = await m.reply(f'{k} جاريع تعديل الملف')
+      mm = await m.reply(t('g_3641dfecb1', '{0} جاريع تعديل الملف', k))
       get = await r.get(f'{m.chat.id}:replace3:{m.from_user.id}{Dev_Zaid}')
       old = get.split('&&new&&')[0]
       new = get.split('&&new&&')[1]
