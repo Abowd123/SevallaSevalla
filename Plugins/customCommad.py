@@ -20,6 +20,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 import asyncio
 
@@ -276,16 +277,16 @@ async def delcommandg(c,m,k):
      else:
        txt=text.split(None,2)[2]
        if not await r.hget(Dev_Zaid+f"locks-{m.chat.id}", txt):
-         return await m.reply("الامر مو مقفول من قبل")
+         return await m.reply(t('g_919c05e513', "الامر مو مقفول من قبل"))
        await r.hdel(Dev_Zaid+f"locks-{m.chat.id}", txt)
-       return await m.reply("تم فتح الامر بنجاح")
+       return await m.reply(t('g_d98ec2dccb', "تم فتح الامر بنجاح"))
    
    if text == "الاوامر المقفوله":
       if not await gowner_pls(m.from_user.id, m.chat.id):
        return await m.reply(quote=True,text=f'{k} هذا الامر يخص ( المالك الاساسي وفوق ) وبس')
       else:
         if not await r.hgetall(Dev_Zaid+f"locks-{m.chat.id}"):
-          return await m.reply(f"{k} مافيه اوامر مقفولة")
+          return await m.reply(t('g_5cc164dd2f', '{0} مافيه اوامر مقفولة', k))
         else:
           commands = await r.hgetall(Dev_Zaid+f"locks-{m.chat.id}")
           txt = "الاوامر المقفوله:\n\n"
@@ -311,11 +312,11 @@ async def delcommandg(c,m,k):
        return await m.reply(quote=True,text=f'{k} هذا الامر يخص ( المالك الاساسي وفوق ) وبس')
       else:
         if not await r.hgetall(Dev_Zaid+f"locks-{m.chat.id}"):
-          return await m.reply(f"{k} مافيه اوامر مقفولة")
+          return await m.reply(t('g_5cc164dd2f', '{0} مافيه اوامر مقفولة', k))
         else:
-          count = len(list(await r.hgetall(Dev_Zaid+f"locks-{m.chat.id}").keys()))
+          count = len(list((await r.hgetall(Dev_Zaid+f"locks-{m.chat.id}")).keys()))
           await r.delete(Dev_Zaid+f"locks-{m.chat.id}")
-          return await m.reply(f"{k} ابشر مسحت ( {count} )")
+          return await m.reply(t('g_ff50c95531', '{0} ابشر مسحت ( {1} )', k, count))
    
    if re.match("^قفل امر ",text):
      if not await gowner_pls(m.from_user.id, m.chat.id):
@@ -323,7 +324,7 @@ async def delcommandg(c,m,k):
      else:
        txt=text.split(None,2)[2]
        return await m.reply(
-          f"{k} حسناً عزيزي اختار نوع الرتبه :\n{k} سيتم وضع امر ↤︎( {txt} ) له فقط",
+          t('g_e112e2b3eb', '{0} حسناً عزيزي اختار نوع الرتبه :\n{1} سيتم وضع امر ↤︎( {2} ) له فقط', k, k, txt),
           reply_markup=InlineKeyboardMarkup(
             [
               [
