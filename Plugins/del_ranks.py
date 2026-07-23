@@ -20,6 +20,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from helpers.Ranks import isLockCommand
 import asyncio
@@ -57,10 +58,10 @@ async def del_ranks_func(c,m,k):
 '''
    if text == 'مسح قائمه Dev':
       if not await devp_pls(id, cid):
-        return await m.reply(f'{k} هذا الامر يخص ( Dev🎖️) بس')
+        return await m.reply(t('g_d06463beb4', '{0} هذا الامر يخص ( Dev🎖️) بس', k))
       else:
         if not await r.smembers(f'{Dev_Zaid}DEV2'):
-          return await m.reply(f'{k} مافيه قائمة Dev²🎖')
+          return await m.reply(t('g_69e4f30913', '{0} مافيه قائمة Dev²🎖', k))
         else:
           count = 0
           for dev2 in await r.smembers(f'{Dev_Zaid}DEV2'):
@@ -71,10 +72,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح قائمه MY':
       if not await dev2_pls(id, cid):
-        return await m.reply(f'{k} هذا الأمر يخص ( Dev²🎖️ وفوق ) بس')
+        return await m.reply(t('g_87098c46e6', '{0} هذا الأمر يخص ( Dev²🎖️ وفوق ) بس', k))
       else:
         if not await r.smembers(f'{Dev_Zaid}DEV'):
-          return await m.reply(f'{k} مافيه قائمة Myth🎖️')
+          return await m.reply(t('g_ea8715d6b2', '{0} مافيه قائمة Myth🎖️', k))
         else:
           count = 0
           for dev in await r.smembers(f'{Dev_Zaid}DEV'):
@@ -85,10 +86,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح المالكين الاساسيين':
       if not await dev_pls(id, cid):
-        return await m.reply(f'{k} هذا الامر يخص ( Myth🎖️ مالك القروب وفوق) بس')
+        return await m.reply(t('g_10ef84eabb', '{0} هذا الامر يخص ( Myth🎖️ مالك القروب وفوق) بس', k))
       else:
         if not await r.smembers(f'{cid}:listGOWNER:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مالكين اساسيين')
+          return await m.reply(t('g_531a942898', '{0} مافيه مالكين اساسيين', k))
         else:
           count = 0
           for gowner in await r.smembers(f'{cid}:listGOWNER:{Dev_Zaid}'):
@@ -99,10 +100,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح المالكين':
       if not await gowner_pls(id, cid):
-        return await m.reply(f'{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس')
+        return await m.reply(t('g_ae475f0efd', '{0} هذا الأمر يخص ( المالك الاساسي وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listOWNER:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مالكين ')
+          return await m.reply(t('g_48df9cf2a7', '{0} مافيه مالكين ', k))
         else:
           count = 0
           for owner in await r.smembers(f'{cid}:listOWNER:{Dev_Zaid}'):
@@ -113,10 +114,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح المدراء':
       if not await owner_pls(id, cid):
-        return await m.reply(f'{k} هذا الأمر يخص ( المالك وفوق ) بس')
+        return await m.reply(t('g_4a108ff756', '{0} هذا الأمر يخص ( المالك وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listMOD:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مدراء')
+          return await m.reply(t('g_e58a368129', '{0} مافيه مدراء', k))
         else:
           count = 0
           for MOD in await r.smembers(f'{cid}:listMOD:{Dev_Zaid}'):
@@ -127,10 +128,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح الادمنيه' or text == 'مسح الادمن':
       if not await mod_pls(id, cid):
-        return await m.reply(f'{k} هذا الأمر يخص ( المدير وفوق ) بس')
+        return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listADMIN:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه ادمن')
+          return await m.reply(t('g_983057d5b4', '{0} مافيه ادمن', k))
         else:
           count = 0
           for ADM in await r.smembers(f'{cid}:listADMIN:{Dev_Zaid}'):
@@ -141,10 +142,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح المميزين':
       if not await mod_pls(id, cid):
-        return await m.reply(f'{k} هذا الأمر يخص ( المدير وفوق ) بس')
+        return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listPRE:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مميزين')
+          return await m.reply(t('g_3a33becf02', '{0} مافيه مميزين', k))
         else:
           count = 0
           for MOD in await r.smembers(f'{cid}:listPRE:{Dev_Zaid}'):
@@ -155,10 +156,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح المكتومين':
       if not await mod_pls(id, cid):
-        return await m.reply(f'{k} هذا الأمر يخص ( المدير وفوق ) بس')
+        return await m.reply(t('g_198196b423', '{0} هذا الأمر يخص ( المدير وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listMUTE:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مكتومين')
+          return await m.reply(t('g_9a7eb39ce7', '{0} مافيه مكتومين', k))
         else:
           count = 0
           for MOD in await r.smembers(f'{cid}:listMUTE:{Dev_Zaid}'):
@@ -173,10 +174,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح المكتومين عام':
       if not await dev_pls(id, cid):
-        return await m.reply(f'{k} هذا الامر يخص ( Myth🎖️ وفوق ) بس')
+        return await m.reply(t('g_68bb86e6c6', '{0} هذا الامر يخص ( Myth🎖️ وفوق ) بس', k))
       else:
         if not await r.smembers(f'listMUTE:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مكتومين عام')
+          return await m.reply(t('g_513d75c85d', '{0} مافيه مكتومين عام', k))
         else:
           count = 0
           for MOD in await r.smembers(f'listMUTE:{Dev_Zaid}'):
@@ -187,10 +188,10 @@ async def del_ranks_func(c,m,k):
    
    if text == 'مسح المحظورين عام':
       if not await dev_pls(id, cid):
-        return await m.reply(f'{k} هذا الامر يخص ( Myth🎖️ وفوق ) بس')
+        return await m.reply(t('g_68bb86e6c6', '{0} هذا الامر يخص ( Myth🎖️ وفوق ) بس', k))
       else:
         if not await r.smembers(f'listGBAN:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه حمير محظورين')
+          return await m.reply(t('g_33944c2cf1', '{0} مافيه حمير محظورين', k))
         else:
           count = 0
           for MOD in await r.smembers(f'listGBAN:{Dev_Zaid}'):
