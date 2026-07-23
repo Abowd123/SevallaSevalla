@@ -3,6 +3,7 @@
 # t() is SYNC and only tags the text; override lookup + formatting happen at send
 # time inside the patched Message methods (which can await Redis).
 import logging
+import hashlib
 from config import *
 from pyrogram.types import *
 
@@ -10,6 +11,11 @@ from pyrogram.types import *
 class TaggedStr(str):
     """A normal string carrying the reply key + default template + args."""
     pass
+
+
+def _content_key(text):
+    """Content-hash key matching the build-time transform scheme (Constant/'C:')."""
+    return "g_" + hashlib.md5(("C:" + str(text)).encode("utf-8")).hexdigest()[:10]
 
 
 def t(key, default, *args):
@@ -57,6 +63,19 @@ async def _resolve(chat_id, text):
 async def _wrap(orig, self, *args, **kwargs):
     text = args[0] if args else kwargs.get("text")
     key = getattr(text, "_rkey", None)
+    # Fallback: make ANY plain-text reply changeable via a content-hash key,
+    # even when the call site was not wrapped with t() at build time.
+    if key is None and isinstance(text, str) and text.strip():
+        try:
+            ck = _content_key(text)
+            tagged = TaggedStr(text)
+            tagged._rkey = ck
+            tagged._rdefault = str(text)
+            tagged._rargs = ()
+            text = tagged
+            key = ck
+        except Exception as e:
+            logging.exception(e)
     if key is not None:
         try:
             chat_id = getattr(getattr(self, "chat", None), "id", None)
