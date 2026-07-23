@@ -6,12 +6,22 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 API_ID = int(os.getenv('API_ID', '0'))
 API_HASH = os.getenv('API_HASH', '')
-REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
-REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
-REDIS_PASSWORD = os.getenv('REDIS_PASSWORD') or None
-r = redis.Redis(REDIS_HOST, REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
+REDIS_URL = os.getenv('REDIS_URL')
+if REDIS_URL:
+  r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+else:
+  REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+  REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
+  REDIS_PASSWORD = os.getenv('REDIS_PASSWORD') or None
+  r = redis.Redis(REDIS_HOST, REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
 
-to_config = f"""
+if REDIS_URL:
+  to_config = f"""
+import redis.asyncio as aioredis
+r = aioredis.Redis.from_url({REDIS_URL!r}, decode_responses=True, max_connections=100, health_check_interval=30, socket_keepalive=True)
+"""
+else:
+  to_config = f"""
 import redis.asyncio as aioredis
 r = aioredis.Redis(host='{REDIS_HOST}', port={REDIS_PORT}, password={REDIS_PASSWORD!r}, decode_responses=True, max_connections=100, health_check_interval=30, socket_keepalive=True)
 """
@@ -21,7 +31,7 @@ Loading…
 █▒▒▒▒▒▒▒▒▒''')
 print('\n\n')
 
-ENV_TOKEN = os.getenv('BOT_TOKEN')
+ENV_TOKEN = os.getenv('BOT_TOKEN') or os.getenv('TOKEN')
 ENV_SUDO = os.getenv('SUDO_ID')
 
 try:
