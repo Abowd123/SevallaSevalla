@@ -1,0 +1,240 @@
+import logging
+"""
+
+
+██████╗░██████╗░██████╗░
+██╔══██╗╚════██╗██╔══██╗
+██████╔╝░█████╔╝██║░░██║
+██╔══██╗░╚═══██╗██║░░██║
+██║░░██║██████╔╝██████╔╝
+╚═╝░░╚═╝╚═════╝░╚═════╝░
+
+
+[ = This plugin is a part from R3D Source code = ]
+{"Developer":"https://t.me/yqyqy66"}
+
+"""
+
+import random, re, time, pytz
+from datetime import datetime
+from threading import Thread
+from pyrogram import *
+from pyrogram.enums import *
+from pyrogram.types import *
+from config import *
+from helpers.Ranks import *
+from helpers.Ranks import isLockCommand
+import asyncio
+
+default_welcome = """لا تُسِئ اللفظ وإن ضَاق عليك الرَّد
+
+ɴᴀᴍᴇ ⌯ {الاسم}
+ᴜѕᴇʀɴᴀᴍᴇ ⌯ {اليوزر}
+𝖣𝖺𝗍𝖾 ⌯ {التاريخ}"""
+
+
+@Client.on_message(filters.group & filters.text, group=29)
+async def setWelcomeHandler(c, m):
+    k = await r.get(f"{Dev_Zaid}:botkey")
+    await welcomeFunc(c, m, k)
+
+
+async def welcomeFunc(c, m, k):
+    if not await r.get(f"{m.chat.id}:enable:{Dev_Zaid}"):
+        return
+    if await r.get(f"{m.chat.id}:mute:{Dev_Zaid}") and not await admin_pls(
+        m.from_user.id, m.chat.id
+    ):
+        return
+    if await r.get(f"{m.from_user.id}:mute:{m.chat.id}{Dev_Zaid}"):
+        return
+    if await r.get(f"{m.from_user.id}:mute:{Dev_Zaid}"):
+        return
+    if await r.get(f"{m.chat.id}:addCustom:{m.from_user.id}{Dev_Zaid}"):
+        return
+    if await r.get(f"{m.chat.id}addCustomG:{m.from_user.id}{Dev_Zaid}"):
+        return
+    if await r.get(f"{m.chat.id}:delCustom:{m.from_user.id}{Dev_Zaid}") or await r.get(
+        f"{m.chat.id}:delCustomG:{m.from_user.id}{Dev_Zaid}"
+    ):
+        return
+    text = m.text
+    name = await r.get(f"{Dev_Zaid}:BotName") or "رعد"
+    if text.startswith(f"{name} "):
+        text = text.replace(f"{name} ", "")
+    if await r.get(f"{m.chat.id}:Custom:{m.chat.id}{Dev_Zaid}&text={text}"):
+        text = await r.get(f"{m.chat.id}:Custom:{m.chat.id}{Dev_Zaid}&text={text}")
+    if await r.get(f"Custom:{Dev_Zaid}&text={text}"):
+        text = await r.get(f"Custom:{Dev_Zaid}&text={text}")
+    if await isLockCommand(m.from_user.id, m.chat.id, text):
+        return
+    if text == "الغاء" and await r.get(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}"):
+        await r.delete(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}")
+        return await m.reply(f"{k} ابشر لغيت وضع الترحيب")
+
+    if text == "الغاء" and await r.get(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}"):
+        await r.delete(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}")
+        return await m.reply(f"{k} ابشر لغيت وضع القوانين")
+
+    if await r.get(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}") and await mod_pls(
+        m.from_user.id, m.chat.id
+    ):
+        await r.set(f"{m.chat.id}:CustomRules:{Dev_Zaid}", m.text.html)
+        await r.delete(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}")
+        return await m.reply(f"{k} تم حطيتها")
+
+    if await r.get(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}") and await mod_pls(
+        m.from_user.id, m.chat.id
+    ):
+        await r.set(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}", m.text.html)
+        await r.delete(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}")
+        return await m.reply(f"{k} تم وسوينا الترحيب ياعيني")
+
+    if text == "مسح القوانين":
+        if not await mod_pls(m.from_user.id, m.chat.id):
+            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            await r.delete(f"{m.chat.id}:CustomRules:{Dev_Zaid}")
+            return await m.reply(f"{k} من عيوني مسحت القوانين")
+
+    if text == "وضع قوانين":
+        if not await mod_pls(m.from_user.id, m.chat.id):
+            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            await r.set(f"{m.chat.id}:setRules:{m.from_user.id}{Dev_Zaid}", 1)
+            return await m.reply(f"{k} ارسل القوانين الحين")
+
+    if text == "الترحيب":
+        if not await mod_pls(m.from_user.id, m.chat.id):
+            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            if not await r.get(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}"):
+                return await m.reply(f"`{default_welcome}`")
+            else:
+                welcome = await r.get(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}")
+                return await m.reply(f"`{welcome}`")
+
+    if text == "مسح الترحيب":
+        if not await mod_pls(m.from_user.id, m.chat.id):
+            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            await r.delete(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}")
+            return await m.reply(f"{k} مسحت الترحيب")
+
+    if text == "وضع الترحيب" or text == "ضع الترحيب":
+        if not await mod_pls(m.from_user.id, m.chat.id):
+            return await m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            await r.set(f"{m.chat.id}:setWelcome:{m.from_user.id}{Dev_Zaid}", 1)
+            return await m.reply("""⇜ تمام عيني  
+⇜ ارسل رسالة الترحيب الحين
+
+⇜ ملاحظة تقدر تضيف دوال للترحيب مثلا :
+⇜ اظهار قوانين المجموعه  ⇠ {القوانين}  
+⇜ اظهار اسم العضو ⇠ {الاسم}
+⇜ اظهار اليوزر العضو ⇠ {اليوزر}
+⇜ اظهار اسم المجموعه ⇠ {المجموعه} 
+⇜ اظهار تاريخ دخول العضو ⇠ {التاريخ} 
+⇜ اظهار وقت دخول العضو ⇠ {الوقت} 
+☆
+""")
+
+
+@Client.on_message(filters.new_chat_members, group=4)
+async def welcomeRespons(c: Client, m: Message):
+    if not await r.get(f"{m.chat.id}:enable:{Dev_Zaid}"):
+        return
+    k = await r.get(f"{Dev_Zaid}:botkey")
+    channel = (
+        await r.get(f"{Dev_Zaid}:BotChannel") or "eFFb0t"
+    )
+    logging.debug("member")
+    if not await r.get(f"{m.chat.id}:disableWelcome:{Dev_Zaid}") and m.new_chat_members:
+        if not await r.get(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}"):
+            welcome = default_welcome
+        else:
+            welcome = await r.get(f"{m.chat.id}:CustomWelcome:{Dev_Zaid}")
+        for me in m.new_chat_members:
+            if not me.id == int(Dev_Zaid):
+                if await r.get(f"{m.chat.id}:enableVerify:{Dev_Zaid}") and not await pre_pls(
+                    me.id, m.chat.id
+                ):
+                    return
+                photo = None
+                if not await r.get(f"{m.chat.id}:disableWelcomep:{Dev_Zaid}") and me.photo:
+                    for photo in c.get_chat_photos(me.id, limit=1):
+                        photo = photo.file_id
+                title = m.chat.title
+                name = me.first_name
+                if me.username:
+                    username = f"@{me.username}"
+                else:
+                    username = f"@{channel}"
+                TIME_ZONE = "Asia/Riyadh"
+                ZONE = pytz.timezone(TIME_ZONE)
+                TIME = datetime.now(ZONE)
+                clock = TIME.strftime("%I:%M %p")
+                date = TIME.strftime("%d/%m/%Y")
+                if await r.get(f"{m.chat.id}:CustomRules:{Dev_Zaid}"):
+                    rules = await r.get(f"{m.chat.id}:CustomRules:{Dev_Zaid}")
+                else:
+                    rules = """{k} ممنوع نشر الروابط 
+{k} ممنوع التكلم او نشر صور اباحيه 
+{k} ممنوع اعاده توجيه 
+{k} ممنوع العنصرية بكل انواعها 
+{k} الرجاء احترام المدراء والادمنيه"""
+                w = (
+                    welcome.replace("{القوانين}", rules)
+                    .replace("{الاسم}", name)
+                    .replace("{المجموعه}", title)
+                    .replace("{الوقت}", clock)
+                    .replace("{التاريخ}", date)
+                    .replace("{اليوزر}", username)
+                )
+                if not photo:
+                    return await m.reply(w, disable_web_page_preview=True)
+                else:
+                    return await m.reply_photo(photo, caption=w)
+
+
+"""
+def welcomeRespons(c,m):
+   if not r.get(f'{m.chat.id}:enable:{Dev_Zaid}'):  return
+   k = r.get(f'{Dev_Zaid}:botkey')
+   channel = r.get(f'{Dev_Zaid}:BotChannel') or 'Y88F8'
+   logging.debug("member")
+   if not r.get(f'{m.chat.id}:disableWelcome:{Dev_Zaid}') and m.new_chat_members:
+     if not r.get(f'{m.chat.id}:CustomWelcome:{Dev_Zaid}'):
+        welcome = default_welcome
+     else:
+        welcome = r.get(f'{m.chat.id}:CustomWelcome:{Dev_Zaid}')
+     for me in m.new_chat_members:
+      if not me.id == int(Dev_Zaid):
+        if r.get(f'{m.chat.id}:enableVerify:{Dev_Zaid}') and not pre_pls(me.id,m.chat.id):
+          return
+        title = m.chat.title
+        name = me.first_name
+        if me.username:
+          username = f'@{me.username}'
+        else:
+          username = f'@{channel}'
+        TIME_ZONE = "Asia/Riyadh"
+        ZONE = pytz.timezone(TIME_ZONE)
+        TIME = datetime.now(ZONE)
+        clock = TIME.strftime("%I:%M %p")
+        date = TIME.strftime("%d/%m/%Y")
+        if r.get(f'{m.chat.id}:CustomRules:{Dev_Zaid}'):
+          rules = r.get(f'{m.chat.id}:CustomRules:{Dev_Zaid}')
+        else:
+          rules = '''{k} ممنوع نشر الروابط 
+{k} ممنوع التكلم او نشر صور اباحيه 
+{k} ممنوع اعاده توجيه 
+{k} ممنوع العنصرية بكل انواعها 
+{k} الرجاء احترام المدراء والادمنيه'''
+        w = welcome.replace('{القوانين}',rules).replace('{الاسم}',name).replace('{المجموعه}',title).replace('{الوقت}', clock).replace('{التاريخ}',date).replace('{اليوزر}',username)
+        try:
+          c.send_message(m.chat.id,w, disable_web_page_preview=True,reply_to_message_id=m.id)
+        except Exception:
+          c.send_message(m.chat.id,w, disable_web_page_preview=True)
+        return True
+"""
