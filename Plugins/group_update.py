@@ -20,6 +20,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from .all import list_UwU
 from helpers.Ranks import *
 from helpers.quran import *
@@ -771,21 +772,21 @@ async def EnableAndDisablegroup(c,m):
   if await r.get(f'{m.from_user.id}:mute:{Dev_Zaid}'):  return 
   if text == 'تفعيل':
     if not (await m.chat.get_member(m.from_user.id)).status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] and not await owner_pls(m.from_user.id,m.chat.id):
-       return await m.reply(f'ادري حلم الاعضاء تفعيل البوتات بس اسف')
+       return await m.reply(t('g_371bfd9f0b', 'ادري حلم الاعضاء تفعيل البوتات بس اسف'))
     if await r.get(f'{m.chat.id}:enable:{Dev_Zaid}'):
-        return await m.reply(f'{k} المجموعة مفعلة من قبل يالطيب')
+        return await m.reply(t('g_3a787fa4f3', '{0} المجموعة مفعلة من قبل يالطيب', k))
     if await r.get(f'DisableBot:{Dev_Zaid}'):
        return await c.send_message(m.chat.id, f'{k} تم تعطيل البوت الخدمي من المطور')
     get = await c.get_chat_member(m.chat.id, c.me.id)
     priv = get.privileges
     if not priv.can_manage_chat or not priv.can_delete_messages or not priv.can_pin_messages or not priv.can_invite_users:
-      return await m.reply(f'{k} عطيني كل الصلاحيات بعدين ارسل تفعيل')
+      return await m.reply(t('g_c74b64a95b', '{0} عطيني كل الصلاحيات بعدين ارسل تفعيل', k))
     else:
         await r.set(f'{m.chat.id}:enable:{Dev_Zaid}', 1)
         await r.sadd(f'enablelist:{Dev_Zaid}', m.chat.id)
         await r.set(f'{m.chat.id}:rankOWNER:{m.from_user.id}{Dev_Zaid}', 1)
         await r.sadd(f'{m.chat.id}:listOWNER:{Dev_Zaid}', m.from_user.id)
-        await m.reply(f'{k} من「 {m.from_user.mention} 」\n{k} ابشر تم تفعيل المجموعة ورفعت كل الادمن\n☆', reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('Commands', url=f'https://t.me/{botUsername}?start=Commands')]]))
+        await m.reply(t('g_1797a71e45', '{0} من「 {1} 」\n{2} ابشر تم تفعيل المجموعة ورفعت كل الادمن\n☆', k, m.from_user.mention, k), reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('Commands', url=f'https://t.me/{botUsername}?start=Commands')]]))
         async for member in await m.chat.get_members(filter=ChatMembersFilter.ADMINISTRATORS):
           if not member.user.is_bot and not member.user.is_deleted:
             if member.status == ChatMemberStatus.OWNER:
@@ -824,14 +825,14 @@ async def EnableAndDisablegroup(c,m):
   
   if text == 'تعطيل':
     if not (await m.chat.get_member(m.from_user.id)).status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] and not await owner_pls(m.from_user.id,m.chat.id):
-       return await m.reply('ادري حلم الاعضاء تعطيل البوتات بس اسف')
+       return await m.reply(t('g_da33e5a14c', 'ادري حلم الاعضاء تعطيل البوتات بس اسف'))
     else:
       if not await r.get(f'{m.chat.id}:enable:{Dev_Zaid}'):
         return False
       else:
         await r.delete(f'{m.chat.id}:enable:{Dev_Zaid}', 1)
         await r.srem(f'enablelist:{Dev_Zaid}', m.chat.id)
-        await m.reply(f'{k} من「 {m.from_user.mention} 」\n{k} تم تعطيل المجموعة\n☆')
+        await m.reply(t('g_40a8f9f196', '{0} من「 {1} 」\n{2} تم تعطيل المجموعة\n☆', k, m.from_user.mention, k))
         text = f'{k} من「 {m.from_user.mention} 」\n'
         usrr = '@'+m.from_user.username if m.from_user.username else 'مافيه'
         text += f'{k} يوزره : {usrr}\n'
