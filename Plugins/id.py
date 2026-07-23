@@ -5,6 +5,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from helpers.get_create import get_creation_date
 from pyrogram.raw.functions.users import GetFullUser
@@ -146,22 +147,22 @@ async def get_my_rank(c,m,k):
    if await isLockCommand(m.from_user.id, m.chat.id, text): return
    if text == 'مجموعاتي':
      if not await r.smembers(f'{m.from_user.id}:groups'):
-       return await m.reply(f'{k} ماعندك مجموعات')
+       return await m.reply(t('g_b17d9a2a3c', '{0} ماعندك مجموعات', k))
      else:
        groups = len(await r.smembers(f'{m.from_user.id}:groups'))
-       return await m.reply(f'{k} عدد مجموعاتك ↼ ( {groups} )')
+       return await m.reply(t('g_23b8ebbbb5', '{0} عدد مجموعاتك ↼ ( {1} )', k, groups))
 
    if text == 'انشائي':
       create_date = await get_creation_date(m.from_user.id)
-      return await m.reply(f'{k} الانشاء ( {create_date} )')
+      return await m.reply(t('g_7d07b32098', '{0} الانشاء ( {1} )', k, create_date))
 
    if text == 'الانشاء' and not m.reply_to_message:
       create_date = await get_creation_date(m.from_user.id)
-      return await m.reply(f'{k} الانشاء ( {create_date} )')
+      return await m.reply(t('g_7d07b32098', '{0} الانشاء ( {1} )', k, create_date))
 
    if (text == 'الانشاء' or text == 'انشائه') and m.reply_to_message:
       create_date = await get_creation_date(m.reply_to_message.from_user.id)
-      return await m.reply(f'{k} الانشاء ( {create_date} )')
+      return await m.reply(t('g_7d07b32098', '{0} الانشاء ( {1} )', k, create_date))
 
    if text == 'اسمي':
      return await m.reply(m.from_user.first_name, disable_web_page_preview=True)
@@ -216,17 +217,17 @@ async def get_my_rank(c,m,k):
       if await r.get(f'{m.chat.id}:disableBio:{Dev_Zaid}'):  return
       get = await c.get_chat(m.reply_to_message.from_user.id)
       if not get.bio:
-        return await m.reply(f'{k} ماعنده بايو')
+        return await m.reply(t('g_a19f7bb52b', '{0} ماعنده بايو', k))
       else:
-        return await m.reply(f'`{get.bio}`')
+        return await m.reply(t('g_39f77e8fb4', '`{0}`', get.bio))
 
    if text == 'بايو' and not m.reply_to_message:
       if await r.get(f'{m.chat.id}:disableBio:{Dev_Zaid}'):  return
       get = await c.get_chat(m.from_user.id)
       if not get.bio:
-        return await m.reply(f'{k} ماعندك بايو')
+        return await m.reply(t('g_9e31ab6d85', '{0} ماعندك بايو', k))
       else:
-        return await m.reply(f'`{get.bio}`')
+        return await m.reply(t('g_39f77e8fb4', '`{0}`', get.bio))
 
 
    if text == 'المجموعه' or text == 'المجموعة':
@@ -262,12 +263,12 @@ async def get_my_rank(c,m,k):
        contacts = 0
      else:
        contacts = int(await r.get(f'{m.chat.id}TotalContacts{m.from_user.id}{Dev_Zaid}'))
-     return await m.reply(f'{k} عدد جهاتك ↢ {contacts}')
+     return await m.reply(t('g_04fadd0f9c', '{0} عدد جهاتك ↢ {1}', k, contacts))
 
    if text == 'افتاري':
      if await r.get(f'{m.chat.id}:disableAV:{Dev_Zaid}'): return False
      if not m.from_user.photo:
-       return await m.reply(f'{k} ماقدر اجيب افتارك ارسل نقطه خاص وارجع جرب')
+       return await m.reply(t('g_16c96dd262', '{0} ماقدر اجيب افتارك ارسل نقطه خاص وارجع جرب', k))
      else:
        if m.from_user.username:
          photo = f'http://t.me/{m.from_user.username}'
@@ -284,7 +285,7 @@ async def get_my_rank(c,m,k):
    if text == 'افتار' and m.reply_to_message and m.reply_to_message.from_user:
      if await r.get(f'{m.chat.id}:disableAV:{Dev_Zaid}'): return False
      if not m.reply_to_message.from_user.photo:
-       return await m.reply(f'{k} مقدر اجيب افتاره يمكن حاظرني')
+       return await m.reply(t('g_70a3c023c8', '{0} مقدر اجيب افتاره يمكن حاظرني', k))
      else:
        if m.reply_to_message.from_user.username:
          photo = f'http://t.me/{m.reply_to_message.from_user.username}'
@@ -299,7 +300,7 @@ async def get_my_rank(c,m,k):
        return await m.reply_photo(photo,caption=caption)
 
    if text == 'ايديي':
-     return await m.reply(f'( `{m.from_user.id}` )')
+     return await m.reply(t('g_1011bf4024', '( `{0}` )', m.from_user.id))
 
    if text.startswith('افتار') and len(text.split()) == 2:
      if await r.get(f'{m.chat.id}:disableAV:{Dev_Zaid}'): return False
@@ -324,33 +325,33 @@ async def get_my_rank(c,m,k):
 
    if text == 'رتبتي':
       rank = await get_rank(m.from_user.id, m.chat.id)
-      await m.reply(f'{k} رتبتك ↢ {rank}')
+      await m.reply(t('g_98d0a08d2b', '{0} رتبتك ↢ {1}', k, rank))
 
    if text == 'مسح رسائلي' or text == 'مسح رسايلي':
       msgs = int(await r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}'))
       await r.delete(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}')
-      return await m.reply(f'{k} ابشر مسحت ( {msgs} ) من رسائلك')
+      return await m.reply(t('g_6a9527e50d', '{0} ابشر مسحت ( {1} ) من رسائلك', k, msgs))
 
    if text == 'مسح تكليجاتي':
       if not await r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'):
-        return await m.reply(f'{k} عدد تكليجاتك ↢ 0')
+        return await m.reply(t('g_439fbb532a', '{0} عدد تكليجاتك ↢ 0', k))
       msgs = int(await r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'))
       await r.delete(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}')
-      return await m.reply(f'{k} ابشر مسحت ( {msgs} ) من تكليجاتك')
+      return await m.reply(t('g_d31c762d7d', '{0} ابشر مسحت ( {1} ) من تكليجاتك', k, msgs))
 
    if text == 'تكليجاتي' or text == 'تعديلاتي':
       if not await r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'):
-        return await m.reply(f'{k} عدد تكليجاتك ↢ 0')
+        return await m.reply(t('g_439fbb532a', '{0} عدد تكليجاتك ↢ 0', k))
       msgs = int(await r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'))
-      return await m.reply(f'{k} عدد تكليجاتك ↢ {msgs}')
+      return await m.reply(t('g_229fed32e8', '{0} عدد تكليجاتك ↢ {1}', k, msgs))
 
    if text == 'رسايلي' or text == 'رسائلي':
       msgs = int(await r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}'))
-      return await m.reply(f'{k} عدد رسايلك ↢ {msgs}')
+      return await m.reply(t('g_81f3e34918', '{0} عدد رسايلك ↢ {1}', k, msgs))
       
    if (text == 'رسايله' or text == 'رسائلة') and m.reply_to_message and m.reply_to_message.from_user:
       msgs = int(await r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.reply_to_message.from_user.id}'))
-      return await m.reply(f'{k} عدد رسايله ↢ {msgs}')
+      return await m.reply(t('g_57583828fb', '{0} عدد رسايله ↢ {1}', k, msgs))
 
 
 
@@ -370,40 +371,40 @@ async def get_my_rank(c,m,k):
         rank2 = 'عضو'
       if status == ChatMemberStatus.BANNED:
         rank2 = 'لاقم حظر'
-      await m.reply(f'رتبته:\n{k} في البوت ( {rank} )\n{k} في المجموعة ( {rank2} )\n-')
+      await m.reply(t('g_99571139ef', 'رتبته:\n{0} في البوت ( {1} )\n{2} في المجموعة ( {3} )\n-', k, rank, k, rank2))
 
    if text == 'نقل ملكية' or text == 'نقل ملكيه':
      if await r.get(f'{m.chat.id}:rankGOWNER:{m.from_user.id}{Dev_Zaid}'):
        status = await m.chat.get_member(m.from_user.id).status
        if status == ChatMemberStatus.OWNER:
-          return await m.reply(f'{k} انت مالك القروب')
+          return await m.reply(t('g_808e54aa7b', '{0} انت مالك القروب', k))
        else:
           for member in await m.chat.get_members(filter=ChatMembersFilter.ADMINISTRATORS):
             if member.status == ChatMemberStatus.OWNER:
               if member.user.is_deleted:
-                return await m.reply(f'{k} حساب المالك محذوف')
+                return await m.reply(t('g_3b68c90d28', '{0} حساب المالك محذوف', k))
               else:
                 await r.delete(f'{m.chat.id}:rankGOWNER:{m.from_user.id}{Dev_Zaid}')
                 await r.srem(f'{m.chat.id}:listGOWNER:{Dev_Zaid}', m.from_user.id)
                 await r.set(f'{m.chat.id}:rankGOWNER:{member.user.id}{Dev_Zaid}')
                 await r.sadd(f'{m.chat.id}:listGOWNER:{Dev_Zaid}', member.user.id)
-                return await m.reply(f'「 {member.user.mention} 」\n{k} نقلت له ملكية المجموعة')
+                return await m.reply(t('g_5fa216b231', '「 {0} 」\n{1} نقلت له ملكية المجموعة', member.user.mention, k))
 
    if text == "مسح المتفاعلين" or text == "تصفير المتفاعلين":
      if not await owner_pls(m.from_user.id, m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 المالك 〗فقط .')
+       return await m.reply(t('g_7d3d10fef1', '{0} عذراً الامر يخص ↤〖 المالك 〗فقط .', k))
      else:
        keys = await r.keys(f"{Dev_Zaid}{m.chat.id}:TotalMsgs:*")
        for _ in keys: await r.delete(_)
-       return await m.reply(f"{k} ابشر مسحت كل المتفاعلين")
+       return await m.reply(t('g_e19ddff65f', '{0} ابشر مسحت كل المتفاعلين', k))
 
    if text == "مسح القروبات" or text == "تصفير القروبات":
      if not await devp_pls(m.from_user.id, m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 Dev🎖️ 〗فقط .')
+       return await m.reply(t('g_2aac5c8b2a', '{0} عذراً الامر يخص ↤〖 Dev🎖️ 〗فقط .', k))
      else:
        keys = await r.keys(f"{Dev_Zaid}:TotalGroupMsgs:*")
        for _ in keys: await r.delete(_)
-       return await m.reply(f"{k} ابشر مسحت توب القروبات")
+       return await m.reply(t('g_69a116311e', '{0} ابشر مسحت توب القروبات', k))
 
    if text == "ترتيبي" or text == "تفاعلي":
      users = await r.keys(f"{Dev_Zaid}{m.chat.id}:TotalMsgs:*")
@@ -419,7 +420,7 @@ async def get_my_rank(c,m,k):
      ids = [i["id"] for i in top]
      rank = ids.index(m.from_user.id) + 1
      msgs = int(await r.get(f"{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}"))
-     return await m.reply(f"{k} ترتيبك بالمتفاعلين ↢ {rank}\n{k} رسائلك بالتفاعل ↢ {msgs:,}\n-")
+     return await m.reply(t('g_75b4928da7', '{0} ترتيبك بالمتفاعلين ↢ {1}\n{2} رسائلك بالتفاعل ↢ {3:,}\n-', k, rank, k, msgs))
 
    if text == "المتفاعلين" or text == "توب المتفاعلين":
         users = await r.keys(f"{Dev_Zaid}{m.chat.id}:TotalMsgs:*")
@@ -510,7 +511,7 @@ async def get_my_rank(c,m,k):
 '''
            return await m.reply(text, disable_web_page_preview=True)
        except Exception:
-           return await m.reply(f'{k} العضو مو بالمجموعة')
+           return await m.reply(t('g_92eb0a0d77', '{0} العضو مو بالمجموعة', k))
 
    if text.startswith('كشف') and len(text.split()) > 1 and 'tg://user?id=' in m.text.html:
        logging.debug(m.text.html)
@@ -637,9 +638,9 @@ async def get_my_rank(c,m,k):
    if text == 'صلاحياته' and m.reply_to_message and m.reply_to_message.from_user:
       get = await m.chat.get_member(m.reply_to_message.from_user.id)
       if not get.status in [ChatMemberStatus.ADMINISTRATOR,ChatMemberStatus.OWNER]:
-         return await m.reply(f'{k} هو العضو وما عنده صلاحيات')
+         return await m.reply(t('g_f787994acb', '{0} هو العضو وما عنده صلاحيات', k))
       if get.status == ChatMemberStatus.OWNER:
-         return await m.reply(f'{k} هو المالك وعنده كل الصلاحيات')
+         return await m.reply(t('g_0f3b500d8d', '{0} هو المالك وعنده كل الصلاحيات', k))
       if get.status == ChatMemberStatus.ADMINISTRATOR:
          p = get.privileges
          p1 = "✔️" if p.can_manage_chat else "✖️"
@@ -667,9 +668,9 @@ async def get_my_rank(c,m,k):
    if text == 'صلاحياتي':
       get = await m.chat.get_member(m.from_user.id)
       if not get.status in [ChatMemberStatus.ADMINISTRATOR,ChatMemberStatus.OWNER]:
-         return await m.reply(f'{k} انت العضو وماعندك صلاحيات')
+         return await m.reply(t('g_c06e442e14', '{0} انت العضو وماعندك صلاحيات', k))
       if get.status == ChatMemberStatus.OWNER:
-         return await m.reply(f'{k} انت المالك وعندك كل الصلاحيات')
+         return await m.reply(t('g_d24c5b9032', '{0} انت المالك وعندك كل الصلاحيات', k))
       if get.status == ChatMemberStatus.ADMINISTRATOR:
          p = get.privileges
          p1 = "✔️" if p.can_manage_chat else "✖️"
@@ -697,74 +698,74 @@ async def get_my_rank(c,m,k):
 
    if await r.get(f'{m.chat.id}:addCustomID:{m.from_user.id}{Dev_Zaid}') and text == 'الغاء':
      await r.delete(f'{m.chat.id}:addCustomID:{m.from_user.id}{Dev_Zaid}')
-     await m.reply(f'{k} ابشر تم الغاء تعيين الايدي ')
+     await m.reply(t('g_5df0efa0b7', '{0} ابشر تم الغاء تعيين الايدي ', k))
      return
 
    if await r.get(f'{m.chat.id}:addCustomIDG:{m.from_user.id}{Dev_Zaid}') and text == 'الغاء':
      await r.delete(f'{m.chat.id}:addCustomIDG:{m.from_user.id}{Dev_Zaid}')
-     await m.reply(f'{k} ابشر تم الغاء تعيين الايدي عام')
+     await m.reply(t('g_78226bb60a', '{0} ابشر تم الغاء تعيين الايدي عام', k))
      return
 
    if await r.get(f'{m.chat.id}:addCustomIDG:{m.from_user.id}{Dev_Zaid}') and await dev_pls(m.from_user.id, m.chat.id):
       await r.set(f'customID:{Dev_Zaid}', m.text)
-      await m.reply(f'{k} وسوينا الايدي العام\n{k} يمديك تجرب شكل الايدي الجديد الحين')
+      await m.reply(t('g_2e4b47b06e', '{0} وسوينا الايدي العام\n{1} يمديك تجرب شكل الايدي الجديد الحين', k, k))
       await r.delete(f'{m.chat.id}:addCustomIDG:{m.from_user.id}{Dev_Zaid}')
       return
 
    if await r.get(f'{m.chat.id}:addCustomID:{m.from_user.id}{Dev_Zaid}') and await mod_pls(m.from_user.id, m.chat.id):
       await r.set(f'{m.chat.id}:customID:{Dev_Zaid}', m.text)
-      await m.reply(f'{k} وسوينا الايدي\n{k} يمديك تجرب شكل الايدي الجديد الحين')
+      await m.reply(t('g_f2aaf84ac3', '{0} وسوينا الايدي\n{1} يمديك تجرب شكل الايدي الجديد الحين', k, k))
       await r.delete(f'{m.chat.id}:addCustomID:{m.from_user.id}{Dev_Zaid}')
       return
 
    if text == 'مسح الايدي':
       if not await mod_pls(m.from_user.id, m.chat.id):
-        return await m.reply(f'{k} عذراً الامر يخص ↤〖 المدير 〗فقط .')
+        return await m.reply(t('g_d69076d2ab', '{0} عذراً الامر يخص ↤〖 المدير 〗فقط .', k))
       if not await r.get(f'{m.chat.id}:customID:{Dev_Zaid}'):
-        return await m.reply(f'{k} الايدي مو معدل')
+        return await m.reply(t('g_204d412e25', '{0} الايدي مو معدل', k))
       else:
-        await m.reply(f'{k} ابشر مسحت الايدي')
+        await m.reply(t('g_bd3fe2a91f', '{0} ابشر مسحت الايدي', k))
         await r.delete(f'{m.chat.id}:customID:{Dev_Zaid}')
         return
 
    if text == 'مسح الايدي العام' or text == 'مسح الايدي عام':
       if not await dev2_pls(m.from_user.id, m.chat.id):
-        return await m.reply(f'{k} عذراً الامر يخص ↤〖 Dev²🎖 〗فقط .')
+        return await m.reply(t('g_1b5bc04eb0', '{0} عذراً الامر يخص ↤〖 Dev²🎖 〗فقط .', k))
       if not await r.get(f'customID:{Dev_Zaid}'):
-        return await m.reply(f'{k} الايدي العام مو معدل')
+        return await m.reply(t('g_ca89e0772c', '{0} الايدي العام مو معدل', k))
       else:
-        await m.reply(f'{k} ابشر مسحت الايدي العام')
+        await m.reply(t('g_3823cfcccc', '{0} ابشر مسحت الايدي العام', k))
         await r.delete(f'customID:{Dev_Zaid}')
 
    if text == 'الايدي':
       if not await mod_pls(m.from_user.id, m.chat.id):
         return
       if not await r.get(f'{m.chat.id}:customID:{Dev_Zaid}'):
-        return await m.reply(f'{k} الايدي مو معدل')
+        return await m.reply(t('g_204d412e25', '{0} الايدي مو معدل', k))
       else:
         id = await r.get(f'{m.chat.id}:customID:{Dev_Zaid}')
-        return await m.reply(f'`{id}`')
+        return await m.reply(t('g_39f77e8fb4', '`{0}`', id))
 
    if text == 'الايدي العام':
       if not await dev2_pls(m.from_user.id, m.chat.id):
         return
       if not await r.get(f'customID:{Dev_Zaid}'):
-        return await m.reply(f'{k} الايدي العام مو معدل')
+        return await m.reply(t('g_ca89e0772c', '{0} الايدي العام مو معدل', k))
       else:
         id = await r.get(f'customID:{Dev_Zaid}')
-        return await m.reply(f'`{id}`')
+        return await m.reply(t('g_39f77e8fb4', '`{0}`', id))
 
    if text == 'تغيير الايدي':
       if not await mod_pls(m.from_user.id, m.chat.id):
-        return await m.reply(f'{k} عذراً الامر يخص ↤〖 المدير 〗فقط .')
+        return await m.reply(t('g_d69076d2ab', '{0} عذراً الامر يخص ↤〖 المدير 〗فقط .', k))
       else:
         id = random.choice(custom_ids)
         await r.set(f'{m.chat.id}:customID:{Dev_Zaid}', id)
-        await m.reply(f'{k} وسوينا الايدي\n{k} يمديك تجرب شكل الايدي الجديد الحين')
+        await m.reply(t('g_f2aaf84ac3', '{0} وسوينا الايدي\n{1} يمديك تجرب شكل الايدي الجديد الحين', k, k))
 
    if text == 'تعيين الايدي':
       if not await mod_pls(m.from_user.id, m.chat.id):
-        return await m.reply(f'{k} عذراً الامر يخص ↤〖 المدير 〗فقط .')
+        return await m.reply(t('g_d69076d2ab', '{0} عذراً الامر يخص ↤〖 المدير 〗فقط .', k))
       reply = '''
 تمام , الحين ارسل شكل الايدي الجديد
 
@@ -789,7 +790,7 @@ async def get_my_rank(c,m,k):
       return
    if text == 'تعيين الايدي عام':
       if not await dev2_pls(m.from_user.id, m.chat.id):
-        return await m.reply(f'{k} عذراً الامر يخص ↤〖 Dev²🎖 〗فقط .')
+        return await m.reply(t('g_1b5bc04eb0', '{0} عذراً الامر يخص ↤〖 Dev²🎖 〗فقط .', k))
       reply = '''
 تمام , الحين ارسل شكل الايدي الجديد
 
@@ -815,73 +816,73 @@ async def get_my_rank(c,m,k):
 
    if text == 'تفعيل الايدي':
      if not await admin_pls(m.from_user.id,m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 الادمن 〗فقط .')
+       return await m.reply(t('g_55e29cfbc8', '{0} عذراً الامر يخص ↤〖 الادمن 〗فقط .', k))
      else:
        if not await r.get(f'{m.chat.id}:disableID:{Dev_Zaid}'):
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} الايدي مفعل من قبل')
+         return await m.reply(t('g_c74d5eec57', '{0} بواسطة ↤ {1}\n{2} الايدي مفعل من قبل', k, m.from_user.mention, k))
        else:
          await r.delete(f'{m.chat.id}:disableID:{Dev_Zaid}')
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} ابشر فعلت الايدي')
+         return await m.reply(t('g_0250851c06', '{0} بواسطة ↤ {1}\n{2} ابشر فعلت الايدي', k, m.from_user.mention, k))
 
    if text == 'تعطيل الايدي':
      if not await admin_pls(m.from_user.id,m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 الادمن 〗فقط .')
+       return await m.reply(t('g_55e29cfbc8', '{0} عذراً الامر يخص ↤〖 الادمن 〗فقط .', k))
      else:
        if await r.get(f'{m.chat.id}:disableID:{Dev_Zaid}'):
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} الايدي معطل من قبل')
+         return await m.reply(t('g_e542510cc5', '{0} بواسطة ↤ {1}\n{2} الايدي معطل من قبل', k, m.from_user.mention, k))
        else:
          await r.set(f'{m.chat.id}:disableID:{Dev_Zaid}',1)
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} ابشر عطلت الايدي')
+         return await m.reply(t('g_c95c6cb8ea', '{0} بواسطة ↤ {1}\n{2} ابشر عطلت الايدي', k, m.from_user.mention, k))
 
    if text == 'تفعيل افتاري':
      if not await admin_pls(m.from_user.id,m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 الادمن 〗فقط .')
+       return await m.reply(t('g_55e29cfbc8', '{0} عذراً الامر يخص ↤〖 الادمن 〗فقط .', k))
      else:
        if not await r.get(f'{m.chat.id}:disableAV:{Dev_Zaid}'):
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} افتار مفعل من قبل')
+         return await m.reply(t('g_c652426ea1', '{0} بواسطة ↤ {1}\n{2} افتار مفعل من قبل', k, m.from_user.mention, k))
        else:
          await r.delete(f'{m.chat.id}:disableAV:{Dev_Zaid}')
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} ابشر فعلت افتار')
+         return await m.reply(t('g_c37982b6dc', '{0} بواسطة ↤ {1}\n{2} ابشر فعلت افتار', k, m.from_user.mention, k))
 
    if text == 'تعطيل افتاري':
      if not await admin_pls(m.from_user.id,m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 الادمن 〗فقط .')
+       return await m.reply(t('g_55e29cfbc8', '{0} عذراً الامر يخص ↤〖 الادمن 〗فقط .', k))
      else:
        if await r.get(f'{m.chat.id}:disableAV:{Dev_Zaid}'):
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} افتار معطل من قبل')
+         return await m.reply(t('g_e492ba4d6c', '{0} بواسطة ↤ {1}\n{2} افتار معطل من قبل', k, m.from_user.mention, k))
        else:
          await r.set(f'{m.chat.id}:disableAV:{Dev_Zaid}',1)
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} ابشر عطلت افتار')
+         return await m.reply(t('g_bfa0eb0499', '{0} بواسطة ↤ {1}\n{2} ابشر عطلت افتار', k, m.from_user.mention, k))
 
    if text == 'تعطيل الايدي بالصوره':
      if not await admin_pls(m.from_user.id,m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 الادمن 〗فقط .')
+       return await m.reply(t('g_55e29cfbc8', '{0} عذراً الامر يخص ↤〖 الادمن 〗فقط .', k))
      else:
        if await r.get(f'{m.chat.id}:disableIDPHOTO:{Dev_Zaid}'):
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} الايدي بالصوره معطل من قبل')
+         return await m.reply(t('g_6581dd60c3', '{0} بواسطة ↤ {1}\n{2} الايدي بالصوره معطل من قبل', k, m.from_user.mention, k))
        else:
          await r.set(f'{m.chat.id}:disableIDPHOTO:{Dev_Zaid}',1)
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} ابشر عطلت الايدي بالصوره')
+         return await m.reply(t('g_fa4cc8a59b', '{0} بواسطة ↤ {1}\n{2} ابشر عطلت الايدي بالصوره', k, m.from_user.mention, k))
 
    if text == 'تفعيل الايدي بالصوره':
      if not await admin_pls(m.from_user.id,m.chat.id):
-       return await m.reply(f'{k} عذراً الامر يخص ↤〖 الادمن 〗فقط .')
+       return await m.reply(t('g_55e29cfbc8', '{0} عذراً الامر يخص ↤〖 الادمن 〗فقط .', k))
      else:
        if not await r.get(f'{m.chat.id}:disableIDPHOTO:{Dev_Zaid}'):
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} الايدي بالصوره مفعل من قبل')
+         return await m.reply(t('g_b44ca3a7ea', '{0} بواسطة ↤ {1}\n{2} الايدي بالصوره مفعل من قبل', k, m.from_user.mention, k))
        else:
          await r.delete(f'{m.chat.id}:disableIDPHOTO:{Dev_Zaid}')
-         return await m.reply(f'{k} بواسطة ↤ {m.from_user.mention}\n{k} ابشر فعلت الايدي بالصوره')
+         return await m.reply(t('g_6716cad386', '{0} بواسطة ↤ {1}\n{2} ابشر فعلت الايدي بالصوره', k, m.from_user.mention, k))
 
    if text == "لقبي":
      title = await m.chat.get_member(m.from_user.id).custom_title
      if not title:
-       return await m.reply(f"{k} ماعندك لقب")
+       return await m.reply(t('g_ea97b2f4f2', '{0} ماعندك لقب', k))
      else:
-       return await m.reply(f"{k} لقبك ↢ ( {title} )")
+       return await m.reply(t('g_ceede6f110', '{0} لقبك ↢ ( {1} )', k, title))
 
    if (text == 'ايدي' or text.lower() == 'ا') and m.reply_to_message and m.reply_to_message.from_user:
-       return await m.reply(f'الايدي ↢ ( `{m.reply_to_message.from_user.id}` )')
+       return await m.reply(t('g_ec9bcb6b4f', 'الايدي ↢ ( `{0}` )', m.reply_to_message.from_user.id))
 
    if (text == 'ايدي' or text.lower() == 'id') and not m.reply_to_message:
       if await r.get(f'{m.chat.id}:disableID:{Dev_Zaid}'):  return
