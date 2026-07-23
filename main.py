@@ -6,11 +6,14 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 API_ID = int(os.getenv('API_ID', '0'))
 API_HASH = os.getenv('API_HASH', '')
-r = redis.Redis('localhost',decode_responses=True)
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD') or None
+r = redis.Redis(REDIS_HOST, REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
 
-to_config = """
+to_config = f"""
 import redis.asyncio as aioredis
-r = aioredis.Redis(host='localhost', decode_responses=True, max_connections=100, health_check_interval=30, socket_keepalive=True)
+r = aioredis.Redis(host='{REDIS_HOST}', port={REDIS_PORT}, password={REDIS_PASSWORD!r}, decode_responses=True, max_connections=100, health_check_interval=30, socket_keepalive=True)
 """
 
 print('''
@@ -18,15 +21,21 @@ Loading…
 █▒▒▒▒▒▒▒▒▒''')
 print('\n\n')
 
+ENV_TOKEN = os.getenv('BOT_TOKEN')
+ENV_SUDO = os.getenv('SUDO_ID')
+
 try:
   from information import *
   Dev_Zaid = token.split(':')[0]
   r.set(f'{Dev_Zaid}botowner', owner_id)
 except Exception as e:
   with open ('information.py','w+') as www:
-     token = input ('[+] Enter the bot token : ')
+     token = ENV_TOKEN or input ('[+] Enter the bot token : ')
      Dev_Zaid = token.split(':')[0]
-     if not r.get(f'{Dev_Zaid}botowner'):
+     if ENV_SUDO:
+       owner_id = int(ENV_SUDO)
+       r.set(f'{Dev_Zaid}botowner', owner_id)
+     elif not r.get(f'{Dev_Zaid}botowner'):
        owner_id = int(input('[+] Enter SUDO ID : '))
        r.set(f'{Dev_Zaid}botowner', owner_id)
      else:
@@ -38,7 +47,7 @@ except Exception as e:
 
 
 if not r.get(f'{Dev_Zaid}botowner'):
-    owner_id = int(input('[+] Enter SUDO ID : '))
+    owner_id = int(ENV_SUDO) if ENV_SUDO else int(input('[+] Enter SUDO ID : '))
     r.set(f'{Dev_Zaid}botowner', owner_id)
 else:
     owner_id = int(r.get(f'{Dev_Zaid}botowner'))
