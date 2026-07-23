@@ -6,12 +6,11 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 API_ID = int(os.getenv('API_ID', '0'))
 API_HASH = os.getenv('API_HASH', '')
-REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
-r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+r = redis.Redis('localhost',decode_responses=True)
 
-to_config = f"""
+to_config = """
 import redis.asyncio as aioredis
-r = aioredis.Redis.from_url('{REDIS_URL}', decode_responses=True, max_connections=100, health_check_interval=30, socket_keepalive=True)
+r = aioredis.Redis(host='localhost', decode_responses=True, max_connections=100, health_check_interval=30, socket_keepalive=True)
 """
 
 print('''
@@ -19,14 +18,30 @@ Loading…
 █▒▒▒▒▒▒▒▒▒''')
 print('\n\n')
 
-token = os.getenv('TOKEN', '')
-owner_id_env = os.getenv('SUDO_ID', '')
-if not token or not owner_id_env:
-  raise SystemExit('[!] Set TOKEN and SUDO_ID as environment variables before starting the bot.')
+try:
+  from information import *
+  Dev_Zaid = token.split(':')[0]
+  r.set(f'{Dev_Zaid}botowner', owner_id)
+except Exception as e:
+  with open ('information.py','w+') as www:
+     token = input ('[+] Enter the bot token : ')
+     Dev_Zaid = token.split(':')[0]
+     if not r.get(f'{Dev_Zaid}botowner'):
+       owner_id = int(input('[+] Enter SUDO ID : '))
+       r.set(f'{Dev_Zaid}botowner', owner_id)
+     else:
+        owner_id = int(r.get(f'{Dev_Zaid}botowner'))
+     text = 'token = "{}"\nowner_id = {}'
+     www.write(text.format(token, owner_id))
 
-Dev_Zaid = token.split(':')[0]
-owner_id = int(owner_id_env)
-r.set(f'{Dev_Zaid}botowner', owner_id)
+    
+
+
+if not r.get(f'{Dev_Zaid}botowner'):
+    owner_id = int(input('[+] Enter SUDO ID : '))
+    r.set(f'{Dev_Zaid}botowner', owner_id)
+else:
+    owner_id = int(r.get(f'{Dev_Zaid}botowner'))
 print('''
 10% 
 ███▒▒▒▒▒▒▒ ''')
