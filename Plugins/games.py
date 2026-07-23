@@ -14,6 +14,7 @@ from pyrogram.types import *
 from config import *
 from helpers.Ranks import *
 from helpers.games import *
+from helpers.replies import t
 from helpers.Ranks import isLockCommand
 import asyncio
 users_demon = {}
@@ -47,14 +48,10 @@ async def diceFunc(c,m):
         else:
            floos = ra
            await r.set(f'{m.from_user.id}:Floos',ra)
-        return await m.reply(f'''
-صح عليك فزت **[بالنرد]({m.link})** ⁪⁬⁪⁬⁮⁪⁬⁪⁬⁮✔
-💸فلوسك: `{floos}` ريال
-☆
-''', disable_web_page_preview=True)
+        return await m.reply(t('g_204a525dac', '\nصح عليك فزت **[بالنرد]({0})** \u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\u206c\u206e✔\n💸فلوسك: `{1}` ريال\n☆\n', m.link, floos), disable_web_page_preview=True)
      else:
         await asyncio.sleep(3)
-        return await m.reply(f"{k} للأسف خسرت بالنرد")
+        return await m.reply(t('g_edf55e7bcc', '{0} للأسف خسرت بالنرد', k))
    
 
 async def gamesFunc(c,m,k,channel):
@@ -80,31 +77,31 @@ async def gamesFunc(c,m,k,channel):
    if await r.get(f'{m.from_user.id}:toTrans:{m.chat.id}{Dev_Zaid}'):
       if not re.findall('[0-9]+', text): 
         await r.delete(f'{m.from_user.id}:toTrans:{m.chat.id}{Dev_Zaid}')
-        return await m.reply(f'{k} لازم يكون ارقام')
+        return await m.reply(t('g_cbb26c4117', '{0} لازم يكون ارقام', k))
       acc_id = int(re.findall('[0-9]+', text)[0])
       acc_id_from = int(await r.get(f'{m.from_user.id}:bankID'))
       if acc_id == acc_id_from:
         await r.delete(f'{m.from_user.id}:toTrans:{m.chat.id}{Dev_Zaid}')
-        return await m.reply(f'{k} مافيك تحول لنفسك')
+        return await m.reply(t('g_01f5b05a03', '{0} مافيك تحول لنفسك', k))
       floos_to_trans = int(await r.get(f'{m.from_user.id}:toTrans:{m.chat.id}{Dev_Zaid}'))
       await r.delete(f'{m.from_user.id}:toTrans:{m.chat.id}{Dev_Zaid}')
       if not await r.sismember('BankList', m.from_user.id):
-        return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+        return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
       if not await r.get(f'{m.from_user.id}:Floos'):
         floos = 0
       else:
         floos = int(await r.get(f'{m.from_user.id}:Floos'))
       if floos_to_trans > floos:
-        return await m.reply(f'{k} فلوسك ماتكفي')
+        return await m.reply(t('g_721c0a5c4d', '{0} فلوسك ماتكفي', k))
       else:
         if not await r.get(f'{acc_id}:getAccBank'):
-          return await m.reply(f'{k} مافي حساب بنكي كذا')
+          return await m.reply(t('g_dcde9360c0', '{0} مافي حساب بنكي كذا', k))
         else:
           id_to = int(await r.get(f'{acc_id}:getAccBank'))
           if not await r.sismember('BankList', id_to):
-            return await m.reply(f'{k} ماعنده حساب بأي بنك')
+            return await m.reply(t('g_7f1c150318', '{0} ماعنده حساب بأي بنك', k))
           if await r.get(f'{id_to}:bankName'):
-            name_to = await r.get(f'{id_to}:bankName')[:10]
+            name_to = (await r.get(f'{id_to}:bankName'))[:10]
           else:
             gett = await c.get_users(int(await r.get(f'{acc_id}:getAccBank')))
             name_to = gett.first_name[:10]
@@ -115,7 +112,7 @@ async def gamesFunc(c,m,k,channel):
             await r.set(f'{m.from_user.id}:Floos',floos-floos_to_trans)
           bank_to = await r.get(f'{id_to}:bankType')
           bank_from = await r.get(f'{m.from_user.id}:bankType')
-          name_from = await r.get(f'{m.from_user.id}:bankName')[:10] or m.from_user.first_name[:10]
+          name_from = (await r.get(f'{m.from_user.id}:bankName'))[:10] or m.from_user.first_name[:10]
           mention_from = f'[{name_from}](tg://user?id={m.from_user.id})'
           mention_to = f'[{name_to}](tg://user?id={id_to})'
           if not await r.get(f'{id_to}:Floos'):
@@ -152,7 +149,7 @@ async def gamesFunc(c,m,k,channel):
        return await m.reply(f'{k} مافيه بنك بهالاسم')
      '''
      if not text in ['الاهلي','راجحي', 'الانماء']:
-       return await m.reply(f'{k} مافيه بنك بهالاسم')
+       return await m.reply(t('g_d5d040ead8', '{0} مافيه بنك بهالاسم', k))
      card = random.choice(['الاهلي كارد','الراجحي كارد','الإنماء كارد','مدى كارد'])
      if text == 'الاهلي':
         await r.set(f'{m.from_user.id}:bankType', 'الاهلي')
@@ -189,13 +186,13 @@ async def gamesFunc(c,m,k,channel):
      fff = floos + floos_to_add
      await r.set(f'{m.from_user.id}:Floos',fff)
      await r.set(f'{m.from_user.id}:bankName',m.from_user.first_name)
-     await m.reply(f'• وسوينا لك حساب في بنك {text}\n\n{k} رقم حسابك ↢ ( `{id}` )\n{k} نوع البطاقة ↢ ( {card} )\n{k} فلوسك ↢ ( {fff} ريال 💸 )')
+     await m.reply(t('g_4d0b99f4a1', '• وسوينا لك حساب في بنك {0}\n\n{1} رقم حسابك ↢ ( `{2}` )\n{3} نوع البطاقة ↢ ( {4} )\n{5} فلوسك ↢ ( {6} ريال 💸 )', text, k, id, k, card, k, fff))
      if await r.get(f'DevGroup:{Dev_Zaid}'):
          await c.send_message(int(await r.get(f'DevGroup:{Dev_Zaid}')),
            f' ⟨ {m.from_user.mention} ⟩\n{k} سوى حساب بالبنك\n{k} رقم حسابه ( `{id}` )')
    
    if text == 'توب' or text == 'التوب':
-     await m.reply(f'{k} اهلين فيك في قوائم التوب\nللاستفسار - @{channel}',
+     await m.reply(t('g_b1466a286f', '{0} اهلين فيك في قوائم التوب\nللاستفسار - @{1}', k, channel),
      reply_markup=InlineKeyboardMarkup (
        [
        [
@@ -210,7 +207,7 @@ async def gamesFunc(c,m,k,channel):
    
    if text == 'توب الفلوس':
      if not await r.smembers('BankList'):
-       return await m.reply(f'{k} مافيه حسابات بالبنك')
+       return await m.reply(t('g_c1b358ae5b', '{0} مافيه حسابات بالبنك', k))
      else:
        rep = InlineKeyboardMarkup (
          [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
@@ -235,7 +232,7 @@ async def gamesFunc(c,m,k,channel):
             ccc += 1
             id = int(user)
             if await r.get(f'{id}:bankName'):
-              name = await r.get(f'{id}:bankName')[:10]
+              name = (await r.get(f'{id}:bankName'))[:10]
             else:
               try:
                 name = await c.get_chat(id).first_name
@@ -275,7 +272,7 @@ async def gamesFunc(c,m,k,channel):
    
    if text == 'توب الحراميه' or text == 'توب الحرامية' or text == 'توب الزرف':
      if not await r.smembers('BankList'):
-       return await m.reply(f'{k} مافيه حسابات بالبنك')
+       return await m.reply(t('g_c1b358ae5b', '{0} مافيه حسابات بالبنك', k))
      else:
        rep = InlineKeyboardMarkup (
          [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
@@ -300,7 +297,7 @@ async def gamesFunc(c,m,k,channel):
             ccc += 1
             id = int(user)
             if await r.get(f'{id}:bankName'):
-              name = await r.get(f'{id}:bankName')[:10]
+              name = (await r.get(f'{id}:bankName'))[:10]
             else:
               try:
                 name = await c.get_chat(id).first_name
@@ -339,7 +336,7 @@ async def gamesFunc(c,m,k,channel):
    
    if text == 'زواجات' or text == 'توب زواجات' or text == 'توب الزواجات':
      if not await r.smembers(f'{m.chat.id}:zwag:{Dev_Zaid}'):
-        return await m.reply(f'{k} محد متزوج بالقروب')
+        return await m.reply(t('g_a1725ff0f7', '{0} محد متزوج بالقروب', k))
      else:
         #await r.sadd(f'{m.chat.id}:zwag:{Dev_Zaid}', f'{m.reply_to_message.from_user.id}--{m.from_user.id}&&floos={floos}')
         users = []
@@ -350,7 +347,7 @@ async def gamesFunc(c,m,k,channel):
            money = int(marriage.split('&&floos=')[1])
            ccc += 1
            if await r.get(f'{user_id_1}:bankName'):
-              name_1 = await r.get(f'{user_id_1}:bankName')[:10]
+              name_1 = (await r.get(f'{user_id_1}:bankName'))[:10]
            else:
               try:
                 name_1 = await c.get_chat(id).first_name[:10]
@@ -359,7 +356,7 @@ async def gamesFunc(c,m,k,channel):
                 name_1 = 'INVALID_NAME'
                 await r.set(f'{user_id_1}:bankName',name_1)
            if await r.get(f'{user_id_2}:bankName'):
-              name_2 = await r.get(f'{user_id_2}:bankName')[:10]
+              name_2 = (await r.get(f'{user_id_2}:bankName'))[:10]
            else:
               try:
                 name_2 = await c.get_chat(id).first_name[:10]
@@ -399,7 +396,7 @@ async def gamesFunc(c,m,k,channel):
             ccc += 1
             id = int(user)
             if await r.get(f'{id}:bankName'):
-              name = await r.get(f'{id}:bankName')[:10]
+              name = (await r.get(f'{id}:bankName'))[:10]
             else:
               try:
                 name = await c.get_chat(id).first_name
@@ -430,7 +427,7 @@ async def gamesFunc(c,m,k,channel):
             ccc += 1
             id = int(user)
             if await r.get(f'{id}:bankName'):
-              name = await r.get(f'{id}:bankName')[:10]
+              name = (await r.get(f'{id}:bankName'))[:10]
             else:
               try:
                 name = await c.get_chat(id).first_name
@@ -462,7 +459,7 @@ async def gamesFunc(c,m,k,channel):
    
    if text == 'حسابي':
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      else:
        card = await r.get(f'{m.from_user.id}:bankCard')
        id = int(await r.get(f'{m.from_user.id}:bankID'))
@@ -475,39 +472,34 @@ async def gamesFunc(c,m,k,channel):
          name = await r.get(f'{m.from_user.id}:bankName')
        else:
          name = m.from_user.first_name
-       await m.reply(f'''{k} الاسم ↢ ⁪⁬⁪⁬⁮⁪⁬⁪⁬⁮{name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-{k} الحساب ↢ `{id}`
-{k} بنك ↢ ( {bank} )
-{k} نوع ↢ ( {card} )
-{k} الرصيد ↢ ( {floos} ريال 💸 )
-☆''')
+       await m.reply(t('g_9bf4a8693d', '{0} الاسم ↢ \u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\u206c\u206e{1}\n{2} الحساب ↢ `{3}`\n{4} بنك ↢ ( {5} )\n{6} نوع ↢ ( {7} )\n{8} الرصيد ↢ ( {9} ريال 💸 )\n☆', k, name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_",""), k, id, k, bank, k, card, k, floos))
    
    if text == 'انشاء حساب بنكي':
      if await r.sismember('BankList', m.from_user.id):
        bank = await r.get(f'{m.from_user.id}:bankType')
        acc_id = int(await r.get(f'{m.from_user.id}:bankID'))
-       return await m.reply(f'{k} عندك حساب في بنك {bank}\n\n{k} لتفاصيل اكثر اكتب\n{k} `حساب {acc_id}`')
+       return await m.reply(t('g_637afeae84', '{0} عندك حساب في بنك {1}\n\n{2} لتفاصيل اكثر اكتب\n{3} `حساب {4}`', k, bank, k, k, acc_id))
      else:
        await r.set(f'{m.from_user.id}:createBank:{m.chat.id}',1,ex=300)
        '''
        return await m.reply(f'– عشان تسوي حساب لازم تختار بنك\n\n{k} `الاهلي`\n{k} `راجحي`\n{k} `الانماء`\n{k} `عبد الفتاح السيسي`\n\n- اضغط للنسخ')
        '''
-       return await m.reply(f'– عشان تسوي حساب لازم تختار بنك\n\n{k} `الاهلي`\n{k} `راجحي`\n{k} `الانماء`\n\n- اضغط للنسخ')
+       return await m.reply(t('g_ada5bc5b84', '– عشان تسوي حساب لازم تختار بنك\n\n{0} `الاهلي`\n{1} `راجحي`\n{2} `الانماء`\n\n- اضغط للنسخ', k, k, k))
        
    
    if text == 'مسح حسابي':
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي')
+       return await m.reply(t('g_e27ad80089', '{0} ماعندك حساب بنكي', k))
      else:
        await r.srem('BankList', m.from_user.id)
-       await m.reply(f'{k} تم حذف حسابك البنكي')
+       await m.reply(t('g_714655ca14', '{0} تم حذف حسابك البنكي', k))
    
    if text.startswith('حساب ') and len(text.split()) == 2 and re.findall('[0-9]+', text):
       acc_id = int(re.findall('[0-9]+', text)[0])
       if await r.get(f'{acc_id}:getAccBank'):
          id = int(await r.get(f'{acc_id}:getAccBank'))
          if await r.get(f'{id}:bankName'):
-           name = await r.get(f'{id}:bankName')[:10]
+           name = (await r.get(f'{id}:bankName'))[:10]
          else:
            gett = await c.get_users(int(await r.get(f'{acc_id}:getAccBank')))
            name = gett.first_name
@@ -518,14 +510,7 @@ async def gamesFunc(c,m,k,channel):
            floos = 0
          else:
            floos = int(await r.get(f'{id}:Floos'))
-         await m.reply(f'''
-{k} الاسم ↢ ⁪⁬⁪⁬⁮⁪⁬⁪⁬⁮{name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_","")}
-{k} الحساب ↢ `{acc_id}`
-{k} بنك ↢ ( {bank} )
-{k} نوع ↢ ( {card} )
-{k} الرصيد ↢ ( `{floos}` ريال 💸 )
-☆
-''')
+         await m.reply(t('g_72992a5cb9', '\n{0} الاسم ↢ \u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\u206c\u206e{1}\n{2} الحساب ↢ `{3}`\n{4} بنك ↢ ( {5} )\n{6} نوع ↢ ( {7} )\n{8} الرصيد ↢ ( `{9}` ريال 💸 )\n☆\n', k, name.replace("*","").replace("`","").replace("|","").replace("#","").replace("<","").replace(">","").replace("_",""), k, acc_id, k, bank, k, card, k, floos))
    
    if text.startswith('تحويل ') and len(text.split()) == 2 and re.findall('[0-9]+', text):
       floos_to_trans = int(re.findall('[0-9]+', text)[0])
@@ -534,25 +519,25 @@ async def gamesFunc(c,m,k,channel):
       else:
         floos = int(await r.get(f'{m.from_user.id}:Floos'))
       if floos_to_trans < 200:
-        return await m.reply(f'{k} الحد الادنى المسموح هو 200 ريال')
+        return await m.reply(t('g_cc73762273', '{0} الحد الادنى المسموح هو 200 ريال', k))
       else:
         if floos_to_trans > floos:
-          return await m.reply(f'{k} فلوسك ماتكفي')
+          return await m.reply(t('g_721c0a5c4d', '{0} فلوسك ماتكفي', k))
         if not await r.sismember('BankList', m.from_user.id):
-          return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+          return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
         else:
           await r.set(f'{m.from_user.id}:toTrans:{m.chat.id}{Dev_Zaid}',floos_to_trans, ex=600)
-          return await m.reply(f'{k} ارسل الحين رقم حساب البنكي الي تبي تحول له')
+          return await m.reply(t('g_88c09f2857', '{0} ارسل الحين رقم حساب البنكي الي تبي تحول له', k))
    
       
       
    if text.startswith('حظ ') and len(text.split()) == 2 and re.findall('[0-9]+', text):
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if await r.get(f'{m.from_user.id}:BankWaitHZ'):
        get = await r.ttl(f'{m.from_user.id}:BankWaitHZ')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} مايمديك تلعب لعبة الحظ الحين ! \n{k} تعال بعد {wait} دقيقة')
+       return await m.reply(t('g_2f38fd84b6', '{0} مايمديك تلعب لعبة الحظ الحين ! \n{1} تعال بعد {2} دقيقة', k, k, wait))
      else:
        if not await r.get(f'{m.from_user.id}:Floos'):
          floos = 0
@@ -560,9 +545,9 @@ async def gamesFunc(c,m,k,channel):
          floos = int(await r.get(f'{m.from_user.id}:Floos'))
        floos_to_hz = int(re.findall('[0-9]+', text)[0])
        if floos_to_hz == 0:
-         return await m.reply(f'{k} مايمدي تلعب بالصفر')
+         return await m.reply(t('g_c9e5110254', '{0} مايمدي تلعب بالصفر', k))
        if floos_to_hz > floos:
-         return await m.reply(f'{k} فلوسك ماتكفي')
+         return await m.reply(t('g_721c0a5c4d', '{0} فلوسك ماتكفي', k))
        else:
          await r.set(f'{m.from_user.id}:BankWaitHZ',1,ex=600)
          hzz = random.choice(['yes','no'])
@@ -570,23 +555,23 @@ async def gamesFunc(c,m,k,channel):
            fls = floos_to_hz
            floos_com = floos+fls
            await r.set(f'{m.from_user.id}:Floos', floos+fls)
-           return await m.reply(f'{k} مبروك فزت بالحظ !\n{k} فلوسك قبل ↢ ( **{floos}** ريال 💸 )\n{k} فلوسك الحين ↢ ( **{floos_com}** ريال 💸 )')
+           return await m.reply(t('g_6eb7f3a8f3', '{0} مبروك فزت بالحظ !\n{1} فلوسك قبل ↢ ( **{2}** ريال 💸 )\n{3} فلوسك الحين ↢ ( **{4}** ريال 💸 )', k, k, floos, k, floos_com))
          else:
            fls = floos-floos_to_hz
            if fls == 0:
               await r.delete(f'{m.from_user.id}:Floos')
            else:
               await r.set(f'{m.from_user.id}:Floos', fls)
-           return await m.reply(f'{k} للأسف خسرت بالحظ !\n{k} فلوسك قبل ↢ ( **{floos}** ريال 💸 )\n{k} فلوسك الحين ↢ ( **{fls}** ريال 💸 )')
+           return await m.reply(t('g_aed6d718d3', '{0} للأسف خسرت بالحظ !\n{1} فلوسك قبل ↢ ( **{2}** ريال 💸 )\n{3} فلوسك الحين ↢ ( **{4}** ريال 💸 )', k, k, floos, k, fls))
    
    
    if text == "حظ فلوسي":
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if await r.get(f'{m.from_user.id}:BankWaitHZ'):
        get = await r.ttl(f'{m.from_user.id}:BankWaitHZ')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} مايمديك تلعب لعبة الحظ الحين ! \n{k} تعال بعد {wait} دقيقة')
+       return await m.reply(t('g_2f38fd84b6', '{0} مايمديك تلعب لعبة الحظ الحين ! \n{1} تعال بعد {2} دقيقة', k, k, wait))
      else:
        if not await r.get(f'{m.from_user.id}:Floos'):
          floos = 0
@@ -594,7 +579,7 @@ async def gamesFunc(c,m,k,channel):
          floos = int(await r.get(f'{m.from_user.id}:Floos'))
        floos_to_hz = floos
        if floos_to_hz == 0:
-         return await m.reply(f'{k} مايمدي تلعب بالصفر')
+         return await m.reply(t('g_c9e5110254', '{0} مايمدي تلعب بالصفر', k))
        else:
          await r.set(f'{m.from_user.id}:BankWaitHZ',1,ex=600)
          hzz = random.choice(['yes','no'])
@@ -602,30 +587,30 @@ async def gamesFunc(c,m,k,channel):
            fls = floos_to_hz
            floos_com = floos+fls
            await r.set(f'{m.from_user.id}:Floos', floos+fls)
-           return await m.reply(f'{k} مبروك فزت بالحظ !\n{k} فلوسك قبل ↢ ( **{floos}** ريال 💸 )\n{k} فلوسك الحين ↢ ( **{floos_com}** ريال 💸 )')
+           return await m.reply(t('g_6eb7f3a8f3', '{0} مبروك فزت بالحظ !\n{1} فلوسك قبل ↢ ( **{2}** ريال 💸 )\n{3} فلوسك الحين ↢ ( **{4}** ريال 💸 )', k, k, floos, k, floos_com))
          else:
            fls = floos-floos_to_hz
            if fls == 0:
               await r.delete(f'{m.from_user.id}:Floos')
            else:
               await r.set(f'{m.from_user.id}:Floos', fls)
-           return await m.reply(f'{k} للأسف خسرت بالحظ !\n{k} فلوسك قبل ↢ ( "**{floos}** ريال 💸 )\n{k} فلوسك الحين ↢ ( **{fls}** ريال 💸 )')
+           return await m.reply(t('g_a9fb33f806', '{0} للأسف خسرت بالحظ !\n{1} فلوسك قبل ↢ ( "**{2}** ريال 💸 )\n{3} فلوسك الحين ↢ ( **{4}** ريال 💸 )', k, k, floos, k, fls))
 
    if text == 'عجله' or text == 'عجلة':
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      else:
        if await r.get(f'{m.from_user.id}:BankWait3JL'):
          get = await r.ttl(f'{m.from_user.id}:BankWait3JL')
          wait = time.strftime('%M:%S', time.gmtime(get))
-         return await m.reply(f'{k} مايمديك تلعب عجلة الحين ! \n{k} تعال بعد {wait} دقيقة')
+         return await m.reply(t('g_a3d7533715', '{0} مايمديك تلعب عجلة الحين ! \n{1} تعال بعد {2} دقيقة', k, k, wait))
        else:
          await r.set(f'{m.from_user.id}:BankWait3JL',1,ex=300)
-         rep = await m.reply(f'{k} حلف العجلة بعد ٣ ثواني',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('³',callback_data='None')]]))
+         rep = await m.reply(t('g_7aa205a6f6', '{0} حلف العجلة بعد ٣ ثواني', k),reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('³',callback_data='None')]]))
          await asyncio.sleep(1)
-         await rep.edit_text(f'{k} حلف العجلة بعد ثانيتين',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('²',callback_data='None')]]))
+         await rep.edit_text(t('g_3d3d38bd30', '{0} حلف العجلة بعد ثانيتين', k),reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('²',callback_data='None')]]))
          await asyncio.sleep(1)
-         await rep.edit_text(f'{k} حلف العجلة بعد ثانية',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('¹',callback_data='None')]]))
+         await rep.edit_text(t('g_328451894d', '{0} حلف العجلة بعد ثانية', k),reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('¹',callback_data='None')]]))
          await asyncio.sleep(1)
          emojis_3jl = [
          '💸','💸','💸','💸','💸','💸','💸',
@@ -660,7 +645,7 @@ async def gamesFunc(c,m,k,channel):
               floos = 0
             else:
               floos = int(await r.get(f'{m.from_user.id}:Floos'))
-            await rep.edit_text(f'{k} فزت بعجلة الحظ!\n\n{k} مبلغ الربح ( {chance} ريال 💸 )\n{k} فلوسك قبل ( `{floos}` ريال 💸 )\n{k} فلوسك الحين ( `{floos+chance}` ريال 💸 )',reply_markup=reply_ma)
+            await rep.edit_text(t('g_1449c3fca2', '{0} فزت بعجلة الحظ!\n\n{1} مبلغ الربح ( {2} ريال 💸 )\n{3} فلوسك قبل ( `{4}` ريال 💸 )\n{5} فلوسك الحين ( `{6}` ريال 💸 )', k, k, chance, k, floos, k, floos+chance),reply_markup=reply_ma)
             await r.set(f'{m.from_user.id}:Floos', floos+chance)
          else:
             chance = random.randint(100,1000)
@@ -668,16 +653,16 @@ async def gamesFunc(c,m,k,channel):
               floos = 0
             else:
               floos = int(await r.get(f'{m.from_user.id}:Floos'))
-            await rep.edit_text(f'{k} للأسف خسرت بعجلة الحظ!\n\n{k} خذ {chance} ريال عشان ماتصيح\n{k} فلوسك قبل ( `{floos}` ريال 💸 )\n{k} فلوسك الحين ( `{floos+chance}` ريال 💸 )',reply_markup=reply_ma)
+            await rep.edit_text(t('g_3f13e63f4d', '{0} للأسف خسرت بعجلة الحظ!\n\n{1} خذ {2} ريال عشان ماتصيح\n{3} فلوسك قبل ( `{4}` ريال 💸 )\n{5} فلوسك الحين ( `{6}` ريال 💸 )', k, k, chance, k, floos, k, floos+chance),reply_markup=reply_ma)
             await r.set(f'{m.from_user.id}:Floos', floos+chance)
            
    if text.startswith('استثمار ') and len(text.split()) == 2 and re.findall('[0-9]+', text):
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if await r.get(f'{m.from_user.id}:BankWaitEST'):
        get = await r.ttl(f'{m.from_user.id}:BankWaitEST')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} مايمديك تستثمر الحين ! \n{k} تعال بعد {wait} دقيقة')
+       return await m.reply(t('g_d54321293e', '{0} مايمديك تستثمر الحين ! \n{1} تعال بعد {2} دقيقة', k, k, wait))
      else:
        if not await r.get(f'{m.from_user.id}:Floos'):
          floos = 0
@@ -685,30 +670,25 @@ async def gamesFunc(c,m,k,channel):
          floos = int(await r.get(f'{m.from_user.id}:Floos'))
        floos_to_est = int(re.findall('[0-9]+', text)[0])
        if floos_to_est == 0:
-         return await m.reply(f'{k} مايمدي تلعب بالصفر')
+         return await m.reply(t('g_c9e5110254', '{0} مايمدي تلعب بالصفر', k))
        if floos_to_est > floos:
-         return await m.reply(f'{k} فلوسك ماتكفي')
+         return await m.reply(t('g_721c0a5c4d', '{0} فلوسك ماتكفي', k))
        if floos_to_est < 2000:
-         return await m.reply(f'{k} للأسف لازم تستثمر ب 2000 ريال عالأقل')
+         return await m.reply(t('g_40cdd62f50', '{0} للأسف لازم تستثمر ب 2000 ريال عالأقل', k))
        else:
          await r.set(f'{m.from_user.id}:BankWaitEST',1,ex=300)
          one = int(floos_to_est/random.randint(1,9))
          rb7 = int(is_what_percent_of(one,floos_to_est))
          await r.set(f'{m.from_user.id}:Floos',floos+one)
-         await m.reply(f'''
-{k}  استثمار ناجح!
-{k} نسبة الربح ↢ {rb7}%
-{k} مبلغ الربح ↢ ( `{one}` ريال )
-{k} فلوسك صارت ↢ ( `{floos+one}` ريال 💸 )
-''')
+         await m.reply(t('g_563e1d74a2', '\n{0}  استثمار ناجح!\n{1} نسبة الربح ↢ {2}%\n{3} مبلغ الربح ↢ ( `{4}` ريال )\n{5} فلوسك صارت ↢ ( `{6}` ريال 💸 )\n', k, k, rb7, k, one, k, floos+one))
    
    if text == "استثمار فلوسي":
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if await r.get(f'{m.from_user.id}:BankWaitEST'):
        get = await r.ttl(f'{m.from_user.id}:BankWaitEST')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} مايمديك تستثمر الحين ! \n{k} تعال بعد {wait} دقيقة')
+       return await m.reply(t('g_d54321293e', '{0} مايمديك تستثمر الحين ! \n{1} تعال بعد {2} دقيقة', k, k, wait))
      else:
        if not await r.get(f'{m.from_user.id}:Floos'):
          floos = 0
@@ -716,28 +696,23 @@ async def gamesFunc(c,m,k,channel):
          floos = int(await r.get(f'{m.from_user.id}:Floos'))
        floos_to_est = floos
        if floos_to_est == 0:
-         return await m.reply(f'{k} مايمدي تستثمر بالصفر')
+         return await m.reply(t('g_b9459f5ac6', '{0} مايمدي تستثمر بالصفر', k))
        if floos_to_est < 2000:
-         return await m.reply(f'{k} للأسف لازم تستثمر ب 2000 ريال عالأقل')
+         return await m.reply(t('g_40cdd62f50', '{0} للأسف لازم تستثمر ب 2000 ريال عالأقل', k))
        else:
          await r.set(f'{m.from_user.id}:BankWaitEST',1,ex=300)
          one = int(floos_to_est/random.randint(1,9))
          rb7 = int(is_what_percent_of(one,floos_to_est))
          await r.set(f'{m.from_user.id}:Floos',floos+one)
-         await m.reply(f'''
-{k}  استثمار ناجح!
-{k} نسبة الربح ↢ {rb7}%
-{k} مبلغ الربح ↢ ( `{one}` ريال )
-{k} فلوسك صارت ↢ ( `{floos+one}` ريال 💸 )
-''')
+         await m.reply(t('g_563e1d74a2', '\n{0}  استثمار ناجح!\n{1} نسبة الربح ↢ {2}%\n{3} مبلغ الربح ↢ ( `{4}` ريال )\n{5} فلوسك صارت ↢ ( `{6}` ريال 💸 )\n', k, k, rb7, k, one, k, floos+one))
    
    if text == 'كنز':
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if await r.get(f'{m.from_user.id}:BankWaitKNZ'):
        get = await r.ttl(f'{m.from_user.id}:BankWaitKNZ')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} كنزك بينزل بعد {wait} دقيقة')
+       return await m.reply(t('g_e1bcb49f61', '{0} كنزك بينزل بعد {1} دقيقة', k, wait))
      else:
        if not await r.get(f'{m.from_user.id}:Floos'):
           floos = 0
@@ -749,15 +724,15 @@ async def gamesFunc(c,m,k,channel):
        await r.set(f'{m.from_user.id}:BankWaitKNZ',1, ex=600)
        await r.set(f'{m.from_user.id}:Floos', floos+money)
        fls = floos+money
-       return await m.reply(f'اشعار ايداع {m.from_user.mention(m.from_user.first_name[:10])}⁪⁬⁪⁬⁮⁪⁬⁪\nالمبلغ: **{money}** ريال\nالكنز: {name}\nنوع العملية: ربح كنز\nرصيدك الحين: **{fls}** ريال 💸')
+       return await m.reply(t('g_f74a2f9dba', 'اشعار ايداع {0}\u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\nالمبلغ: **{1}** ريال\nالكنز: {2}\nنوع العملية: ربح كنز\nرصيدك الحين: **{3}** ريال 💸', m.from_user.mention(m.from_user.first_name[:10]), money, name, fls))
 
    if text == 'بخشيش':
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if await r.get(f'{m.from_user.id}:BankWaitB5'):
        get = await r.ttl(f'{m.from_user.id}:BankWaitB5')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} مايمدي اعطيك بخشيش الحين\n{k} تعال بعد {wait} دقيقة')
+       return await m.reply(t('g_eaf6b6e6ca', '{0} مايمدي اعطيك بخشيش الحين\n{1} تعال بعد {2} دقيقة', k, k, wait))
      else:
        b5 = random.randint(5,1000)
        await r.set(f'{m.from_user.id}:BankWaitB5',1, ex=300)
@@ -766,15 +741,15 @@ async def gamesFunc(c,m,k,channel):
        else:
           floos = int(await r.get(f'{m.from_user.id}:Floos'))
        await r.set(f'{m.from_user.id}:Floos', floos+b5)
-       await m.reply(f'{k} دلعتك وعطيتك {b5} ريال 💸')
+       await m.reply(t('g_c937c93d89', '{0} دلعتك وعطيتك {1} ريال 💸', k, b5))
        
    if text == 'راتب':
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if await r.get(f'{m.from_user.id}:BankWait'):
        get = await r.ttl(f'{m.from_user.id}:BankWait')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} راتبك بينزل بعد {wait} دقيقة')
+       return await m.reply(t('g_963a7bd56b', '{0} راتبك بينزل بعد {1} دقيقة', k, wait))
      else:
        job = random.choice(jobs)
        money = job['credit']
@@ -786,36 +761,36 @@ async def gamesFunc(c,m,k,channel):
           floos = int(await r.get(f'{m.from_user.id}:Floos'))
        await r.set(f'{m.from_user.id}:Floos', floos+money)
        fls = floos+money
-       await m.reply(f'اشعار ايداع⁪⁬⁪⁬⁮⁪⁬⁪ {m.from_user.mention(m.from_user.first_name[:10])}\nالمبلغ: **{money}** ريال\nوظيفتك: {name}\nنوع العملية: اضافة راتب\nرصيدك الحين: **{fls}** ريال 💸')
+       await m.reply(t('g_691d5821a5', 'اشعار ايداع\u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a {0}\nالمبلغ: **{1}** ريال\nوظيفتك: {2}\nنوع العملية: اضافة راتب\nرصيدك الحين: **{3}** ريال 💸', m.from_user.mention(m.from_user.first_name[:10]), money, name, fls))
    
    if text == 'زرف' and m.reply_to_message and m.reply_to_message.from_user:
      if m.reply_to_message.from_user.id == int(Dev_Zaid):
-       return await m.reply('?')
+       return await m.reply(t('g_e21402a25b', '?'))
      if not await r.sismember('BankList', m.from_user.id):
-       return await m.reply(f'{k} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )')
+       return await m.reply(t('g_1753c876a5', '{0} ماعندك حساب بنكي ارسل ↢ ( `انشاء حساب بنكي` )', k))
      if not await r.sismember('BankList', m.reply_to_message.from_user.id):
-       return await m.reply(f'{k} ماعنده حساب بنكي')
+       return await m.reply(t('g_04a38ac51c', '{0} ماعنده حساب بنكي', k))
      if m.reply_to_message.from_user.id == m.from_user.id:
-       return await m.reply('تبي تزرف نفسك؟')
+       return await m.reply(t('g_d1eb91efb0', 'تبي تزرف نفسك؟'))
      if await r.get(f'{m.from_user.id}:BankWaitZRF'):
        get = await r.ttl(f'{m.from_user.id}:BankWaitZRF')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} يولد انحش الشرطة للحين تدور عنك\n{k} يمديك تزرف مره ثانيه بعد {wait}')
+       return await m.reply(t('g_9cfed5664f', '{0} يولد انحش الشرطة للحين تدور عنك\n{1} يمديك تزرف مره ثانيه بعد {2}', k, k, wait))
      if await r.get(f'{m.reply_to_message.from_user.id}:BankWaitMZROF'):
        get = await r.ttl(f'{m.reply_to_message.from_user.id}:BankWaitMZROF')
        wait = time.strftime('%M:%S', time.gmtime(get))
-       return await m.reply(f'{k} ذا المسكين مزروف قبل شوي\n{k} يمديك تزرفه بعد {wait}')
+       return await m.reply(t('g_8c55c2c9f9', '{0} ذا المسكين مزروف قبل شوي\n{1} يمديك تزرفه بعد {2}', k, k, wait))
      if not await r.get(f'{m.reply_to_message.from_user.id}:Floos'):
-       return await m.reply(f'{k} مطفر مامعه ولا ريال')
+       return await m.reply(t('g_b386a447b2', '{0} مطفر مامعه ولا ريال', k))
      if int(await r.get(f'{m.reply_to_message.from_user.id}:Floos')) < 2000:
-       return await m.reply(f'{k} مايمديك تزرفه لان فلوسه اقل من 2000 ريال')
+       return await m.reply(t('g_59e446fe6f', '{0} مايمديك تزرفه لان فلوسه اقل من 2000 ريال', k))
      else:
        zrf = random.randint(50,1000)
        await r.set(f'{m.from_user.id}:BankWaitZRF',1,ex=300)
        await r.set(f'{m.reply_to_message.from_user.id}:BankWaitMZROF',1,ex=300)
        floos = int(await r.get(f'{m.reply_to_message.from_user.id}:Floos'))
        await r.set(f'{m.reply_to_message.from_user.id}:Floos',floos-zrf)
-       await m.reply(f'{k} خذ يالحرامي زرفته {zrf} ريال 💸')
+       await m.reply(t('g_e1e6af1792', '{0} خذ يالحرامي زرفته {1} ريال 💸', k, zrf))
        if not await r.get(f'{m.from_user.id}:Floos'):
          floos_from_user = 0
        else:
@@ -843,39 +818,39 @@ async def gamesFunc(c,m,k,channel):
   
    if text == 'تصفير البنك':
      if await devp_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} متأكد تبي تصفر البنك ؟',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('اي', callback_data='yes:del:bank')],[InlineKeyboardButton ('لا', callback_data='no:del:bank')]]))
+        return await m.reply(t('g_9a49f667eb', '{0} متأكد تبي تصفر البنك ؟', k),reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('اي', callback_data='yes:del:bank')],[InlineKeyboardButton ('لا', callback_data='no:del:bank')]]))
    
    if text == 'فلوسي':
      if not await r.get(f'{m.from_user.id}:Floos'):
-        await m.reply(f'{k} ماعندك فلوس ارسل الالعاب وابدا جمع الفلوس')
+        await m.reply(t('g_d07b14d789', '{0} ماعندك فلوس ارسل الالعاب وابدا جمع الفلوس', k))
      else:
         floos = int(await r.get(f'{m.from_user.id}:Floos'))
-        return await m.reply(f'{k} فلوسك `{floos}` ريال 💸')
+        return await m.reply(t('g_425160b97e', '{0} فلوسك `{1}` ريال 💸', k, floos))
    
    if text == 'فلوس':
      if not m.reply_to_message:
        if not await r.get(f'{m.from_user.id}:Floos'):
-         return await m.reply(f'{k} ماعندك فلوس ارسل الالعاب وابدا جمع الفلوس')
+         return await m.reply(t('g_d07b14d789', '{0} ماعندك فلوس ارسل الالعاب وابدا جمع الفلوس', k))
        else:
          floos = int(await r.get(f'{m.from_user.id}:Floos'))
-       return await m.reply(f'{k} فلوسك `{floos}` ريال 💸')
+       return await m.reply(t('g_425160b97e', '{0} فلوسك `{1}` ريال 💸', k, floos))
      else:
        if not await r.get(f'{m.reply_to_message.from_user.id}:Floos'):
          floos = 0
        else:
          floos = int(await r.get(f'{m.reply_to_message.from_user.id}:Floos'))
-       return await m.reply(f'{k} فلوسه ↢ ( {floos} ريال 💸 )')
+       return await m.reply(t('g_a4637ee234', '{0} فلوسه ↢ ( {1} ريال 💸 )', k, floos))
    
    if text.startswith('بيع فلوسي ') and len(text.split()) == 3 and re.findall('[0-9]+', text):
      if not await r.get(f'{m.from_user.id}:Floos'):
-        await m.reply(f'{k} للاسف انت مطفر عندك 0 ريال')
+        await m.reply(t('g_67c035d36d', '{0} للاسف انت مطفر عندك 0 ريال', k))
      else:
         floos_to_sale = int(re.findall('[0-9]+', text)[0])
         floos = int(await r.get(f'{m.from_user.id}:Floos'))
         if floos_to_sale == 0:
-         return await m.reply(f'{k} مايمدي تبيع صفر')
+         return await m.reply(t('g_df0781fe21', '{0} مايمدي تبيع صفر', k))
         if floos_to_sale > floos:
-          return await m.reply(f'{k} للاسف انت مطفر عندك {floos} ريال')
+          return await m.reply(t('g_bfef395238', '{0} للاسف انت مطفر عندك {1} ريال', k, floos))
         if floos_to_sale == floos:
            await r.delete(f'{m.from_user.id}:Floos')
         else:
@@ -883,7 +858,7 @@ async def gamesFunc(c,m,k,channel):
         get = int(await r.get(f'{m.chat.id}:TotalMsgs:{m.from_user.id}{Dev_Zaid}'))
         rsayl = floos_to_sale * 20
         await r.set(f'{m.chat.id}:TotalMsgs:{m.from_user.id}{Dev_Zaid}', get+rsayl)
-        await m.reply(f'{k} بعت ( {floos_to_sale} ريال 💸 ) من فلوسك\n{k} مجموع رسايلك الحين ( {get + rsayl} )\n☆')
+        await m.reply(t('g_4557e46f74', '{0} بعت ( {1} ريال 💸 ) من فلوسك\n{2} مجموع رسايلك الحين ( {3} )\n☆', k, floos_to_sale, k, get + rsayl))
    
    if text.startswith('اضف فلوس ') and len(text.split()) == 3 and re.findall('[0-9]+', text):
      if await dev2_pls(m.from_user.id,m.chat.id):
@@ -894,7 +869,7 @@ async def gamesFunc(c,m,k,channel):
           else:
              floos = int(await r.get(f'{m.reply_to_message.from_user.id}:Floos'))
              await r.set(f'{m.reply_to_message.from_user.id}:Floos',floos_to_add+floos)
-          await m.reply(f'「 {m.reply_to_message.from_user.mention} 」\n{k} ضفت له ( {floos_to_add} ) ريال 💸')
+          await m.reply(t('g_4f779a9565', '「 {0} 」\n{1} ضفت له ( {2} ) ريال 💸', m.reply_to_message.from_user.mention, k, floos_to_add))
    
    
    if text == 'استخراج الاكواد':
@@ -902,7 +877,7 @@ async def gamesFunc(c,m,k,channel):
          if await r.get(f'{Dev_Zaid}:codeWait'):
            t = await r.ttl(f'{Dev_Zaid}:codeWait')
            wait = time.strftime('%H:%M:%S', time.gmtime(t))
-           return await m.reply(f'{k} استخرجت اكواد الكشط من شوي تعال بعد {wait}')
+           return await m.reply(t('g_18e21684b4', '{0} استخرجت اكواد الكشط من شوي تعال بعد {1}', k, wait))
          else:
            txt = 'اكواد الكشط:\n'
            ccc = 1
@@ -919,11 +894,11 @@ async def gamesFunc(c,m,k,channel):
    if text.startswith('كشط ') and len(text.split()) == 2:
      code = text.split()[1]
      if not await r.get(f'{code}:CodeBank:{Dev_Zaid}'):
-       return await m.reply(f'{k} الكود منتهي الصلاحيه او تابع لبوت ثاني')
+       return await m.reply(t('g_f1e514b4a8', '{0} الكود منتهي الصلاحيه او تابع لبوت ثاني', k))
      if await r.get(f'{m.from_user.id}:BankWaitKSHT:{Dev_Zaid}'):
        t = await r.ttl(f'{m.from_user.id}:BankWaitKSHT:{Dev_Zaid}')
        wait = time.strftime('%H:%M:%S', time.gmtime(t))
-       return await m.reply(f'{k} كشطت كود من شوي تعال بعد {wait}')
+       return await m.reply(t('g_1f55faf53a', '{0} كشطت كود من شوي تعال بعد {1}', k, wait))
      else:
        await r.delete(f'{code}:CodeBank:{Dev_Zaid}')
      if not await r.get(f'{m.from_user.id}:Floos'):
@@ -932,7 +907,7 @@ async def gamesFunc(c,m,k,channel):
        floos_from_user = int(await r.get(f'{m.from_user.id}:Floos'))
      chance = random.choice([1000000000, 2000000000, 3000000000])
      await r.set(f'{m.from_user.id}:Floos',floos_from_user+chance)
-     await m.reply(f'{k} مبرووووك 🏆\n{k} كشطت الكود واخذت ( {chance} ريال 💸 )\n{k} فلوسك قبل ( `{floos_from_user}` ريال 💸 )\n{k} فلوسك الحين ( `{floos_from_user+chance}` ريال 💸 )')
+     await m.reply(t('g_b7c1c2206a', '{0} مبرووووك 🏆\n{1} كشطت الكود واخذت ( {2} ريال 💸 )\n{3} فلوسك قبل ( `{4}` ريال 💸 )\n{5} فلوسك الحين ( `{6}` ريال 💸 )', k, k, chance, k, floos_from_user, k, floos_from_user+chance))
      await r.set(f'{m.from_user.id}:BankWaitKSHT:{Dev_Zaid}',1,ex=7200)
      if await r.get(f'DevGroup:{Dev_Zaid}'):
        alert = f'𖡋 𝐍𝐀𝐌𝐄 ⌯ {m.from_user.mention}\n𖡋 𝐈𝐃 ⌯ `{m.from_user.id}`\n\nكشط الكود `{code}` وأخذ {chance} ريال 💸'
@@ -940,24 +915,24 @@ async def gamesFunc(c,m,k,channel):
    
    if text.startswith('زواج ') and re.findall('[0-9]+', text) and m.reply_to_message and m.reply_to_message.from_user and len(text.split()) == 2:
      if m.reply_to_message.from_user.id == c.me.id or m.reply_to_message.from_user.id == m.from_user.id:
-       return await m.reply('?')
+       return await m.reply(t('g_e21402a25b', '?'))
      if m.reply_to_message.from_user.is_bot:
        return False
      if await r.get(f'{m.from_user.id}:marriedMan:{m.chat.id}{Dev_Zaid}'):
        getUser = await c.get_users(int(await r.get(f'{m.from_user.id}:marriedMan:{m.chat.id}{Dev_Zaid}')))
        mention = getUser.mention
-       return await m.reply(f'「 {mention} 」 \n{k} تعاليييي زوجك بيخونك')
+       return await m.reply(t('g_8680a471c9', '「 {0} 」 \n{1} تعاليييي زوجك بيخونك', mention, k))
      if await r.get(f'{m.from_user.id}:marriedWomen:{m.chat.id}{Dev_Zaid}'):
        getUser = await c.get_users(int(await r.get(f'{m.from_user.id}:marriedWomen:{m.chat.id}{Dev_Zaid}')))
        mention = getUser.mention
-       return await m.reply(f'「 {mention} 」 \n{k} تعال زوجتك بتخونك')
+       return await m.reply(t('g_79ff12d90e', '「 {0} 」 \n{1} تعال زوجتك بتخونك', mention, k))
      if not await r.get(f'{m.from_user.id}:Floos'):
        floos_from_user = 0
      else:
        floos_from_user = int(await r.get(f'{m.from_user.id}:Floos'))
      floos = int(re.findall('[0-9]+', text)[0])
      if floos > floos_from_user:
-       return await m.reply('مطفر فلوسك ماتكفي')
+       return await m.reply(t('g_c3899670f1', 'مطفر فلوسك ماتكفي'))
      else:
        if await r.get(f'{m.reply_to_message.from_user.id}:marriedWomen:{m.chat.id}{Dev_Zaid}'):
          return await m.reply('「 {} 」 \n{} مو سنقل دورلك غيرها\n༄'.format(m.reply_to_message.from_user.mention,k))
@@ -965,7 +940,7 @@ async def gamesFunc(c,m,k,channel):
          return await m.reply('「 {} 」 \n{} مو سنقل دورلك غيره\n༄'.format(m.reply_to_message.from_user.mention,k))
        else:
          if floos < 50000:
-           return await m.reply('لازم المهر اقل شي 50 ألف ريال')
+           return await m.reply(t('g_22c52ff266', 'لازم المهر اقل شي 50 ألف ريال'))
          else:
            if floos == floos_from_user:
              await r.delete(f'{m.from_user.id}:Floos')
@@ -985,28 +960,20 @@ async def gamesFunc(c,m,k,channel):
            await r.set(f'{m.from_user.id}:MARRYMONEY:{m.chat.id}{Dev_Zaid}',floos)
            await r.set(f'{m.reply_to_message.from_user.id}:MARRYMONEY:{m.chat.id}{Dev_Zaid}',floos)
            await r.sadd(f'{m.chat.id}:zwag:{Dev_Zaid}', f'{m.reply_to_message.from_user.id}--{m.from_user.id}&&floos={floos}')
-           return await m.reply(f'''
-{k} باركووو للعرسان 
-
-{k} 👰 العروس ↢ ( {m.reply_to_message.from_user.mention} )
-{k} 🤵 العريس ↢ ( {m.from_user.mention} )
-
-{k} 💸 المهر ↢ ( `{floos}` ريال )
-☆
-''')
+           return await m.reply(t('g_0ea42eaa2b', '\n{0} باركووو للعرسان \n\n{1} 👰 العروس ↢ ( {2} )\n{3} 🤵 العريس ↢ ( {4} )\n\n{5} 💸 المهر ↢ ( `{6}` ريال )\n☆\n', k, k, m.reply_to_message.from_user.mention, k, m.from_user.mention, k, floos))
            
            
    if text == 'زواجي':
      if not await r.get(f'{m.from_user.id}:MARRYTEXT:{m.chat.id}{Dev_Zaid}'):
-       return await m.reply(f'{k} انت سنقل')
+       return await m.reply(t('g_d1fc9c93a3', '{0} انت سنقل', k))
      else:
        if await r.get(f'{m.from_user.id}:marriedMan:{m.chat.id}{Dev_Zaid}'):
          getUser = await c.get_users(int(await r.get(f'{m.from_user.id}:marriedMan:{m.chat.id}{Dev_Zaid}')))
-         txt = await r.get(f'{m.from_user.id}:MARRYTEXT:{m.chat.id}{Dev_Zaid}').format(k=k,two=m.from_user.mention(m.from_user.first_name[:10]),one=getUser.mention(getUser.first_name[:10]))
+         txt = (await r.get(f'{m.from_user.id}:MARRYTEXT:{m.chat.id}{Dev_Zaid}')).format(k=k,two=m.from_user.mention(m.from_user.first_name[:10]),one=getUser.mention(getUser.first_name[:10]))
          return await m.reply(txt)
        if await r.get(f'{m.from_user.id}:marriedWomen:{m.chat.id}{Dev_Zaid}'):
          getUser = await c.get_users(int(await r.get(f'{m.from_user.id}:marriedWomen:{m.chat.id}{Dev_Zaid}')))
-         txt = await r.get(f'{m.from_user.id}:MARRYTEXT:{m.chat.id}{Dev_Zaid}').format(k=k,two=getUser.mention(getUser.first_name[:10]),one=m.from_user.mention(m.from_user.first_name[:10]))
+         txt = (await r.get(f'{m.from_user.id}:MARRYTEXT:{m.chat.id}{Dev_Zaid}')).format(k=k,two=getUser.mention(getUser.first_name[:10]),one=m.from_user.mention(m.from_user.first_name[:10]))
          return await m.reply(txt)         
    
    if text == "سورس" or text == "السورس":
@@ -1033,7 +1000,7 @@ async def gamesFunc(c,m,k,channel):
      await r.delete(f'{m.from_user.id}:MARRYTEXT:{m.chat.id}{Dev_Zaid}')
      await r.delete(f'{m.from_user.id}:MARRYMONEY:{m.chat.id}{Dev_Zaid}')
      await r.delete(f'{getUser.id}:MARRYMONEY:{m.chat.id}{Dev_Zaid}')
-     return await m.reply(f'{k} طلقتك من 「 {getUser.mention} 」\n{k} ضفت ( {floos} ريال 💸 ) لفلوسها')
+     return await m.reply(t('g_e9d2e5849b', '{0} طلقتك من 「 {1} 」\n{2} ضفت ( {3} ريال 💸 ) لفلوسها', k, getUser.mention, k, floos))
      
    
    if text== 'خلع' and await r.get(f'{m.from_user.id}:marriedWomen:{m.chat.id}{Dev_Zaid}'):
@@ -1051,7 +1018,7 @@ async def gamesFunc(c,m,k,channel):
      await r.delete(f'{m.from_user.id}:MARRYTEXT:{m.chat.id}{Dev_Zaid}')
      await r.delete(f'{m.from_user.id}:MARRYMONEY:{m.chat.id}{Dev_Zaid}')
      await r.delete(f'{getUser.id}:MARRYMONEY:{m.chat.id}{Dev_Zaid}')
-     return await m.reply(f'{k} خلعتك من 「 {getUser.mention} 」\n{k} ورجعت له المهر ( {floos} ريال 💸 )')
+     return await m.reply(t('g_ec321f13a2', '{0} خلعتك من 「 {1} 」\n{2} ورجعت له المهر ( {3} ريال 💸 )', k, getUser.mention, k, floos))
 
    if text == 'كت' or text == 'تويت' or text == 'كت تويت':
       return await m.reply(random.choice(cut))
@@ -1059,7 +1026,7 @@ async def gamesFunc(c,m,k,channel):
    if text == 'جمل':
      gmla = random.choice(gomal)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', gmla.replace(" '",""), ex=600)
-     await m.reply(f'الجملة ↢ ( {gmla} )\n{k} اكتبها بدون فواصل')
+     await m.reply(t('g_2ec437055a', 'الجملة ↢ ( {0} )\n{1} اكتبها بدون فواصل', gmla, k))
    
    if await r.get(f'{m.chat.id}:gameEmoji:{Dev_Zaid}'):
      if text == await r.get(f'{m.chat.id}:gameEmoji:{Dev_Zaid}'):
@@ -1074,12 +1041,7 @@ async def gamesFunc(c,m,k,channel):
         else:
            floos = ra
            await r.set(f'{m.from_user.id}:Floos',ra)
-        return await m.reply(f'''
-صح عليك ⁪⁬⁪⁬⁮⁪⁬⁪⁬⁮✔
-⏰الوقت: {timeo} ثانية
-💸فلوسك: {floos} ريال
-☆
-''')
+        return await m.reply(t('g_cca1c67c6e', '\nصح عليك \u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\u206c\u206e✔\n⏰الوقت: {0} ثانية\n💸فلوسك: {1} ريال\n☆\n', timeo, floos))
    
    if await r.get(f'{m.chat.id}:game5tm:{m.from_user.id}{Dev_Zaid}'):
     try:
@@ -1095,15 +1057,10 @@ async def gamesFunc(c,m,k,channel):
         else:
            floos = ra
            await r.set(f'{m.from_user.id}:Floos',ra)
-        return await m.reply(f'''
-صح عليك ⁪⁬⁪⁬⁮⁪⁬⁪⁬⁮✔
-⏰الوقت: {timeo} ثانية
-💸فلوسك: {floos} ريال
-☆
-''')
+        return await m.reply(t('g_cca1c67c6e', '\nصح عليك \u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\u206c\u206e✔\n⏰الوقت: {0} ثانية\n💸فلوسك: {1} ريال\n☆\n', timeo, floos))
      else:
         await r.delete(f'{m.chat.id}:game5tm:{m.from_user.id}{Dev_Zaid}')
-        return await m.reply(f'{k} اجابتك خطأ')
+        return await m.reply(t('g_880ae80728', '{0} اجابتك خطأ', k))
     except Exception:
      pass
 
@@ -1120,12 +1077,7 @@ async def gamesFunc(c,m,k,channel):
         else:
            floos = ra
            await r.set(f'{m.from_user.id}:Floos',ra)
-        await m.reply(f'''
-صح عليك ⁪⁬⁪⁬⁮⁪⁬⁪⁬⁮✔
-⏰الوقت: {timeo} ثانية
-💸فلوسك: {floos} ريال
-☆
-''')
+        await m.reply(t('g_cca1c67c6e', '\nصح عليك \u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\u206c\u206e✔\n⏰الوقت: {0} ثانية\n💸فلوسك: {1} ريال\n☆\n', timeo, floos))
         return True
      
    
@@ -1173,12 +1125,12 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub('ساحه', 'ح ا ه س', name)
      name = re.sub('جسر', 'ر ج س', name)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name1,ex=600)
-     await m.reply(f'رتب ↢ {name}')
+     await m.reply(t('g_7ef337305c', 'رتب ↢ {0}', name))
      return True
    
    if text == 'ايموجي':
       if await r.get(f'{m.chat.id}:gameEmoji:{Dev_Zaid}'):
-        return await m.reply(f'{k} معليش في لعبة ايموجي شغالة الحين حاول بعد 20 ثانية\n\n{k} في حال ماتبي تكملها ارسل سكب')
+        return await m.reply(t('g_446ac1235f', '{0} معليش في لعبة ايموجي شغالة الحين حاول بعد 20 ثانية\n\n{1} في حال ماتبي تكملها ارسل سكب', k, k))
       ran = random.choice(emojis_pics)
       emoji = ran['emoji']
       photo = ran['photo']
@@ -1192,7 +1144,7 @@ async def gamesFunc(c,m,k,channel):
    if text == 'سكب':
       if await r.get(f'{m.chat.id}:gameEmoji:{Dev_Zaid}'):
          await r.delete(f'{m.chat.id}:gameEmoji:{Dev_Zaid}')
-         await m.reply(f'{k} سكبت لعبه الايموجي')
+         await m.reply(t('g_da8da89682', '{0} سكبت لعبه الايموجي', k))
          return True
    
    if text == 'انقليزي':
@@ -1217,7 +1169,7 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub("اصدقاء", "friends", name)
      name = re.sub("منضده", "table", name)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name1,ex=600)
-     await m.reply(f'اكتب معنى ↢ ( {name} )')
+     await m.reply(t('g_4e22addbce', 'اكتب معنى ↢ ( {0} )', name))
      return True
    
    if text == 'معاني':
@@ -1254,7 +1206,7 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub("وزه", "🦆", name)
      name = re.sub("كتكوت", "🐣", name)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name1,ex=600)
-     await m.reply(f'ايش معنى الايموجي ↢ ( {name} )')
+     await m.reply(t('g_1e24c1709b', 'ايش معنى الايموجي ↢ ( {0} )', name))
      return True
    
    if text == 'احسب':
@@ -1294,7 +1246,7 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub("57", "77 - 20 = ?", name)
      name = re.sub("220", "250 - 30 = ?", name)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name1,ex=600)
-     await m.reply(f'{name}')
+     await m.reply(t('g_44e3969eff', '{0}', name))
      return True
    
    if text == 'عربي':
@@ -1334,7 +1286,7 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub("فنانين", "فنان", name)
      name = re.sub("صواريخ", "صاروخ", name)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name1,ex=600)
-     await m.reply(f'اكتب جمع او مفرد ↢ ( {name} )')
+     await m.reply(t('g_033fbd761a', 'اكتب جمع او مفرد ↢ ( {0} )', name))
      return True
    
    if text == 'كلمات':
@@ -1375,14 +1327,14 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub("صاروخ", "صاروخ", name)
      '''
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name,ex=600)
-     await m.reply(f'الكلمة ↢ ( {name} )')
+     await m.reply(t('g_34e20165bb', 'الكلمة ↢ ( {0} )', name))
      return True
 
    if text == 'تفكيك':
      tfkeek = random.choice(trteep)
      name = ' '.join(a for a in tfkeek)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name,ex=600)
-     await m.reply(f'فكك ↢ ( {tfkeek} )')
+     await m.reply(t('g_d744ae9604', 'فكك ↢ ( {0} )', tfkeek))
      return True
    
    
@@ -1391,7 +1343,7 @@ async def gamesFunc(c,m,k,channel):
      name = country['name']
      capital=country['capital']
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', capital,ex=600)
-     await m.reply(f'{k} ايش عاصمة {name} ؟')
+     await m.reply(t('g_0d36b6bb8c', '{0} ايش عاصمة {1} ؟', k, name))
      return True
    
    if text == 'اكمل':
@@ -1419,19 +1371,13 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub("يكحلها", "جه ... عماها", name)
      name = re.sub("امه", "القرد فى عين ... غزال", name)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name1 ,ex=600)
-     await m.reply(f'اكمل ↢ ( {name} ؟ )')
+     await m.reply(t('g_7ef2a32085', 'اكمل ↢ ( {0} ؟ )', name))
      return True
    
    if text == 'احكام':
      if await r.get(f'{m.chat.id}:AHKAMGAME:{Dev_Zaid}'):
-       return await m.reply(f"{k} معليش في لعبة احكام شغالة الحين حاول بعد دقيقة")
-     await m.reply(f'''
-{k} بدينا لعبة احكام واضفت اسمك 
-{k} اللي يبي يلعب يرسل كلمة ( انا ) 
-
-{k} اللي عليك انت صاحب اللعبة ترسل ( تم ) اذا اكتمل العدد
-☆
-''')
+       return await m.reply(t('g_4cf1525c57', '{0} معليش في لعبة احكام شغالة الحين حاول بعد دقيقة', k))
+     await m.reply(t('g_b733683364', '\n{0} بدينا لعبة احكام واضفت اسمك \n{1} اللي يبي يلعب يرسل كلمة ( انا ) \n\n{2} اللي عليك انت صاحب اللعبة ترسل ( تم ) اذا اكتمل العدد\n☆\n', k, k, k))
      await r.delete(f'{m.chat.id}:ListAhkam:{Dev_Zaid}')
      await r.set(f'{m.chat.id}:AHKAMGAME:{Dev_Zaid}',m.from_user.id,ex=120)
      await r.sadd(f'{m.chat.id}:ListAhkam:{Dev_Zaid}',m.from_user.id)
@@ -1439,20 +1385,20 @@ async def gamesFunc(c,m,k,channel):
      
    if text == 'انا' and await r.get(f'{m.chat.id}:AHKAMGAME:{Dev_Zaid}'):
      if await r.sismember(f'{m.chat.id}:ListAhkam:{Dev_Zaid}',m.from_user.id):
-       return await m.reply(f"{k} اسمك موجود بالقائمة")
+       return await m.reply(t('g_0b1afe45d3', '{0} اسمك موجود بالقائمة', k))
      else:
-       await m.reply(f"{k} ضفت اسمك للقائمة")
+       await m.reply(t('g_75a525bd88', '{0} ضفت اسمك للقائمة', k))
        await r.sadd(f'{m.chat.id}:ListAhkam:{Dev_Zaid}',m.from_user.id)
        return True
   
    if text == 'تم' and await r.get(f'{m.chat.id}:AHKAMGAME:{Dev_Zaid}') and m.from_user.id == int(await r.get(f'{m.chat.id}:AHKAMGAME:{Dev_Zaid}')):
      if len(await r.smembers(f'{m.chat.id}:ListAhkam:{Dev_Zaid}')) == 1:
-       return await m.reply(f"{k} مافيه لاعبين")
+       return await m.reply(t('g_2d4ac9c98f', '{0} مافيه لاعبين', k))
      else:
        ids = [elem for elem in await r.smembers(f'{m.chat.id}:ListAhkam:{Dev_Zaid}')]
        id = random.choice(ids)
        getUser = await c.get_users(int(id))
-       await m.reply(f"{k} تم اختيار ( ⁪⁬⁪⁬{getUser.mention} ) للحكم عليه")
+       await m.reply(t('g_5f8a6e98cd', '{0} تم اختيار ( \u206a\u206c\u206a\u206c{1} ) للحكم عليه', k, getUser.mention))
        await r.delete(f'{m.chat.id}:ListAhkam:{Dev_Zaid}')
        await r.delete(f'{m.chat.id}:AHKAMGAME:{Dev_Zaid}')
        return True
@@ -1460,14 +1406,8 @@ async def gamesFunc(c,m,k,channel):
    
    if text == 'روليت':
      if await r.get(f'{m.chat.id}:ROLETGAME:{Dev_Zaid}'):
-       return await m.reply(f"{k} معليش في لعبة روليت شغالة الحين حاول بعد دقيقة")
-     await m.reply(f'''
-{k} بدينا لعبة الروليت واضفت اسمك 
-{k} اللي يبي يلعب يرسل كلمة ( انا ) 
-
-{k} اللي عليك انت صاحب اللعبة ترسل ( تم ) اذا اكتمل العدد
-☆
-''')
+       return await m.reply(t('g_ccf748213f', '{0} معليش في لعبة روليت شغالة الحين حاول بعد دقيقة', k))
+     await m.reply(t('g_7964402f83', '\n{0} بدينا لعبة الروليت واضفت اسمك \n{1} اللي يبي يلعب يرسل كلمة ( انا ) \n\n{2} اللي عليك انت صاحب اللعبة ترسل ( تم ) اذا اكتمل العدد\n☆\n', k, k, k))
      await r.delete(f'{m.chat.id}:ListRolet:{Dev_Zaid}')
      await r.set(f'{m.chat.id}:ROLETGAME:{Dev_Zaid}',m.from_user.id,ex=120)
      await r.sadd(f'{m.chat.id}:ListRolet:{Dev_Zaid}',m.from_user.id)
@@ -1475,20 +1415,20 @@ async def gamesFunc(c,m,k,channel):
      
    if text == 'انا' and await r.get(f'{m.chat.id}:ROLETGAME:{Dev_Zaid}'):
      if await r.sismember(f'{m.chat.id}:ListRolet:{Dev_Zaid}',m.from_user.id):
-       return await m.reply(f"{k} اسمك موجود بالقائمة")
+       return await m.reply(t('g_0b1afe45d3', '{0} اسمك موجود بالقائمة', k))
      else:
-       await m.reply(f"{k} ضفت اسمك للقائمة")
+       await m.reply(t('g_75a525bd88', '{0} ضفت اسمك للقائمة', k))
        await r.sadd(f'{m.chat.id}:ListRolet:{Dev_Zaid}',m.from_user.id)
        return True
   
    if text == 'تم' and await r.get(f'{m.chat.id}:ROLETGAME:{Dev_Zaid}') and m.from_user.id == int(await r.get(f'{m.chat.id}:ROLETGAME:{Dev_Zaid}')):
      if len(await r.smembers(f'{m.chat.id}:ListRolet:{Dev_Zaid}')) == 1:
-       return await m.reply(f"{k} مافيه لاعبين")
+       return await m.reply(t('g_2d4ac9c98f', '{0} مافيه لاعبين', k))
      else:
        ids = [elem for elem in await r.smembers(f'{m.chat.id}:ListRolet:{Dev_Zaid}')]
        id = random.choice(ids)
        getUser = await c.get_users(int(id))
-       await m.reply(f"{k} مبروك اخترت اللاعب ( {getUser.mention} ) واخذ 3 مجوهرات")
+       await m.reply(t('g_92f3ecf742', '{0} مبروك اخترت اللاعب ( {1} ) واخذ 3 مجوهرات', k, getUser.mention))
        if not await r.get(f'{getUser.id}:Floos'):
          floos = 0
        else:
@@ -1503,14 +1443,14 @@ async def gamesFunc(c,m,k,channel):
      name = random.randint(1,6)
      await r.set(f'{m.chat.id}:game5tm:{m.from_user.id}{Dev_Zaid}', name ,ex=600)
      await r.delete(f'{m.chat.id}:game:{Dev_Zaid}')
-     return await m.reply('''
+     return await m.reply(t('g_61b9c7de41', '''
 １    ２      ３     ４    ５     ６
   ↓     ↓      ↓     ↓     ↓     ↓
   ✋🏼 ‹› ✋🏼 ‹› ✋🏼 ‹› ✋🏼 ‹› ✋🏼 ‹› ✋🏼
   
   
 ⚘ اختار اليد اللي تتوقع فيها الخاتم
-     ''')
+     '''))
    
    if text == 'اعلام':
      country=random.choice(countries_)
@@ -1540,7 +1480,7 @@ async def gamesFunc(c,m,k,channel):
      for a in range(random.randint(5,15)):
        num += str(random.randint(1,9))
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', num ,ex=600)
-     await m.reply(f'الرقم ↢ ( {num} )', protect_content=True)
+     await m.reply(t('g_8e4d9a8a75', 'الرقم ↢ ( {0} )', num), protect_content=True)
      return True
      
    if text == 'انمي':
@@ -1616,17 +1556,17 @@ async def gamesFunc(c,m,k,channel):
      name = re.sub("فنانين", "ف ن ا ن ي ن", name)
      name = re.sub("صواريخ", "ص و ا ر ي خ", name)
      await r.set(f'{m.chat.id}:game:{Dev_Zaid}', name1,ex=600)
-     await m.reply(f'ركب ↢ ( {name} )')
+     await m.reply(t('g_f045f1120c', 'ركب ↢ ( {0} )', name))
    
    if text == "سكب ديمون":
     if m.from_user.id in users_demon:
         del users_demon[m.from_user.id]
-        return await m.reply("⇜ ابشر الغيت اللعبة")
+        return await m.reply(t('g_a577ba6cbd', "⇜ ابشر الغيت اللعبة"))
     else:
-        return await m.reply("⇜ مافيه لعبة ديمون شغالة")
+        return await m.reply(t('g_97e765f23d', "⇜ مافيه لعبة ديمون شغالة"))
         
    if text == 'حجره' or text == 'حجرة':
-     return await m.reply('- اختار حجره / ورقة / مقص',reply_markup=InlineKeyboardMarkup (
+     return await m.reply(t('g_52c36bf53a', '- اختار حجره / ورقة / مقص'),reply_markup=InlineKeyboardMarkup (
      [
      [
        InlineKeyboardButton ('🪨', callback_data=f'RPS:rock++{m.from_user.id}'),
@@ -1652,23 +1592,16 @@ async def gamesFunc(c,m,k,channel):
         else:
            floos = ra
            await r.set(f'{m.from_user.id}:Floos',ra)
-        return await m.reply(f'''
-صح عليك فزت **[بالنرد]({dice.link})** ⁪⁬⁪⁬⁮⁪⁬⁪⁬⁮✔
-💸فلوسك: `{floos}` ريال
-☆
-''', disable_web_page_preview=True)
+        return await m.reply(t('g_204a525dac', '\nصح عليك فزت **[بالنرد]({0})** \u206a\u206c\u206a\u206c\u206e\u206a\u206c\u206a\u206c\u206e✔\n💸فلوسك: `{1}` ريال\n☆\n', dice.link, floos), disable_web_page_preview=True)
      else:
-        return await m.reply(f"{k} للأسف خسرت بالنرد")
+        return await m.reply(t('g_edf55e7bcc', '{0} للأسف خسرت بالنرد', k))
        
    
    if text == 'ديمون':
      if m.from_user.id in users_demon:
-        return await m.reply("⇜ في لعبة ديمون شغالة استخدم امر <code>سكب ديمون</code>")
+        return await m.reply(t('g_d4c15686c8', "⇜ في لعبة ديمون شغالة استخدم امر <code>سكب ديمون</code>"))
      else:
-        return await m.reply(f'''بوو 👻
-انا ديمون 🧛🏻‍♀️ اقدر اعرف مين الشخصية الي فبالك !
-
-- فكر بشخص واضغط بدء وجاوب على اسئلتي''',
+        return await m.reply(t('g_cc2a86bdfb', 'بوو 👻\nانا ديمون 🧛🏻\u200d♀️ اقدر اعرف مين الشخصية الي فبالك !\n\n- فكر بشخص واضغط بدء وجاوب على اسئلتي'),
      reply_markup=InlineKeyboardMarkup (
        [
        [
@@ -1684,11 +1617,11 @@ async def akinatorHandler(c,m):
     rep = InlineKeyboardMarkup (
          [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
        )
-    await m.edit_message_text("⇜ جاري بدء اللعبة...",reply_markup=rep)
+    await m.edit_message_text(t('g_d38d22cfe0', "⇜ جاري بدء اللعبة..."),reply_markup=rep)
     aki= akinator.Akinator()
     q = aki.start_game(language="ar")
     users_demon.update({m.from_user.id:[aki,q]})
-    return await m.edit_message_text(users_demon[m.from_user.id][1],
+    return await m.edit_message_text(users_demon[m.from_user.id][1] or "🤔",
      reply_markup=InlineKeyboardMarkup (
        [
        [
@@ -1714,7 +1647,7 @@ async def akinatorHandler(c,m):
         except Exception: await c.send_message(m.message.chat.id,f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
         del users_demon[m.from_user.id]
     else:
-        return await m.edit_message_text(users_demon[m.from_user.id][1],
+        return await m.edit_message_text(users_demon[m.from_user.id][1] or "🤔",
      reply_markup=InlineKeyboardMarkup (
        [
        [
@@ -1740,7 +1673,7 @@ async def akinatorHandler(c,m):
         except Exception: await c.send_message(m.message.chat.id,f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
         del users_demon[m.from_user.id]
     else:
-        return await m.edit_message_text(users_demon[m.from_user.id][1],
+        return await m.edit_message_text(users_demon[m.from_user.id][1] or "🤔",
      reply_markup=InlineKeyboardMarkup (
        [
        [
@@ -1766,7 +1699,7 @@ async def akinatorHandler(c,m):
         except Exception: await c.send_message(m.message.chat.id,f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
         del users_demon[m.from_user.id]
     else:
-        return await m.edit_message_text(users_demon[m.from_user.id][1],
+        return await m.edit_message_text(users_demon[m.from_user.id][1] or "🤔",
      reply_markup=InlineKeyboardMarkup (
        [
        [
