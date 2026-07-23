@@ -20,6 +20,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 import asyncio
 
@@ -50,7 +51,7 @@ async def plugin_func(c,m,k):
    
    if await r.get(f'{m.from_user.id}:setAddP4:{m.chat.id}{Dev_Zaid}') or await r.get(f'{m.from_user.id}:setAddP:{m.chat.id}{Dev_Zaid}') or await r.get(f'{m.from_user.id}:setAddP2:{m.chat.id}{Dev_Zaid}') or await r.get(f'{m.from_user.id}:setAddP3:{m.chat.id}{Dev_Zaid}') or await r.get(f'{m.from_user.id}:setAddP4:{m.chat.id}{Dev_Zaid}') or await r.get(f'{m.from_user.id}:setDelp:{m.chat.id}{Dev_Zaid}'):
      if text == 'الغاء':
-       await m.reply(f'{k} ابشر ياعيني لغيت كلشي')
+       await m.reply(t('g_134b4d36e5', '{0} ابشر ياعيني لغيت كلشي', k))
        await r.delete(f'{m.from_user.id}:setAddP:{m.chat.id}{Dev_Zaid}')
        await r.delete(f'{m.from_user.id}:setAddP2:{m.chat.id}{Dev_Zaid}')
        await r.delete(f'{m.from_user.id}:setAddP3:{m.chat.id}{Dev_Zaid}')
@@ -61,25 +62,25 @@ async def plugin_func(c,m,k):
    if text == 'اضف ميزة' or text == 'اضف ميزه':
      if await devp_pls(m.from_user.id,m.chat.id):
         await r.set(f'{m.from_user.id}:setAddP:{m.chat.id}{Dev_Zaid}',1)
-        return await m.reply(f'{k} هلا عيني ارسل اسم الميزة الحين')
+        return await m.reply(t('g_ee49bbfb0e', '{0} هلا عيني ارسل اسم الميزة الحين', k))
    
    if await r.get(f'{m.from_user.id}:setAddP:{m.chat.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id) and len(m.text.split()) == 1:
       await r.delete(f'{m.from_user.id}:setAddP:{m.chat.id}{Dev_Zaid}')
       await r.set(f'{m.from_user.id}:setAddP2:{m.chat.id}{Dev_Zaid}',m.text)
-      return await m.reply(f'{k} تمام عيني ارسل نوع الميزة الحين ( صوره,فيديو,متحركه,بصمه,صوت)\n☆')
+      return await m.reply(t('g_3c565f3d4b', '{0} تمام عيني ارسل نوع الميزة الحين ( صوره,فيديو,متحركه,بصمه,صوت)\n☆', k))
    
    if text in ['صوره','فيديو','متحركه','بصمه','صوت'] and await r.get(f'{m.from_user.id}:setAddP2:{m.chat.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id):
       miza = await r.get(f'{m.from_user.id}:setAddP2:{m.chat.id}{Dev_Zaid}')
       await r.delete(f'{m.from_user.id}:setAddP2:{m.chat.id}{Dev_Zaid}')
       await r.set(f'{m.from_user.id}:setAddP3:{m.chat.id}{Dev_Zaid}',f'miza={miza}&&type={m.text}')
-      return await m.reply(f'{k} ارسل يوزر القناة الحين')
+      return await m.reply(t('g_764855275f', '{0} ارسل يوزر القناة الحين', k))
    
    if await r.get(f'{m.from_user.id}:setAddP3:{m.chat.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id):
       miza = await r.get(f'{m.from_user.id}:setAddP3:{m.chat.id}{Dev_Zaid}')
       miza += f'&&channel={m.text.replace("@","")}'
       await r.delete(f'{m.from_user.id}:setAddP3:{m.chat.id}{Dev_Zaid}')
       await r.set(f'{m.from_user.id}:setAddP4:{m.chat.id}{Dev_Zaid}', miza)
-      return await m.reply(f'{k} ارسل الحين ايديات الرسايل العشوائية\n{k} مثال 1 - 100')
+      return await m.reply(t('g_074f06ce04', '{0} ارسل الحين ايديات الرسايل العشوائية\n{1} مثال 1 - 100', k, k))
    
    if await r.get(f'{m.from_user.id}:setAddP4:{m.chat.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id):
       miza = await r.get(f'{m.from_user.id}:setAddP4:{m.chat.id}{Dev_Zaid}')
@@ -91,28 +92,28 @@ async def plugin_func(c,m,k):
       miza_channel = miza.split('&&channel=')[1].split('&&')[0]
       await r.set(f'{miza_name}:customPlugin:{Dev_Zaid}', f'type={miza_type}&&channel={miza_channel}&&random={id1}_{id2}')
       await r.sadd(f'customPlugins:{Dev_Zaid}', miza_name)
-      return await m.reply(f'{k} ابشر ضفت الميزة ( {miza_name} )\n{k} نوع الميزة {miza_type}\n{k} قناة الميزة ( @{miza_channel} )')
+      return await m.reply(t('g_ce95d82d67', '{0} ابشر ضفت الميزة ( {1} )\n{2} نوع الميزة {3}\n{4} قناة الميزة ( @{5} )', k, miza_name, k, miza_type, k, miza_channel))
    
    if text == 'مسح ميزة' or text == 'مسح ميزه':
      if await devp_pls(m.from_user.id,m.chat.id):
         await r.set(f'{m.from_user.id}:setDelp:{m.chat.id}{Dev_Zaid}',1)
-        return await m.reply(f'{k} هلا عيني ارسل اسم الميزة الحين')
+        return await m.reply(t('g_ee49bbfb0e', '{0} هلا عيني ارسل اسم الميزة الحين', k))
         
    if await r.get(f'{m.from_user.id}:setDelp:{m.chat.id}{Dev_Zaid}') and await devp_pls(m.from_user.id,m.chat.id):
      if not await r.get(f'{m.text}:customPlugin:{Dev_Zaid}'):
        await r.delete(f'{m.from_user.id}:setDelp:{m.chat.id}{Dev_Zaid}')
-       return await m.reply(f'{k} مافي ميزة بهالأسم')
+       return await m.reply(t('g_cf61f5ad52', '{0} مافي ميزة بهالأسم', k))
      else:
        await r.srem(f'customPlugins:{Dev_Zaid}', m.text)
        await r.delete(f'{m.text}:customPlugin:{Dev_Zaid}')
        await r.delete(f'{m.from_user.id}:setDelp:{m.chat.id}{Dev_Zaid}')
        await r.delete(f'{m.text}:customPluginD:{Dev_Zaid}{m.chat.id}')
-       return await m.reply(f'{k} الميزة ( {m.text} ) مسحتها .')
+       return await m.reply(t('g_e30d0b5195', '{0} الميزة ( {1} ) مسحتها .', k, m.text))
    
    if text == 'المميزات المضافه':
      if await devp_pls(m.from_user.id,m.chat.id):
        if not await r.smembers(f'customPlugins:{Dev_Zaid}'):
-         return await m.reply(f'{k} مافي ولا ميزة مضافة')
+         return await m.reply(t('g_2b3b02c0ea', '{0} مافي ولا ميزة مضافة', k))
        else:
          text = 'المميزات المضافه:\n\n'
          count = 1
@@ -151,25 +152,25 @@ async def plugin_func(c,m,k):
       miza = text.split()[1]
       if await r.get(f'{miza}:customPlugin:{Dev_Zaid}'):
         if not await owner_pls(m.from_user.id,m.chat.id):
-          return await m.reply(f'{k} هذا الامر يخص ( المالك وفوق ) بس') 
+          return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k)) 
         else:
           if await r.get(f'{miza}:customPluginD:{Dev_Zaid}{m.chat.id}'):
-            return await m.reply(f'{k} من「 {m.from_user.mention} 」\n{k} ميزة {miza} معطله من قبل\n☆')
+            return await m.reply(t('g_43f63cb74b', '{0} من「 {1} 」\n{2} ميزة {3} معطله من قبل\n☆', k, m.from_user.mention, k, miza))
           else:
             await r.set(f'{miza}:customPluginD:{Dev_Zaid}{m.chat.id}',1)
-            return await m.reply(f'من「 {m.from_user.mention} 」\n{k} ابشر عطلت ميزة {miza}\n☆')
+            return await m.reply(t('g_17ded0c134', 'من「 {0} 」\n{1} ابشر عطلت ميزة {2}\n☆', m.from_user.mention, k, miza))
    
    if text.startswith('تفعيل ') and len(text.split()) == 2:
       miza = text.split()[1]
       if await r.get(f'{miza}:customPlugin:{Dev_Zaid}'):
         if not await owner_pls(m.from_user.id,m.chat.id):
-          return await m.reply(f'{k} هذا الامر يخص ( المالك وفوق ) بس') 
+          return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k)) 
         else:
           if not await r.get(f'{miza}:customPluginD:{Dev_Zaid}{m.chat.id}'):
-            return await m.reply(f'{k} من「 {m.from_user.mention} 」\n{k} ميزة {miza} مفعله من قبل\n☆')
+            return await m.reply(t('g_bd1a2ca7a0', '{0} من「 {1} 」\n{2} ميزة {3} مفعله من قبل\n☆', k, m.from_user.mention, k, miza))
           else:
             await r.delete(f'{miza}:customPluginD:{Dev_Zaid}{m.chat.id}')
-            return await m.reply(f'من「 {m.from_user.mention} 」\n{k} ابشر فعلت ميزة {miza}\n☆')
+            return await m.reply(t('g_c4945f41fe', 'من「 {0} 」\n{1} ابشر فعلت ميزة {2}\n☆', m.from_user.mention, k, miza))
    
             
             
