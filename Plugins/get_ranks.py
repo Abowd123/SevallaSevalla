@@ -20,6 +20,7 @@ from pyrogram import *
 from pyrogram.enums import *
 from pyrogram.types import *
 from config import *
+from helpers.replies import t
 from helpers.Ranks import *
 from helpers.Ranks import isLockCommand
 import asyncio
@@ -50,10 +51,10 @@ async def get_ranks_func(c,m,k,channel):
    if await isLockCommand(m.from_user.id, m.chat.id, text): return
    if text == 'قائمه Dev':
       if not await devp_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( Dev🎖️) بس')
+        return await m.reply(t('g_d06463beb4', '{0} هذا الامر يخص ( Dev🎖️) بس', k))
       else:
         if not await r.smembers(f'{Dev_Zaid}DEV2'):
-           return await m.reply(f'{k} مافيه قائمة  Dev²🎖️')
+           return await m.reply(t('g_506d17355a', '{0} مافيه قائمة  Dev²🎖️', k))
         else:
           text = '- قائمة  Dev²🎖:\n\n'
           count = 1
@@ -79,10 +80,10 @@ async def get_ranks_func(c,m,k,channel):
    
    if text == 'قائمه MY':
       if not await dev2_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( Dev²🎖️ وفوق ) بس')
+        return await m.reply(t('g_2d0da46fab', '{0} هذا الامر يخص ( Dev²🎖️ وفوق ) بس', k))
       else:
         if not await r.smembers(f'{Dev_Zaid}DEV'):
-          return await m.reply(f'{k}  مافيه Myth🎖️ ')
+          return await m.reply(t('g_d14d1150b2', '{0}  مافيه Myth🎖️ ', k))
         else:
           text = '- قائمة Myth🎖️:\n\n'
           count = 1
@@ -109,10 +110,10 @@ async def get_ranks_func(c,m,k,channel):
    cid = m.chat.id
    if text == 'المالكين الاساسيين':
       if not await dev_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( المطور وفوق ) بس')
+        return await m.reply(t('g_33cf211beb', '{0} هذا الامر يخص ( المطور وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listGOWNER:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مالكين اساسيين ')
+          return await m.reply(t('g_ca2842eaae', '{0} مافيه مالكين اساسيين ', k))
         else:
           text = '- المالكين الاساسيين:\n\n'
           count = 1
@@ -138,10 +139,10 @@ async def get_ranks_func(c,m,k,channel):
           
    if text == 'المالكين':
       if not await gowner_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( المالك الاساسي ) بس')
+        return await m.reply(t('g_aa2b0014e0', '{0} هذا الامر يخص ( المالك الاساسي ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listOWNER:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مالكيين ')
+          return await m.reply(t('g_e6ce10be3b', '{0} مافيه مالكيين ', k))
         else:
           text = '- المالكيين:\n\n'
           count = 1
@@ -167,10 +168,10 @@ async def get_ranks_func(c,m,k,channel):
    
    if text == 'المدراء':
       if not await owner_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( المالك وفوق ) بس')
+        return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listMOD:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مدراء ')
+          return await m.reply(t('g_1159ef7f2c', '{0} مافيه مدراء ', k))
         else:
           text = '- المدراء:\n\n'
           count = 1
@@ -196,10 +197,10 @@ async def get_ranks_func(c,m,k,channel):
    
    if text == 'الادمنيه':
       if not await mod_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( المدير وفوق ) بس')
+        return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listADMIN:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه ادمن ')
+          return await m.reply(t('g_d39210a2d1', '{0} مافيه ادمن ', k))
         else:
           text = '- الادمنيه:\n\n'
           count = 1
@@ -225,7 +226,7 @@ async def get_ranks_func(c,m,k,channel):
    
    if text == 'المشرفين':
       if not await owner_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( المالك وفوق ) بس')
+        return await m.reply(t('g_48f04e3277', '{0} هذا الامر يخص ( المالك وفوق ) بس', k))
       else:
           text = '- المشرفين:\n\n'
           count = 1
@@ -244,10 +245,10 @@ async def get_ranks_func(c,m,k,channel):
    
    if text == 'المميزين':
       if not await admin_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( الادمن وفوق ) بس')
+        return await m.reply(t('g_8bb879faee', '{0} هذا الامر يخص ( الادمن وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listPRE:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مميزين ')
+          return await m.reply(t('g_5fa1935022', '{0} مافيه مميزين ', k))
         else:
           text = '- المميزين:\n\n'
           count = 1
@@ -273,10 +274,10 @@ async def get_ranks_func(c,m,k,channel):
    
    if text == 'المكتومين':
       if not await mod_pls(m.from_user.id,m.chat.id):
-        return await m.reply(f'{k} هذا الامر يخص ( المدير وفوق ) بس')
+        return await m.reply(t('g_ab8da5b9b9', '{0} هذا الامر يخص ( المدير وفوق ) بس', k))
       else:
         if not await r.smembers(f'{cid}:listMUTE:{Dev_Zaid}'):
-          return await m.reply(f'{k} مافيه مكتومين ')
+          return await m.reply(t('g_877c7bb23a', '{0} مافيه مكتومين ', k))
         else:
           text = '- المكتومين:\n\n'
           count = 1
